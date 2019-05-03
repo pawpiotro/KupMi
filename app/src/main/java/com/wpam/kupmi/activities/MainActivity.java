@@ -72,6 +72,7 @@ public class MainActivity extends Activity
             if (resultCode == RESULT_OK)
             {
                 startActivity(new Intent(this, MapsActivity.class));
+                finish();
             }
             else
             {
