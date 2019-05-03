@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">KupMi</string>
     <string name="title_activity_maps">Map</string>
+    <string name="coordinates_label_name">Coordinates</string>
+    <string name="time_label_name">Time</string>
+    <string name="request_label_name">Description</string>
 </resources>
