@@ -23,13 +23,21 @@
                 android:id="@+id/coordinatesLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:padding="1dp"
                 android:text="@string/coordinates_label_name"
-                android:textAlignment="textEnd" />
+                android:textAlignment="textEnd"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/coordinates"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:padding="1dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:textSize="24sp" />
         </TableRow>
 
         <TableRow
@@ -41,13 +49,22 @@
                 android:id="@+id/timeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:padding="1dp"
                 android:text="@string/time_label_name"
-                android:textAlignment="textEnd" />
+                android:textAlignment="textEnd"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_width="274dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:inputType="date"
+                android:padding="1dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:textSize="24sp" />
         </TableRow>
 
         <TableRow
@@ -59,13 +76,22 @@
                 android:id="@+id/requestLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:padding="1dp"
                 android:text="@string/request_label_name"
-                android:textAlignment="textEnd" />
+                android:textAlignment="textEnd"
+                android:textSize="24sp" />
 
-            <TextView
+            <EditText
                 android:id="@+id/request"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:inputType="textLongMessage"
+                android:padding="1dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:textSize="24sp" />
         </TableRow>
 
     </TableLayout>
