@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.wpam.kupmi.utils.NetworkUtils.*;
-import static com.wpam.kupmi.utils.AlertDialogUtils.*;
+import static com.wpam.kupmi.utils.DialogUtils.*;
 
 public class MainActivity extends Activity
 {

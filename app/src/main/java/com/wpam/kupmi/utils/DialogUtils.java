@@ -3,7 +3,7 @@ package com.wpam.kupmi.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 
-public class AlertDialogUtils
+public class DialogUtils
 {
     public static void showOKDialog(Context context, int titleId, int msgId, int iconId)
     {
