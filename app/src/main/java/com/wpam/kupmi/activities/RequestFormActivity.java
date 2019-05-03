@@ -1,13 +1,19 @@
 package com.wpam.kupmi.activities;
 
 import android.Manifest;
+import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
+import android.util.Pair;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -16,6 +22,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.wpam.kupmi.R;
+
+import java.util.Calendar;
 
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
 
@@ -31,6 +39,9 @@ public class RequestFormActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     private LocationResult locationResult;
 
+    private Pair<Double, Double> coords;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,13 +56,37 @@ public class RequestFormActivity extends AppCompatActivity {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                TextView coords = (TextView) findViewById(R.id.coordinates);
-                coords.setText(locationResult.toString());
+                TextView coordsText = (TextView) findViewById(R.id.coordinates);
+                Double lat = locationResult.getLastLocation().getLatitude();
+                Double lon = locationResult.getLastLocation().getLongitude();
+                coords = new Pair<Double,Double>(lat, lon);
+                coordsText.setText(lat + ", " + lon);
                 //once
                 fusedLocationClient.removeLocationUpdates(locationCallback);
             }
         };
+        final TextView timeEditText = (TextView)findViewById(R.id.time);
+        timeEditText.setText(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" +
+                Calendar.getInstance().get(Calendar.MINUTE));
+        //timeEditText.setInputType(InputType.TYPE_NULL);
+        timeEditText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                final Calendar currentTime = Calendar.getInstance();
+                int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = currentTime.get(Calendar.MINUTE);
 
+                TimePickerDialog timePicker = new TimePickerDialog(RequestFormActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        timeEditText.setText(selectedHour + ":" + selectedMinute);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                timePicker.setTitle("Select Time");
+                timePicker.show();
+
+            }
+        });
     }
 
     @Override
