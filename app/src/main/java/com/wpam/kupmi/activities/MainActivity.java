@@ -32,7 +32,7 @@ public class MainActivity extends Activity
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null)
         {
-            startActivity(new Intent(this, MapsActivity.class));
+            startActivity(new Intent(this, MenuActivity.class));
             finish();
         }
         else
@@ -71,7 +71,7 @@ public class MainActivity extends Activity
         {
             if (resultCode == RESULT_OK)
             {
-                startActivity(new Intent(this, MapsActivity.class));
+                startActivity(new Intent(this, MenuActivity.class));
                 finish();
             }
             else
