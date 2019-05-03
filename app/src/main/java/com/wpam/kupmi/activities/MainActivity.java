@@ -18,9 +18,9 @@ import static com.wpam.kupmi.utils.DialogUtils.*;
 public class MainActivity extends Activity
 {
     // Firebase authentication section
-    public static final List<AuthUI.IdpConfig> authProviders = Collections.singletonList(
+    private static final List<AuthUI.IdpConfig> authProviders = Collections.singletonList(
             new AuthUI.IdpConfig.EmailBuilder().build());
-    public static final int RC_SIGN_IN = 0x01;
+    private static final int RC_SIGN_IN = 0x01;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
