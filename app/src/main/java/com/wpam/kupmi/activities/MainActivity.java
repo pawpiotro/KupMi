@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.wpam.kupmi.R;
 import java.util.Collections;
 import java.util.List;
+
+import static com.wpam.kupmi.utils.NetworkUtils.*;
+import static com.wpam.kupmi.utils.AlertDialogUtils.*;
 
 public class MainActivity extends Activity
 {
@@ -28,26 +30,33 @@ public class MainActivity extends Activity
 
         setContentView(R.layout.activity_main);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        if(auth.getCurrentUser() != null)
+        if (FirebaseAuth.getInstance().getCurrentUser() != null)
         {
-
+            startActivity(new Intent(this, MapsActivity.class));
+            finish();
         }
         else
         {
             Button authEmailButton = findViewById(R.id.authEmailButton);
             authEmailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
+
                 public void onClick(View v) {
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setAvailableProviders(authProviders)
-                                    .setLogo(R.drawable.fui_ic_check_circle_black_128dp)
-                                    .setTheme(R.style.AppTheme)
-                                    .build(),
-                            RC_SIGN_IN);
+                    if (isNetworkAvailable(MainActivity.this)) {
+                        startActivityForResult(
+                                AuthUI.getInstance()
+                                        .createSignInIntentBuilder()
+                                        .setAvailableProviders(authProviders)
+                                        .setLogo(R.drawable.fui_ic_check_circle_black_128dp)
+                                        .setTheme(R.style.AppTheme)
+                                        .build(),
+                                RC_SIGN_IN);
+                    }
+                    else
+                    {
+                        showOKDialog(MainActivity.this, R.string.error_title, R.string.no_network_connection,
+                                android.R.drawable.ic_dialog_alert);
+                    }
                 }
             });
         }
@@ -60,18 +69,15 @@ public class MainActivity extends Activity
 
         if (requestCode == RC_SIGN_IN)
         {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
             if (resultCode == RESULT_OK)
             {
-                // Successfully signed in
+                startActivity(new Intent(this, MapsActivity.class));
             }
             else
             {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
-                // ...
             }
         }
     }
