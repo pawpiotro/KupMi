@@ -5,6 +5,7 @@
     <string name="coordinates_label_name">Coordinates</string>
     <string name="time_label_name">Time</string>
     <string name="request_label_name">Description</string>
+    <string name="tags_label_name">Tags</string>
     <!-- Dialog -->
     <string name="error_title">Error</string>
     <!-- Network -->
