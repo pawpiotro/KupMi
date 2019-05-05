@@ -2,8 +2,11 @@ package com.wpam.kupmi.activities;
 
 import android.Manifest;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +29,8 @@ import com.wpam.kupmi.R;
 import java.util.Calendar;
 
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
+import com.wpam.kupmi.lib.Constants;
+import com.wpam.kupmi.services.FetchAddressIntentService;
 
 public class RequestFormActivity extends AppCompatActivity {
 
@@ -39,13 +44,32 @@ public class RequestFormActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     private LocationResult locationResult;
 
-    private Pair<Double, Double> coords;
+    private Location location;
+    private AddressResultReceiver resultReceiver;
 
+    private TextView coordsText;
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultData == null) {
+                return;
+            }
+            coordsText.setText(resultData.getString(Constants.RESULT_DATA_KEY));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_form);
+        coordsText = (TextView) findViewById(R.id.coordinates);
+        resultReceiver = new AddressResultReceiver(new Handler());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         Log.i(TAG, "On create");
         //version with location updates
@@ -56,13 +80,15 @@ public class RequestFormActivity extends AppCompatActivity {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-                TextView coordsText = (TextView) findViewById(R.id.coordinates);
+
+                location = locationResult.getLastLocation();
                 Double lat = locationResult.getLastLocation().getLatitude();
                 Double lon = locationResult.getLastLocation().getLongitude();
-                coords = new Pair<Double,Double>(lat, lon);
                 coordsText.setText(lat + ", " + lon);
                 //once
                 fusedLocationClient.removeLocationUpdates(locationCallback);
+                startIntentService();
+
             }
         };
         final TextView timeEditText = (TextView)findViewById(R.id.time);
@@ -81,7 +107,7 @@ public class RequestFormActivity extends AppCompatActivity {
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         timeEditText.setText(selectedHour + ":" + selectedMinute);
                     }
-                }, hour, minute, true);//Yes 24 hour time
+                }, hour, minute, true);
                 timePicker.setTitle("Select Time");
                 timePicker.show();
 
@@ -92,16 +118,13 @@ public class RequestFormActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "No permissions");
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_ACCESS_PERMISSIONS_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_ACCESS_PERMISSIONS_CODE);
             return;
         }
         Log.i(TAG, "Waiting for location");
@@ -142,5 +165,12 @@ public class RequestFormActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+
+    protected void startIntentService() {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, resultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
+        startService(intent);
     }
 }
