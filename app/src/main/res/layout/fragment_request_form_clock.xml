@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F0"
+    tools:context=".activities.requestForm.RequestFormClock">
+
+    <TimePicker
+        android:id="@+id/request_form_clock_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:id="@+id/fragment_inflate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageButton
+            android:id="@+id/request_form_clock_next_button"
+            style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:elevation="5dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/ic_menu_send" />
+
+    </FrameLayout>
+
+</FrameLayout>

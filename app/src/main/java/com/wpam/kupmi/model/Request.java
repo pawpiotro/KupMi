@@ -105,4 +105,12 @@ public class Request
     public void setState(RequestState state) {
         this.state = state;
     }
+
+    public String getLocationAddress() {
+        return locationAddress;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
 }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F0F0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/request_form_desc_tags_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:padding="1dp"
+            android:text="@string/tags_label_name"
+            android:textAlignment="viewStart"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/request_form_desc_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:inputType="textLongMessage"
+            android:padding="1dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:textAlignment="viewStart"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/request_form_desc_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:padding="1dp"
+            android:text="@string/request_label_name"
+            android:textAlignment="viewStart"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/request_form_desc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:padding="1dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:singleLine="false"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_inflate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageButton
+            android:id="@+id/request_form_desc_next_button"
+            style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:elevation="5dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/ic_menu_send" />
+
+    </FrameLayout>
+
+</FrameLayout>
