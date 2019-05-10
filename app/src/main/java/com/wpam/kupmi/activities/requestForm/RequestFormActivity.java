@@ -1,38 +1,36 @@
-package com.wpam.kupmi.activities;
+package com.wpam.kupmi.activities.requestForm;
 
 import android.Manifest;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.InputType;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TimePicker;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.wpam.kupmi.R;
-
-import java.util.Calendar;
-
-import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
 import com.wpam.kupmi.lib.Constants;
+import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.services.FetchAddressIntentService;
 
-public class RequestFormActivity extends AppCompatActivity {
+import java.util.Date;
+import java.util.List;
+
+import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
+
+public class RequestFormActivity extends FragmentActivity {
 
     private static final String TAG = "REQUEST_FORM_ACTIVITY";
     private FusedLocationProviderClient fusedLocationClient;
@@ -45,9 +43,17 @@ public class RequestFormActivity extends AppCompatActivity {
     private LocationResult locationResult;
 
     private Location location;
+    private Request request = new Request();
+
     private AddressResultReceiver resultReceiver;
 
-    private TextView coordsText;
+    private ProgressBar bar;
+
+    private FragmentManager fragmentManager;
+    private RequestFormMap requestFormMap = new RequestFormMap();
+    private RequestFormClock requestFormClock = new RequestFormClock();
+    private RequestFormDesc requestFormDesc = new RequestFormDesc();
+    private RequestFormSummary requestFormSummary = new RequestFormSummary();
 
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
@@ -60,7 +66,8 @@ public class RequestFormActivity extends AppCompatActivity {
             if (resultData == null) {
                 return;
             }
-            coordsText.setText(resultData.getString(Constants.RESULT_DATA_KEY));
+            Log.i(TAG,resultData.getString(Constants.RESULT_DATA_KEY));
+            request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));
         }
     }
 
@@ -68,51 +75,31 @@ public class RequestFormActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_form);
-        coordsText = (TextView) findViewById(R.id.coordinates);
         resultReceiver = new AddressResultReceiver(new Handler());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         Log.i(TAG, "On create");
-        //version with location updates
+
+        fragmentManager = getSupportFragmentManager();
+
+        bar = (ProgressBar) findViewById(R.id.progressBar);
+        bar.setVisibility(View.VISIBLE);
+
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(UPDATE_INTERVAL)
                 .setFastestInterval(FASTEST_INTERVAL);
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
-
                 location = locationResult.getLastLocation();
-                Double lat = locationResult.getLastLocation().getLatitude();
-                Double lon = locationResult.getLastLocation().getLongitude();
-                coordsText.setText(lat + ", " + lon);
-                //once
+                // we want only one result
                 fusedLocationClient.removeLocationUpdates(locationCallback);
-                startIntentService();
-
+                goToMap();
             }
         };
-        final TextView timeEditText = (TextView)findViewById(R.id.time);
-        timeEditText.setText(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" +
-                Calendar.getInstance().get(Calendar.MINUTE));
-        //timeEditText.setInputType(InputType.TYPE_NULL);
-        timeEditText.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                final Calendar currentTime = Calendar.getInstance();
-                int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = currentTime.get(Calendar.MINUTE);
 
-                TimePickerDialog timePicker = new TimePickerDialog(RequestFormActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        timeEditText.setText(selectedHour + ":" + selectedMinute);
-                    }
-                }, hour, minute, true);
-                timePicker.setTitle("Select Time");
-                timePicker.show();
 
-            }
-        });
     }
 
     @Override
@@ -129,21 +116,6 @@ public class RequestFormActivity extends AppCompatActivity {
         }
         Log.i(TAG, "Waiting for location");
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
-        //version without location updates
-        /*
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            Log.i(TAG, "Got location");
-                            TextView coords = (TextView) findViewById(R.id.coordinates);
-                            coords.setText(location.toString());
-                        }
-                    }
-                });
-        */
     }
 
     @Override
@@ -172,5 +144,74 @@ public class RequestFormActivity extends AppCompatActivity {
         intent.putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
         startService(intent);
+    }
+
+    public void insertIntoDB(){
+        Log.i(TAG, "INSERTING INTO DATABASE");
+        //TODO
+    }
+
+    public void setBarVisible(boolean b) {
+        if (bar == null)
+            return;
+        if (b)
+            bar.setVisibility(View.VISIBLE);
+        else
+            bar.setVisibility(View.GONE);
+    }
+
+    public void setLocation(double lat, double lon) {
+        location.setLatitude(lat);
+        location.setLongitude(lon);
+        Log.i(TAG, lat + ", " + lon);
+        startIntentService();
+    }
+
+    public void setDeadline(Date deadline) {
+        request.setDeadline(deadline);
+    }
+
+    public void setDescription(String description) {
+        request.setDescription(description);
+    }
+
+    public void setTags(List<String> tags) {
+        request.setTags(tags);
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void goToMap() {
+        Bundle bundle = new Bundle();
+        bundle.putDouble("lat", location.getLatitude());
+        bundle.putDouble("lon", location.getLongitude());
+
+        requestFormMap.setArguments(bundle);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.request_form_main_layout, requestFormMap);
+        transaction.commit();
+    }
+
+    public void goToClock() {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.request_form_main_layout, requestFormClock);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    public void goToDesc() {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.request_form_main_layout, requestFormDesc);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    public void goToSummary() {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.request_form_main_layout, requestFormSummary);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
