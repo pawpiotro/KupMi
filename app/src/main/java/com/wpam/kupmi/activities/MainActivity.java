@@ -7,8 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.firebase.auth.AuthManager;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class MainActivity extends Activity
 
         setContentView(R.layout.activity_main);
 
-        if (FirebaseAuth.getInstance().getCurrentUser() != null)
+        if (AuthManager.getInstance().isSignIn())
         {
             startActivity(new Intent(this, MenuActivity.class));
             finish();

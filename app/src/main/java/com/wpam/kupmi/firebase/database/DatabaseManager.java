@@ -3,17 +3,12 @@ package com.wpam.kupmi.firebase.database;
 import android.util.Pair;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.core.GeoHash;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbModel;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
-import com.wpam.kupmi.firebase.database.model.DbUser;
 import com.wpam.kupmi.model.Request;
-import com.wpam.kupmi.model.User;
 import com.wpam.kupmi.utils.DateUtils;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,22 +21,16 @@ public class DatabaseManager
     private DatabaseReference dbRef;
 
     // Constructors
-    public DatabaseManager()
+    private DatabaseManager()
     {
         this.db = FirebaseDatabase.getInstance();
         this.dbRef = db.getReference();
     }
 
     // Public methods
-    public void addUser(User user)
+    public static DatabaseManager getInstance()
     {
-        DbUser dbUser = new DbUser();
-        dbUser.setEmail(user.getEmail());
-        dbUser.setName(user.getName());
-        dbUser.setPhoneNumber(user.getPhoneNumber());
-        dbUser.setReputation(user.getReputation());
-
-        setObject(DbModel.USERS_KEY, user.getUserUID(), dbUser);
+        return new DatabaseManager();
     }
 
     public void addRequest(Request request)

@@ -22,12 +22,12 @@ public class Request
     private RequestState state;
 
     public Request() {}
-    public Request(String requesterUID, String supplierUID, String deadlineText, String dateFormat,
+    public Request(String requesterUID, String deadlineText, String dateFormat,
             Locale locale, String description, List<String> tags, Pair<Double, Double> location, int stateId)
     {
         this.requestUID = UIDUtils.getUID();
         this.requesterUID = requesterUID;
-        this.supplierUID = supplierUID;
+        this.supplierUID = "";
         this.deadline = getDate(deadlineText, dateFormat, locale);
         this.description = description;
         this.tags = tags;

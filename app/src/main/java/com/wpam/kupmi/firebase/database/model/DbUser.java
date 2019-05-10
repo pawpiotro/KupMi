@@ -5,20 +5,11 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class DbUser
 {
-    private String name;
     private String email;
     private String phoneNumber;
     private Long reputation;
 
     public DbUser() {}
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getEmail() {
         return email;
