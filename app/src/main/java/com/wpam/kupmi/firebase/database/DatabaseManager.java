@@ -38,11 +38,12 @@ public class DatabaseManager
         DbRequest dbRequest = new DbRequest();
         dbRequest.setRequesterUID(request.getRequesterUID());
         dbRequest.setSupplierUID(request.getSupplierUID());
-        dbRequest.setDeadline(DateUtils.getDateText(request.getDeadline(), DatabaseConfig.dateFormat,
-                DatabaseConfig.dateFormatCulture));
+        dbRequest.setDeadline(DateUtils.getDateText(request.getDeadline(), DatabaseConfig.DATE_FORMAT,
+                DatabaseConfig.DATE_FORMAT_CULTURE));
         dbRequest.setDescription(request.getDescription());
         dbRequest.setTags(request.getTags());
         dbRequest.setState((long) request.getState().getStateId());
+        dbRequest.setLocationAddress(request.getLocationAddress());
 
         Pair<Double, Double> requestLoc = request.getLocation();
         GeoHash locHash = new GeoHash(new GeoLocation(requestLoc.first, requestLoc.second));

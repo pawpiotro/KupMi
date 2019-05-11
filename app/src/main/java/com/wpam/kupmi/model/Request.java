@@ -1,8 +1,10 @@
 package com.wpam.kupmi.model;
 
+import android.content.Context;
 import android.util.Pair;
+import com.wpam.kupmi.utils.DateUtils;
 import com.wpam.kupmi.utils.UIDUtils;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,15 +15,17 @@ public class Request
     private String requestUID;
     private String requesterUID;
     private String supplierUID;
-    private Date deadline;
+    private Calendar deadline;
     private String description;
     private List<String> tags;
     private Pair<Double, Double> location;
-    // TODO: Location -> Address od Pawła
     private String locationAddress;
     private RequestState state;
 
-    public Request() {}
+    public Request()
+    {
+        this.requestUID = UIDUtils.getUID();
+    }
     public Request(String requesterUID, String deadlineText, String dateFormat,
             Locale locale, String description, List<String> tags, Pair<Double, Double> location, int stateId)
     {
@@ -34,7 +38,7 @@ public class Request
         this.location = location;
         this.state = RequestState.getInstance(stateId);
     }
-    public Request(String requesterUID, String supplierUID, Date deadline, String description,
+    public Request(String requesterUID, String supplierUID, Calendar deadline, String description,
                    List<String> tags, Pair<Double, Double> location, RequestState state)
     {
         this.requesterUID = requesterUID;
@@ -66,11 +70,11 @@ public class Request
         this.supplierUID = supplierUID;
     }
 
-    public Date getDeadline() {
+    public Calendar getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(Calendar deadline) {
         this.deadline = deadline;
     }
 
@@ -112,5 +116,32 @@ public class Request
 
     public void setLocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
+    }
+
+    public String toString(Context ctx)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        String lineSeparator = System.lineSeparator();
+
+        stringBuilder.append("Request UID: ").append(requestUID);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Requester UID: ").append(requesterUID);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Supplier UID: ").append(supplierUID);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Deadline: ").append(DateUtils.getDateText(deadline, ctx));
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Description: ").append(description);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Tags: ").append(tags);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Location: ").append(location.first).append(" ").append(location.second);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Location address: ").append(locationAddress);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("State: ").append(state.name());
+        stringBuilder.append(lineSeparator);
+
+        return stringBuilder.toString();
     }
 }

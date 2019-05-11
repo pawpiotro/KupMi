@@ -1,6 +1,7 @@
 package com.wpam.kupmi.activities.requestForm;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -11,22 +12,26 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.firebase.auth.AuthManager;
+import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
+import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.services.FetchAddressIntentService;
-
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
 
@@ -146,9 +151,15 @@ public class RequestFormActivity extends FragmentActivity {
         startService(intent);
     }
 
-    public void insertIntoDB(){
-        Log.i(TAG, "INSERTING INTO DATABASE");
-        //TODO
+    public void insertIntoDB()
+    {
+        request.setRequesterUID(AuthManager.getInstance().getCurrentUserUid());
+        request.setState(RequestState.NEW);
+
+        Log.i(TAG, "INSERTING INTO DATABASE:");
+        Log.i(TAG, request.toString(this));
+
+        DatabaseManager.getInstance().addRequest(request);
     }
 
     public void setBarVisible(boolean b) {
@@ -163,11 +174,13 @@ public class RequestFormActivity extends FragmentActivity {
     public void setLocation(double lat, double lon) {
         location.setLatitude(lat);
         location.setLongitude(lon);
+        request.setLocation(Pair.create(lat, lon));
         Log.i(TAG, lat + ", " + lon);
+
         startIntentService();
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(Calendar deadline) {
         request.setDeadline(deadline);
     }
 

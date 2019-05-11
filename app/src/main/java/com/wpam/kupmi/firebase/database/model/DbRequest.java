@@ -12,6 +12,7 @@ public class DbRequest
     private String description;
     private List<String> tags;
     private Long state;
+    private String locationAddress;
 
     public DbRequest() {}
 
@@ -61,5 +62,13 @@ public class DbRequest
 
     public void setState(Long state) {
         this.state = state;
+    }
+
+    public String getLocationAddress() {
+        return locationAddress;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
     }
 }

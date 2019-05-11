@@ -9,12 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.model.Request;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import com.wpam.kupmi.utils.DateUtils;
 import java.util.List;
 
 public class RequestFormSummary extends Fragment {
@@ -56,9 +53,7 @@ public class RequestFormSummary extends Fragment {
             coords.setText(coordinates);
         }
 
-        //TODO: jakis format w Constants moze?
-        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        String strDate = dateFormat.format(request.getDeadline());
+        String strDate = DateUtils.getDateText(request.getDeadline(), getContext());
         time.setText(strDate);
 
         List<String> tagsList = request.getTags();
