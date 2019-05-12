@@ -1,10 +1,14 @@
 package com.wpam.kupmi.firebase.database;
 
 import android.util.Pair;
+import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.geofire.core.GeoHash;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbModel;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
@@ -14,9 +18,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.wpam.kupmi.utils.CoordinatesUtils.getGeoLocation;
+
 public class DatabaseManager
 {
     // Private fields
+
     private FirebaseDatabase db;
     private DatabaseReference dbRef;
 
@@ -33,6 +40,40 @@ public class DatabaseManager
         return new DatabaseManager();
     }
 
+    public GeoQuery getRequestsLocationsQuery(Pair<Double, Double> location, double radius, GeoQueryEventListener listener)
+    {
+        if (location != null && radius >= 0.0f) {
+            GeoFire geoRef = new GeoFire(dbRef.child(DbModel.REQUESTS_LOCATIONS_KEY));
+            GeoQuery geoQuery = geoRef.queryAtLocation(getGeoLocation(location), radius);
+            geoQuery.addGeoQueryEventListener(listener);
+
+            return geoQuery;
+        }
+        return null;
+    }
+
+    public void updateLocationRequestsLocationsQuery(GeoQuery geoQuery, Pair<Double, Double> location)
+    {
+        if (geoQuery != null)
+        {
+            GeoLocation geoLocation = getGeoLocation(location);
+            if (geoLocation != null)
+                geoQuery.setCenter(geoLocation);
+        }
+    }
+
+    public void updateRadiusRequestsLocationsQuery(GeoQuery geoQuery, double radius)
+    {
+        if (geoQuery != null && radius >= 0.0f)
+            geoQuery.setRadius(radius);
+    }
+
+    public void removeRequestsLocationsListeners(GeoQuery geoQuery)
+    {
+        if (geoQuery != null)
+            geoQuery.removeAllListeners();
+    }
+
     public void addRequest(Request request)
     {
         DbRequest dbRequest = new DbRequest();
@@ -46,7 +87,7 @@ public class DatabaseManager
         dbRequest.setLocationAddress(request.getLocationAddress());
 
         Pair<Double, Double> requestLoc = request.getLocation();
-        GeoHash locHash = new GeoHash(new GeoLocation(requestLoc.first, requestLoc.second));
+        GeoHash locHash = new GeoHash(getGeoLocation(requestLoc));
 
         Map<String, Object> updates = new HashMap<>();
         updates.put(createPath(DbModel.REQUESTS_KEY, request.getRequestUID()), dbRequest);

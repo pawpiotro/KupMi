@@ -38,7 +38,6 @@ public class RequestsSearchActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
     private RequestsSearchMap requestsSearchMap = new RequestsSearchMap();
-    private RequestsSearchResultList requestsSearchResultList = new RequestsSearchResultList();
 
     class AddressResultReceiver extends ResultReceiver {
         AddressResultReceiver(Handler handler) {
@@ -120,14 +119,6 @@ public class RequestsSearchActivity extends AppCompatActivity {
     }
 
     // Public methods
-    public void setLocation(double lat, double lon) {
-        location.setLatitude(lat);
-        location.setLongitude(lon);
-        Log.i(TAG, lat + ", " + lon);
-
-        startIntentService();
-    }
-
     public void goToMap() {
         Bundle bundle = new Bundle();
         bundle.putDouble("lat", location.getLatitude());
@@ -136,13 +127,6 @@ public class RequestsSearchActivity extends AppCompatActivity {
         requestsSearchMap.setArguments(bundle);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.requests_search_main_layout, requestsSearchMap);
-        transaction.commit();
-    }
-
-    public void goToResultList() {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.requests_search_result_list, requestsSearchResultList);
-        transaction.addToBackStack(null);
         transaction.commit();
     }
 

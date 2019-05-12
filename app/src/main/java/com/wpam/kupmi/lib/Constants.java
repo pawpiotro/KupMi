@@ -15,4 +15,7 @@ public class Constants
 
     // Map
     public static final float MAP_ZOOM = 15.0f;
+    public static final double DEF_RADIUS = 100.0;
+    public static final double MAX_RADIUS = 1000.0;
+    public static final double MIN_RADIUS = 10.0;
 }
