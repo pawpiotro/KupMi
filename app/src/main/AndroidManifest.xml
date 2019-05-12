@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.MenuActivity"></activity>
+        <activity android:name=".activities.requestsSearch.RequestsSearchActivity"></activity>
+        <activity android:name=".activities.MenuActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.requestForm.RequestFormActivity"></activity>
+        <activity android:name=".activities.requestForm.RequestFormActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -39,10 +40,11 @@
 
         <activity
             android:name=".activities.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
+
         <service
             android:name=".services.FetchAddressIntentService"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

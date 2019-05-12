@@ -1,59 +1,44 @@
-package com.wpam.kupmi.activities.requestForm;
+package com.wpam.kupmi.activities.requestsSearch;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
-import android.view.View;
-import android.widget.ProgressBar;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
-import com.wpam.kupmi.firebase.auth.AuthManager;
-import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
-import com.wpam.kupmi.model.Request;
-import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.services.FetchAddressIntentService;
-import java.util.Calendar;
-import java.util.List;
 
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
 import static com.wpam.kupmi.lib.Constants.UPDATE_INTERVAL;
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
 
-public class RequestFormActivity extends FragmentActivity {
+public class RequestsSearchActivity extends AppCompatActivity {
 
-    private static final String TAG = "REQUEST_FORM_ACTIVITY";
+    private static final String TAG = "REQUESTS_SEARCH_ACTIVITY";
+
     private FusedLocationProviderClient fusedLocationClient;
+    private AddressResultReceiver resultReceiver;
 
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
-
     private Location location;
-    private Request request = new Request();
-
-    private AddressResultReceiver resultReceiver;
-
-    private ProgressBar bar;
 
     private FragmentManager fragmentManager;
-    private RequestFormMap requestFormMap = new RequestFormMap();
-    private RequestFormClock requestFormClock = new RequestFormClock();
-    private RequestFormDesc requestFormDesc = new RequestFormDesc();
-    private RequestFormSummary requestFormSummary = new RequestFormSummary();
+    private RequestsSearchMap requestsSearchMap = new RequestsSearchMap();
+    private RequestsSearchResultList requestsSearchResultList = new RequestsSearchResultList();
 
     class AddressResultReceiver extends ResultReceiver {
         AddressResultReceiver(Handler handler) {
@@ -63,11 +48,10 @@ public class RequestFormActivity extends FragmentActivity {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-            if (resultData == null) {
+            if (resultData == null)
                 return;
-            }
-            Log.i(TAG,resultData.getString(Constants.RESULT_DATA_KEY));
-            request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));
+
+            Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
         }
     }
 
@@ -75,15 +59,12 @@ public class RequestFormActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_request_form);
+        setContentView(R.layout.activity_requests_search);
+
         resultReceiver = new AddressResultReceiver(new Handler());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        Log.i(TAG, "On create");
 
         fragmentManager = getSupportFragmentManager();
-
-        bar = (ProgressBar) findViewById(R.id.progressBar);
-        bar.setVisibility(View.VISIBLE);
 
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -99,7 +80,6 @@ public class RequestFormActivity extends FragmentActivity {
                 goToMap();
             }
         };
-
     }
 
     @Override
@@ -140,49 +120,12 @@ public class RequestFormActivity extends FragmentActivity {
     }
 
     // Public methods
-    public void insertIntoDB()
-    {
-        request.setRequesterUID(AuthManager.getInstance().getCurrentUserUid());
-        request.setState(RequestState.NEW);
-
-        Log.i(TAG, "INSERTING INTO DATABASE:");
-        Log.i(TAG, request.toString(this));
-
-        DatabaseManager.getInstance().addRequest(request);
-    }
-
-    public void setBarVisible(boolean b) {
-        if (bar == null)
-            return;
-        if (b)
-            bar.setVisibility(View.VISIBLE);
-        else
-            bar.setVisibility(View.GONE);
-    }
-
     public void setLocation(double lat, double lon) {
         location.setLatitude(lat);
         location.setLongitude(lon);
-        request.setLocation(Pair.create(lat, lon));
         Log.i(TAG, lat + ", " + lon);
 
         startIntentService();
-    }
-
-    public void setDeadline(Calendar deadline) {
-        request.setDeadline(deadline);
-    }
-
-    public void setDescription(String description) {
-        request.setDescription(description);
-    }
-
-    public void setTags(List<String> tags) {
-        request.setTags(tags);
-    }
-
-    public Request getRequest() {
-        return request;
     }
 
     public void goToMap() {
@@ -190,29 +133,15 @@ public class RequestFormActivity extends FragmentActivity {
         bundle.putDouble("lat", location.getLatitude());
         bundle.putDouble("lon", location.getLongitude());
 
-        requestFormMap.setArguments(bundle);
+        requestsSearchMap.setArguments(bundle);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.request_form_main_layout, requestFormMap);
+        transaction.add(R.id.requests_search_main_layout, requestsSearchMap);
         transaction.commit();
     }
 
-    public void goToClock() {
+    public void goToResultList() {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.request_form_main_layout, requestFormClock);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    public void goToDesc() {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.request_form_main_layout, requestFormDesc);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    public void goToSummary() {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.request_form_main_layout, requestFormSummary);
+        transaction.add(R.id.requests_search_result_list, requestsSearchResultList);
         transaction.addToBackStack(null);
         transaction.commit();
     }

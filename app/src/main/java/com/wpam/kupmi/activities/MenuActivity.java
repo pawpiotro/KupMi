@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.activities.requestForm.RequestFormActivity;
+import com.wpam.kupmi.activities.requestsSearch.RequestsSearchActivity;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -50,7 +50,7 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Click, look for requests");
-                startActivity(new Intent(context, MapsActivity.class));
+                startActivity(new Intent(context, RequestsSearchActivity.class));
             }
         });
 

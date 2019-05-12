@@ -1,4 +1,4 @@
-package com.wpam.kupmi.activities.requestForm;
+package com.wpam.kupmi.activities.requestsSearch;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,11 +20,10 @@ import com.wpam.kupmi.R;
 
 import static com.wpam.kupmi.lib.Constants.MAP_ZOOM;
 
-public class RequestFormMap extends Fragment implements OnMapReadyCallback {
+public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
+    private static final String TAG = "REQUESTS_SEARCH_MAP_FRAGMENT";
 
-    private static final String TAG = "REQUEST_FORM_MAP_FRAGMENT";
-
-    private RequestFormActivity parentActivity;
+    private RequestsSearchActivity parentActivity;
 
     private TextView coords;
     private GoogleMap map;
@@ -32,24 +31,24 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
     private LatLng currentLatLng;
 
     // Override Fragment
+    // Override Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i(TAG, "OnCreateView");
         currentLatLng = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lon"));
-        return inflater.inflate(R.layout.fragment_request_form_map, container, false);
+        return inflater.inflate(R.layout.fragment_requests_search_map, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        parentActivity = (RequestFormActivity) getActivity();
-        parentActivity.setBarVisible(false);
+        parentActivity = (RequestsSearchActivity) getActivity();
 
-        MapView mapView = (MapView) getView().findViewById(R.id.request_form_map_view);
-        coords = (TextView) getView().findViewById(R.id.request_form_map_coords_textview);
-        ImageButton next = (ImageButton) getView().findViewById(R.id.request_form_map_next_button);
+        MapView mapView = (MapView) getView().findViewById(R.id.requests_search_map_view);
+        coords = (TextView) getView().findViewById(R.id.requests_search_map_coords_textview);
+        ImageButton next = (ImageButton) getView().findViewById(R.id.requests_search_map_next_button);
 
         String tmp = currentLatLng.latitude + ", " + currentLatLng.longitude;
         coords.setText(tmp);
@@ -62,7 +61,7 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 parentActivity.setLocation(currentLatLng.latitude, currentLatLng.longitude);
-                parentActivity.goToClock();
+                parentActivity.goToResultList();
             }
         });
     }
