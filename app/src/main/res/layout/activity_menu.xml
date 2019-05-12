@@ -14,53 +14,58 @@
 
         <Button
             android:id="@+id/menu_request_button"
-            android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="#00BCD4"
             android:text="Make a request"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/menu_look_for_button"
-            android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="#03A9F4"
             android:text="Look for requests"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/menu_view_active"
-            android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="#3F51B5"
             android:text="View active requests"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/menu_settings"
-            android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="#673AB7"
             android:text="Settings"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/menu_logout"
-            android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="#9C27B0"
             android:text="Sign off"
             android:textAlignment="center"
-            android:textSize="18sp" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
