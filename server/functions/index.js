@@ -24,8 +24,8 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
 });
 
 // Database listeners
-exports.deleteRequest = functions.database.ref(REQUESTS_KEY).onDelete(async (snapshot, context) => {
-    const deletedRequestUid = snapshot.key;
+exports.deleteRequest = functions.database.ref(REQUESTS_KEY + "/{requestUid}").onDelete(async (snapshot, context) => {
+    const deletedRequestUid = context.params.requestUid
     await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + deletedRequestUid).remove()
     .then(function() {
       console.log('Removing request: ' + deletedRequestUid + ' location succeeded.');
