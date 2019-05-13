@@ -25,10 +25,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.wpam.kupmi.lib.Constants.DEF_RADIUS;
 import static com.wpam.kupmi.lib.Constants.MAP_ZOOM;
@@ -50,15 +54,23 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private Circle currentCircle;
     private double currentRadius;
 
+    // Do testów
+    private List<String> currentTags = Arrays.asList("lol1", "lol2");
+
     private GeoQuery requestsLocationsQuery;
-    private HashMap<String, Marker> requestsMarkersMap = new HashMap<>();
+    private List<String> requestsLocationsIds = new ArrayList<>();
+
+    private Query requestsTagsQuery;
+    private List<String> requestsTagsIds = new ArrayList<>();
+
+    private HashMap<String, Marker> requestsMapMarkers = new HashMap<>();
 
     private class RequestsLocationsListener implements GeoQueryEventListener {
         @Override
         public void onKeyEntered(String key, GeoLocation location) {
             if (map != null)
             {
-                requestsMarkersMap.put(key, map.addMarker(new MarkerOptions()
+                requestsMapMarkers.put(key, map.addMarker(new MarkerOptions()
                     .position(getLatLng(location))));
             }
         }
@@ -67,9 +79,9 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         public void onKeyExited(String key) {
             if (map != null)
             {
-                if (requestsMarkersMap.containsKey(key))
+                if (requestsMapMarkers.containsKey(key))
                 {
-                    Marker requestMarker = requestsMarkersMap.get(key);
+                    Marker requestMarker = requestsMapMarkers.get(key);
                     if (requestMarker != null)
                         requestMarker.remove();
                 }
@@ -80,9 +92,9 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         public void onKeyMoved(String key, GeoLocation location) {
             if (map != null)
             {
-                if (requestsMarkersMap.containsKey(key))
+                if (requestsMapMarkers.containsKey(key))
                 {
-                    Marker requestMarker = requestsMarkersMap.get(key);
+                    Marker requestMarker = requestsMapMarkers.get(key);
                     if (requestMarker != null)
                         requestMarker.setPosition(getLatLng(location));
                 }

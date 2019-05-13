@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 const USERS_KEY = 'users';
 const REQUESTS_KEY = 'requests';
 const REQUESTS_LOCATIONS_KEY = 'requests_locations';
+const TAGS_KEY = 'tags';
 
 admin.initializeApp();
 
@@ -24,7 +25,37 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
 });
 
 // Database listeners
-exports.deleteRequest = functions.database.ref(REQUESTS_KEY + "/{requestUid}").onDelete(async (snapshot, context) => {
+exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{requestUid}/tags')
+.onWrite(async (change, context) => {
+    const requestUid = context.params.requestUid
+
+    if (!change.before.exists())
+    {
+        // In case of change tags function
+    }
+    else if (change.before.exists() && change.after.exists())
+    {
+        // In case of change tags function
+    }
+    else if (!change.after.exists())
+    {
+        const deletedTags = change.before.val();
+        if (deletedTags != null && deletedTags instanceof Array)
+        {
+            deletedTags.forEach(async (tag, index, array) => {
+                await admin.database().ref(TAGS_KEY + '/' + tag + '/' + requestUid).remove()
+                .then(function() {
+                  console.log('Removing request: ' + requestUid + ' from tag: ' + tag + ' succeeded.');
+                })
+                .catch(function(error) {
+                  console.log('Removing request from tag: ' + tag + ' failed: ' + error.message);
+                });
+            });
+        }
+    }
+});
+
+exports.deleteRequest = functions.database.ref(REQUESTS_KEY + '/{requestUid}').onDelete(async (snapshot, context) => {
     const deletedRequestUid = context.params.requestUid
     await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + deletedRequestUid).remove()
     .then(function() {

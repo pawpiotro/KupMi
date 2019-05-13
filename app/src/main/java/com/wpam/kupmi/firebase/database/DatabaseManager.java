@@ -9,21 +9,24 @@ import com.firebase.geofire.core.GeoHash;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbModel;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.utils.DateUtils;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static com.wpam.kupmi.firebase.database.model.DbModel.TAGS_KEY;
 import static com.wpam.kupmi.utils.CoordinatesUtils.getGeoLocation;
 
 public class DatabaseManager
 {
     // Private fields
-
     private FirebaseDatabase db;
     private DatabaseReference dbRef;
 
@@ -74,6 +77,22 @@ public class DatabaseManager
             geoQuery.removeAllListeners();
     }
 
+    public List<Query> getTagsRequestsQuery(HashMap<String, ValueEventListener> tags)
+    {
+        List<Query> result = new ArrayList<>();
+        if (tags != null)
+        {
+            for (Map.Entry<String, ValueEventListener> entry: tags.entrySet())
+            {
+                Query tagQuery = dbRef.child(TAGS_KEY).equalTo(entry.getKey());
+                tagQuery.addListenerForSingleValueEvent(entry.getValue());
+                result.add(tagQuery);
+            }
+        }
+
+        return result;
+    }
+
     public void addRequest(Request request)
     {
         DbRequest dbRequest = new DbRequest();
@@ -82,7 +101,8 @@ public class DatabaseManager
         dbRequest.setDeadline(DateUtils.getDateText(request.getDeadline(), DatabaseConfig.DATE_FORMAT,
                 DatabaseConfig.DATE_FORMAT_CULTURE));
         dbRequest.setDescription(request.getDescription());
-        dbRequest.setTags(request.getTags());
+        List<String> tags = request.getTags();
+        dbRequest.setTags(tags);
         dbRequest.setState((long) request.getState().getStateId());
         dbRequest.setLocationAddress(request.getLocationAddress());
 
@@ -95,6 +115,12 @@ public class DatabaseManager
                 locHash.getGeoHashString());
         updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getRequestUID(), "/l"),
                 Arrays.asList(requestLoc.first, requestLoc.second));
+        if (tags != null)
+        {
+            for (String tag : tags)
+                // Problem with adding new item to existing list - empty string value
+                updates.put(createPath(TAGS_KEY, tag, request.getRequestUID()), "");
+        }
         dbRef.updateChildren(updates);
     }
 
