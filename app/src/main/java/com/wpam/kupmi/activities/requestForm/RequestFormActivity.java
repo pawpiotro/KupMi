@@ -82,7 +82,7 @@ public class RequestFormActivity extends FragmentActivity {
 
         fragmentManager = getSupportFragmentManager();
 
-        bar = (ProgressBar) findViewById(R.id.progressBar);
+        bar = (ProgressBar) findViewById(R.id.request_form_progress_bar);
         bar.setVisibility(View.VISIBLE);
 
         locationRequest = LocationRequest.create()

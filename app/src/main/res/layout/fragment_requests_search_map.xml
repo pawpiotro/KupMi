@@ -13,12 +13,18 @@
         android:layout_height="200dp"
         android:layout_weight="1">
 
+        <SearchView
+            android:id="@+id/requests_search_map_searchview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <TextView
             android:id="@+id/requests_search_map_coords_textview"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:textAlignment="center"
             android:textSize="18sp" />
+
     </FrameLayout>
 
     <com.google.android.gms.maps.MapView
@@ -29,7 +35,7 @@
         android:layout_weight="1" />
 
     <SeekBar
-        android:id="@+id/requests_search_seekbar"
+        android:id="@+id/requests_search_map_seekbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:paddingTop="5dp"

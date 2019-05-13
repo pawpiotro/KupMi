@@ -45,6 +45,11 @@
         <service
             android:name=".services.FetchAddressIntentService"
             android:exported="false" />
+
+        <service
+            android:name=".services.GetAddressCoordsIntentService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

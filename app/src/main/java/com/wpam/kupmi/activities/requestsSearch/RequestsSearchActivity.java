@@ -12,6 +12,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -20,6 +23,7 @@ import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.services.FetchAddressIntentService;
+import com.wpam.kupmi.services.GetAddressCoordsIntentService;
 
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
 import static com.wpam.kupmi.lib.Constants.UPDATE_INTERVAL;
@@ -30,29 +34,18 @@ public class RequestsSearchActivity extends AppCompatActivity {
     private static final String TAG = "REQUESTS_SEARCH_ACTIVITY";
 
     private FusedLocationProviderClient fusedLocationClient;
-    private AddressResultReceiver resultReceiver;
+
 
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private Location location;
 
+    private ProgressBar bar;
+
     private FragmentManager fragmentManager;
     private RequestsSearchMap requestsSearchMap = new RequestsSearchMap();
 
-    class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
 
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            if (resultData == null)
-                return;
-
-            Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
-        }
-    }
 
     // Override AppCompatActivity
     @Override
@@ -60,10 +53,13 @@ public class RequestsSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests_search);
 
-        resultReceiver = new AddressResultReceiver(new Handler());
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         fragmentManager = getSupportFragmentManager();
+
+        bar = (ProgressBar) findViewById(R.id.request_search_progress_bar);
+        bar.setVisibility(View.VISIBLE);
 
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -130,11 +126,15 @@ public class RequestsSearchActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    // Private / protected methods
-    protected void startIntentService() {
-        Intent intent = new Intent(this, FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, resultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
-        startService(intent);
+    public void setBarVisible(boolean b) {
+        if (bar == null)
+            return;
+        if (b)
+            bar.setVisibility(View.VISIBLE);
+        else
+            bar.setVisibility(View.GONE);
     }
+
+    // Private / protected methods
+
 }

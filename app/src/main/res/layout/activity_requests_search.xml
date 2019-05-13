@@ -7,4 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".activities.requestsSearch.RequestsSearchActivity">
 
+    <ProgressBar
+        android:id="@+id/request_search_progress_bar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#C8C8C8"
+        android:indeterminateDrawable="@drawable/progress"
+        android:padding="150dp"
+        android:visibility="gone" />
+
 </FrameLayout>
