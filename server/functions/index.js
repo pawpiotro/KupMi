@@ -38,7 +38,8 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
 // Database listeners
 exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{state}/{requestUid}/tag')
 .onWrite(async (change, context) => {
-    const requestUid = context.params.requestUid
+    const requestUid = context.params.requestUid;
+    const state = context.params.state;
 
     if (!change.before.exists())
     {
@@ -53,7 +54,8 @@ exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{state}/{req
         const deletedTag = change.before.val();
         if (deletedTag != null && typeof deletedTag == 'string')
         {
-            await admin.database().ref(TAGS_KEY + '/' + deletedTag + '/' + requestUid).remove()
+            await admin.database().ref(TAGS_KEY + '/' + deletedTag + '/' +
+            state + '/' + requestUid).remove()
             .then(function() {
               console.log('Removing request: ' + requestUid + ' from tag: ' + deletedTag + ' succeeded.');
             })
@@ -69,8 +71,9 @@ exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{state}/{req
 });
 
 exports.deleteRequest = functions.database.ref(REQUESTS_KEY + '/{state}/{requestUid}').onDelete(async (snapshot, context) => {
-    const deletedRequestUid = context.params.requestUid
-    await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + deletedRequestUid).remove()
+    const deletedRequestUid = context.params.requestUid;
+    const state = context.params.state;
+    await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + state + '/' + deletedRequestUid).remove()
     .then(function() {
       console.log('Removing request: ' + deletedRequestUid + ' location succeeded.');
     })

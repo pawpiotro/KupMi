@@ -111,12 +111,13 @@ public class DatabaseManager
         Map<String, Object> updates = new HashMap<>();
         updates.put(createPath(DbModel.REQUESTS_KEY, request.getState().lowerCaseName(),
                 request.getRequestUID()), dbRequest);
-        updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getRequestUID(), "/g"),
-                locHash.getGeoHashString());
-        updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getRequestUID(), "/l"),
-                Arrays.asList(requestLoc.first, requestLoc.second));
+        updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getState().lowerCaseName(),
+                request.getRequestUID(), "/g"), locHash.getGeoHashString());
+        updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getState().lowerCaseName(),
+                request.getRequestUID(), "/l"), Arrays.asList(requestLoc.first, requestLoc.second));
         // Problem with adding new item to existing list - empty string value
-        updates.put(createPath(TAGS_KEY, request.getTag().lowerCaseName(), request.getRequestUID()), "");
+        updates.put(createPath(TAGS_KEY, request.getTag().lowerCaseName(), request.getState().lowerCaseName(),
+                request.getRequestUID()), "");
         dbRef.updateChildren(updates);
     }
 

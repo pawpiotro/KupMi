@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
@@ -36,9 +35,7 @@ import com.wpam.kupmi.R;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.services.GetAddressCoordsIntentService;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,14 +63,11 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private Circle currentCircle;
     private double currentRadius = DEF_RADIUS;
 
-    // Do testów
-    private List<String> currentTags = Arrays.asList("lol1", "lol2");
-
     private GeoQuery requestsLocationsQuery;
-    private List<String> requestsLocationsIds = new ArrayList<>();
+    private HashMap<String, GeoLocation> requestsLocationsIds = new HashMap<>();
 
-    private Query requestsTagsQuery;
-    private List<String> requestsTagsIds = new ArrayList<>();
+    private List<Query> requestsTagsQueries = new ArrayList<>();
+    private HashMap<String, List<String>> requestsTagsIds = new HashMap<>();
 
     private HashMap<String, Marker> requestsMapMarkers = new HashMap<>();
 
