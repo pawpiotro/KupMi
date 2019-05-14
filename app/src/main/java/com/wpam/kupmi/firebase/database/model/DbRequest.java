@@ -10,7 +10,7 @@ public class DbRequest
     private String supplierUID;
     private String deadline;
     private String description;
-    private List<String> tags;
+    private String tag;
     private Long state;
     private String locationAddress;
 
@@ -48,12 +48,12 @@ public class DbRequest
         this.description = description;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public String getTag() {
+        return tag;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public Long getState() {

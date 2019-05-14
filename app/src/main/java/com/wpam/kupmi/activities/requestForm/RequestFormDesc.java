@@ -8,8 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.wpam.kupmi.R;
 
@@ -20,7 +24,7 @@ import java.util.List;
 public class RequestFormDesc extends Fragment {
 
     private ImageButton next;
-    private EditText tagsEditText;
+    private Spinner tagsSpinner;
     private EditText descEditText;
 
     private RequestFormActivity parentActivity;
@@ -35,19 +39,35 @@ public class RequestFormDesc extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        parentActivity = (RequestFormActivity) getActivity();
+
         next = (ImageButton) getView().findViewById(R.id.request_form_desc_next_button);
-        tagsEditText = (EditText) getView().findViewById(R.id.request_form_desc_tags);
+        tagsSpinner = (Spinner) getView().findViewById(R.id.request_form_tag_selection);
         descEditText = (EditText) getView().findViewById(R.id.request_form_desc);
 
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(parentActivity,
+                R.array.tags_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tagsSpinner.setAdapter(adapter);
 
-        parentActivity = (RequestFormActivity) getActivity();
+        tagsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextSize(20);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 parentActivity.setDescription(descEditText.getText().toString());
-                Log.i("DESC", tagsEditText.getText().toString());
-                parentActivity.setTags(tokenize(tagsEditText.getText().toString()));
+                Log.i("DESC", tagsSpinner.getSelectedItem().toString());
+                parentActivity.setTag(tagsSpinner.getSelectedItem().toString());
                 parentActivity.goToSummary();
             }
         });

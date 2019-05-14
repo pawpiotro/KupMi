@@ -13,8 +13,9 @@
             android:id="@+id/request_form_summary_coords_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:padding="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
             android:text="@string/coordinates_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
@@ -28,14 +29,17 @@
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:textAlignment="viewStart"
+            android:textColor="#050505"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/request_form_summary_time_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:padding="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
             android:text="@string/time_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
@@ -49,14 +53,17 @@
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:textAlignment="viewStart"
+            android:textColor="#050505"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/request_form_summary_tags_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:padding="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
             android:text="@string/tags_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
@@ -70,14 +77,17 @@
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:textAlignment="viewStart"
+            android:textColor="#050505"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/request_form_summary_desc_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:padding="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
             android:text="@string/request_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
@@ -86,12 +96,12 @@
             android:id="@+id/request_form_summary_desc"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="1dp"
             android:gravity="top"
             android:padding="1dp"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:singleLine="false"
+            android:textColor="#050505"
             android:textSize="20sp" />
     </LinearLayout>
 

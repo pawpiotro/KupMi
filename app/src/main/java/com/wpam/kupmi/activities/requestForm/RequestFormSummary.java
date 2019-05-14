@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.utils.DateUtils;
-import java.util.List;
 
 public class RequestFormSummary extends Fragment {
 
@@ -56,16 +56,17 @@ public class RequestFormSummary extends Fragment {
         String strDate = DateUtils.getDateText(request.getDeadline(), getContext());
         time.setText(strDate);
 
-        List<String> tagsList = request.getTags();
-        if (!tagsList.isEmpty()) {
-            StringBuilder formattedTags = new StringBuilder();
-            for (Object s : tagsList.toArray()) {
-                formattedTags.append("#");
-                formattedTags.append(s.toString());
-                formattedTags.append(" ");
-            }
-            tags.setText(formattedTags);
-        }
+//        List<String> tagsList = request.getTags();
+//        if (!tagsList.isEmpty()) {
+//            StringBuilder formattedTags = new StringBuilder();
+//            for (Object s : tagsList.toArray()) {
+//                formattedTags.append("#");
+//                formattedTags.append(s.toString());
+//                formattedTags.append(" ");
+//            }
+//            tags.setText(formattedTags);
+//        }
+        tags.setText(request.getTag());
         desc.setText(request.getDescription());
 
         next.setOnClickListener(new View.OnClickListener() {

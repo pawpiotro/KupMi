@@ -10,33 +10,35 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/request_form_desc_tags_label"
+            android:id="@+id/request_form_tags_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:padding="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
             android:text="@string/tags_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
 
-        <EditText
-            android:id="@+id/request_form_desc_tags"
+        <Spinner
+            android:id="@+id/request_form_tag_selection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:inputType="textLongMessage"
-            android:padding="1dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
-            android:textAlignment="viewStart"
-            android:textSize="20sp" />
+            android:paddingStart="2dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="2dp"
+            android:paddingBottom="5dp">
+
+        </Spinner>
 
         <TextView
             android:id="@+id/request_form_desc_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:padding="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
             android:text="@string/request_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
@@ -47,10 +49,15 @@
             android:layout_height="match_parent"
             android:layout_margin="1dp"
             android:gravity="top"
+            android:hint="..."
             android:inputType="textMultiLine"
             android:padding="1dp"
+            android:paddingStart="2dp"
             android:paddingLeft="2dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="2dp"
             android:paddingRight="2dp"
+            android:paddingBottom="5dp"
             android:singleLine="false"
             android:textSize="20sp" />
     </LinearLayout>

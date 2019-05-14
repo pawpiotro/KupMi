@@ -15,6 +15,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -27,8 +28,8 @@ import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.services.FetchAddressIntentService;
+
 import java.util.Calendar;
-import java.util.List;
 
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
 import static com.wpam.kupmi.lib.Constants.UPDATE_INTERVAL;
@@ -66,7 +67,7 @@ public class RequestFormActivity extends FragmentActivity {
             if (resultData == null) {
                 return;
             }
-            Log.i(TAG,resultData.getString(Constants.RESULT_DATA_KEY));
+            Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
             request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));
         }
     }
@@ -140,8 +141,7 @@ public class RequestFormActivity extends FragmentActivity {
     }
 
     // Public methods
-    public void insertIntoDB()
-    {
+    public void insertIntoDB() {
         request.setRequesterUID(AuthManager.getInstance().getCurrentUserUid());
         request.setState(RequestState.NEW);
 
@@ -177,8 +177,8 @@ public class RequestFormActivity extends FragmentActivity {
         request.setDescription(description);
     }
 
-    public void setTags(List<String> tags) {
-        request.setTags(tags);
+    public void setTag(String tag) {
+        request.setTag(tag);
     }
 
     public Request getRequest() {

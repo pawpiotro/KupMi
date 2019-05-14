@@ -9,13 +9,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SeekBar;
-import android.widget.TextView;
+import android.widget.Spinner;
+
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
@@ -31,7 +33,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.wpam.kupmi.R;
-import com.wpam.kupmi.activities.requestForm.RequestFormActivity;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.services.GetAddressCoordsIntentService;
@@ -56,7 +57,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private RequestsSearchActivity parentActivity;
     private LocationResultReceiver resultReceiver;
 
-    private TextView coords;
+    private Spinner tagsSpinner;
     private SeekBar seekBar;
     private SearchView searchView;
     private GoogleMap map;
@@ -89,7 +90,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             if (resultData == null)
                 return;
 
-            if(resultCode == Constants.FAILURE_RESULT){
+            if (resultCode == Constants.FAILURE_RESULT) {
                 Log.w(TAG, "Location not found");
                 return;
             }
@@ -108,19 +109,16 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private class RequestsLocationsListener implements GeoQueryEventListener {
         @Override
         public void onKeyEntered(String key, GeoLocation location) {
-            if (map != null)
-            {
+            if (map != null) {
                 requestsMapMarkers.put(key, map.addMarker(new MarkerOptions()
-                    .position(getLatLng(location))));
+                        .position(getLatLng(location))));
             }
         }
 
         @Override
         public void onKeyExited(String key) {
-            if (map != null)
-            {
-                if (requestsMapMarkers.containsKey(key))
-                {
+            if (map != null) {
+                if (requestsMapMarkers.containsKey(key)) {
                     Marker requestMarker = requestsMapMarkers.get(key);
                     if (requestMarker != null)
                         requestMarker.remove();
@@ -130,10 +128,8 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
 
         @Override
         public void onKeyMoved(String key, GeoLocation location) {
-            if (map != null)
-            {
-                if (requestsMapMarkers.containsKey(key))
-                {
+            if (map != null) {
+                if (requestsMapMarkers.containsKey(key)) {
                     Marker requestMarker = requestsMapMarkers.get(key);
                     if (requestMarker != null)
                         requestMarker.setPosition(getLatLng(location));
@@ -170,12 +166,27 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         resultReceiver = new LocationResultReceiver(new Handler());
 
         MapView mapView = (MapView) getView().findViewById(R.id.requests_search_map_view);
-        coords = (TextView) getView().findViewById(R.id.requests_search_map_coords_textview);
+        tagsSpinner = (Spinner) getView().findViewById(R.id.requests_search_map_tag_selection);
         seekBar = (SeekBar) getView().findViewById(R.id.requests_search_map_seekbar);
         searchView = (SearchView) getView().findViewById(R.id.requests_search_map_searchview);
 
-        String tmp = currentLatLng.latitude + ", " + currentLatLng.longitude;
-        coords.setText(tmp);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(parentActivity,
+                R.array.tags_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tagsSpinner.setAdapter(adapter);
+
+        tagsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //TODO: update markers
+                //parent.getItemAtPosition(pos)
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
@@ -183,8 +194,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
 
         requestsLocationsQuery = DatabaseManager.getInstance().getRequestsLocationsQuery(
@@ -193,12 +203,10 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
 
-        if (requestsLocationsQuery != null)
-        {
+        if (requestsLocationsQuery != null) {
             DatabaseManager.getInstance().removeRequestsLocationsListeners(requestsLocationsQuery);
             requestsLocationsQuery = null;
         }
@@ -209,7 +217,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         Log.i(TAG, "Map ready");
         map = googleMap;
-        if(currentLatLng != null)
+        if (currentLatLng != null)
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -219,7 +227,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                 Log.i(TAG, Double.toString(currentRadius));
                 updateCircle();
                 DatabaseManager.getInstance().updateRadiusRequestsLocationsQuery(requestsLocationsQuery,
-                       currentRadius / 1000);
+                        currentRadius / 1000);
             }
 
             @Override
@@ -250,11 +258,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng latLng) {
                 currentLatLng = latLng;
-
                 Log.i(TAG, currentLatLng.toString());
-                String tmp = latLng.latitude + ", " + latLng.longitude;
-                coords.setText(tmp);
-
                 updateCircle();
 
                 DatabaseManager.getInstance().updateLocationRequestsLocationsQuery(requestsLocationsQuery,
@@ -263,13 +267,13 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void updateCircle(){
-        if(map == null)
+    private void updateCircle() {
+        if (map == null)
             return;
 
         if (currentCircle == null) {
             seekBar.setVisibility(View.VISIBLE);
-            seekBar.setProgress((int)((100 * DEF_RADIUS + MIN_RADIUS) / (MAX_RADIUS - MIN_RADIUS)));
+            seekBar.setProgress((int) ((100 * DEF_RADIUS + MIN_RADIUS) / (MAX_RADIUS - MIN_RADIUS)));
         }
 
         if (currentCircle != null)

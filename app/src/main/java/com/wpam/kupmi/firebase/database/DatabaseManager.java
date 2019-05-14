@@ -101,8 +101,8 @@ public class DatabaseManager
         dbRequest.setDeadline(DateUtils.getDateText(request.getDeadline(), DatabaseConfig.DATE_FORMAT,
                 DatabaseConfig.DATE_FORMAT_CULTURE));
         dbRequest.setDescription(request.getDescription());
-        List<String> tags = request.getTags();
-        dbRequest.setTags(tags);
+        String tag = request.getTag();
+        dbRequest.setTag(tag);
         dbRequest.setState((long) request.getState().getStateId());
         dbRequest.setLocationAddress(request.getLocationAddress());
 
@@ -115,9 +115,8 @@ public class DatabaseManager
                 locHash.getGeoHashString());
         updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getRequestUID(), "/l"),
                 Arrays.asList(requestLoc.first, requestLoc.second));
-        if (tags != null)
+        if (tag != null)
         {
-            for (String tag : tags)
                 // Problem with adding new item to existing list - empty string value
                 updates.put(createPath(TAGS_KEY, tag, request.getRequestUID()), "");
         }
