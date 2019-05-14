@@ -15,6 +15,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -55,6 +56,8 @@ public class RequestFormActivity extends FragmentActivity {
     private RequestFormClock requestFormClock = new RequestFormClock();
     private RequestFormDesc requestFormDesc = new RequestFormDesc();
     private RequestFormSummary requestFormSummary = new RequestFormSummary();
+
+    private boolean mapNotCreated = true;
 
     class AddressResultReceiver extends ResultReceiver {
         AddressResultReceiver(Handler handler) {
@@ -115,8 +118,11 @@ public class RequestFormActivity extends FragmentActivity {
                     Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_ACCESS_PERMISSIONS_CODE);
             return;
         }
-        Log.i(TAG, "Waiting for location");
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        if(mapNotCreated) {
+            Log.i(TAG, "Waiting for location");
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            mapNotCreated = false;
+        }
     }
 
     @Override
@@ -133,7 +139,8 @@ public class RequestFormActivity extends FragmentActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     this.recreate();
                 } else {
-                    //TODO: quit
+                    Toast.makeText(this, "App couldn't work properly without this permission", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 return;
             }
@@ -194,6 +201,7 @@ public class RequestFormActivity extends FragmentActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.request_form_main_layout, requestFormMap);
         transaction.commit();
+        Log.i(TAG, Integer.toString(fragmentManager.getBackStackEntryCount()));
     }
 
     public void goToClock() {
@@ -201,6 +209,7 @@ public class RequestFormActivity extends FragmentActivity {
         transaction.add(R.id.request_form_main_layout, requestFormClock);
         transaction.addToBackStack(null);
         transaction.commit();
+        Log.i(TAG, Integer.toString(fragmentManager.getBackStackEntryCount()));
     }
 
     public void goToDesc() {
@@ -208,6 +217,7 @@ public class RequestFormActivity extends FragmentActivity {
         transaction.add(R.id.request_form_main_layout, requestFormDesc);
         transaction.addToBackStack(null);
         transaction.commit();
+        Log.i(TAG, Integer.toString(fragmentManager.getBackStackEntryCount()));
     }
 
     public void goToSummary() {
@@ -215,6 +225,7 @@ public class RequestFormActivity extends FragmentActivity {
         transaction.add(R.id.request_form_main_layout, requestFormSummary);
         transaction.addToBackStack(null);
         transaction.commit();
+        Log.i(TAG, Integer.toString(fragmentManager.getBackStackEntryCount()));
     }
 
     // Private / protected methods

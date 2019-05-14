@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -45,11 +46,11 @@ public class RequestsSearchActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private RequestsSearchMap requestsSearchMap = new RequestsSearchMap();
 
-
+    private boolean mapNotCreated = true;
 
     // Override AppCompatActivity
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests_search);
 
@@ -89,8 +90,11 @@ public class RequestsSearchActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_ACCESS_PERMISSIONS_CODE);
             return;
         }
-        Log.i(TAG, "Waiting for location");
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        if(mapNotCreated) {
+            Log.i(TAG, "Waiting for location");
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            mapNotCreated = false;
+        }
     }
 
     @Override
@@ -107,7 +111,8 @@ public class RequestsSearchActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     this.recreate();
                 } else {
-                    //TODO: quit
+                    Toast.makeText(this, "App couldn't work properly without this permission", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 return;
             }

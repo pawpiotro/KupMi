@@ -53,7 +53,9 @@ public class RequestFormDesc extends Fragment {
         tagsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ((TextView) parent.getChildAt(0)).setTextSize(20);
+                // not good
+//                if(parent.getChildAt(0) != null)
+//                    ((TextView) parent.getChildAt(0)).setTextSize(20);
             }
 
             @Override

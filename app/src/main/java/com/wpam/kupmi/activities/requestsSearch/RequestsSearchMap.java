@@ -162,7 +162,6 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         parentActivity = (RequestsSearchActivity) getActivity();
-        parentActivity.setBarVisible(false);
         resultReceiver = new LocationResultReceiver(new Handler());
 
         MapView mapView = (MapView) getView().findViewById(R.id.requests_search_map_view);
@@ -216,6 +215,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.i(TAG, "Map ready");
+        parentActivity.setBarVisible(false);
         map = googleMap;
         if (currentLatLng != null)
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));

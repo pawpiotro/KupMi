@@ -45,7 +45,6 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         parentActivity = (RequestFormActivity) getActivity();
-        parentActivity.setBarVisible(false);
 
         MapView mapView = (MapView) getView().findViewById(R.id.request_form_map_view);
         coords = (TextView) getView().findViewById(R.id.request_form_map_coords_textview);
@@ -71,6 +70,7 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.i(TAG, "Map ready");
+        parentActivity.setBarVisible(false);
         map = googleMap;
         map.addMarker(new MarkerOptions().position(currentLatLng).title("Current location"));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
