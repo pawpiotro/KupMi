@@ -28,6 +28,7 @@ import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
+import com.wpam.kupmi.model.RequestTag;
 import com.wpam.kupmi.services.FetchAddressIntentService;
 
 import java.util.Calendar;
@@ -150,7 +151,7 @@ public class RequestFormActivity extends FragmentActivity {
     // Public methods
     public void insertIntoDB() {
         request.setRequesterUID(AuthManager.getInstance().getCurrentUserUid());
-        request.setState(RequestState.NEW);
+        request.setState(RequestState.ACTIVE);
 
         Log.i(TAG, "INSERTING INTO DATABASE:");
         Log.i(TAG, request.toString(this));
@@ -184,7 +185,7 @@ public class RequestFormActivity extends FragmentActivity {
         request.setDescription(description);
     }
 
-    public void setTag(String tag) {
+    public void setTag(RequestTag tag) {
         request.setTag(tag);
     }
 

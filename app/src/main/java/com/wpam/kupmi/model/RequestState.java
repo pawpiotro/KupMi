@@ -2,7 +2,7 @@ package com.wpam.kupmi.model;
 
 public enum RequestState
 {
-    NEW(0),
+    ACTIVE(0),
     ACCEPTED(1),
     DONE(2),
     UNDONE(3),
@@ -15,9 +15,15 @@ public enum RequestState
         this.stateId = stateId;
     }
 
-    public int getStateId()
+    public int getStateId() { return stateId; }
+
+    public String lowerCaseName() { return name().toLowerCase(); }
+
+    public String firstCapitalLetterName()
     {
-        return stateId;
+        String lowerCaseName = lowerCaseName();
+
+        return lowerCaseName.substring(0, 1).toUpperCase() + lowerCaseName.substring(1);
     }
 
     public static RequestState getInstance(int stateId)
@@ -25,7 +31,7 @@ public enum RequestState
         switch (stateId)
         {
             case 0:
-                return NEW;
+                return ACTIVE;
             case 1:
                 return ACCEPTED;
             case 2:

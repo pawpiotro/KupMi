@@ -101,25 +101,22 @@ public class DatabaseManager
         dbRequest.setDeadline(DateUtils.getDateText(request.getDeadline(), DatabaseConfig.DATE_FORMAT,
                 DatabaseConfig.DATE_FORMAT_CULTURE));
         dbRequest.setDescription(request.getDescription());
-        String tag = request.getTag();
-        dbRequest.setTag(tag);
-        dbRequest.setState((long) request.getState().getStateId());
         dbRequest.setLocationAddress(request.getLocationAddress());
+        dbRequest.setTag(request.getTag().lowerCaseName());
+        dbRequest.setState((long) request.getState().getStateId());
 
         Pair<Double, Double> requestLoc = request.getLocation();
         GeoHash locHash = new GeoHash(getGeoLocation(requestLoc));
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put(createPath(DbModel.REQUESTS_KEY, request.getRequestUID()), dbRequest);
+        updates.put(createPath(DbModel.REQUESTS_KEY, request.getState().lowerCaseName(),
+                request.getRequestUID()), dbRequest);
         updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getRequestUID(), "/g"),
                 locHash.getGeoHashString());
         updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getRequestUID(), "/l"),
                 Arrays.asList(requestLoc.first, requestLoc.second));
-        if (tag != null)
-        {
-                // Problem with adding new item to existing list - empty string value
-                updates.put(createPath(TAGS_KEY, tag, request.getRequestUID()), "");
-        }
+        // Problem with adding new item to existing list - empty string value
+        updates.put(createPath(TAGS_KEY, request.getTag().lowerCaseName(), request.getRequestUID()), "");
         dbRef.updateChildren(updates);
     }
 

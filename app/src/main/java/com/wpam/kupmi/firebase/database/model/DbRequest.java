@@ -1,7 +1,6 @@
 package com.wpam.kupmi.firebase.database.model;
 
 import com.google.firebase.database.IgnoreExtraProperties;
-import java.util.List;
 
 @IgnoreExtraProperties
 public class DbRequest
@@ -10,9 +9,9 @@ public class DbRequest
     private String supplierUID;
     private String deadline;
     private String description;
+    private String locationAddress;
     private String tag;
     private Long state;
-    private String locationAddress;
 
     public DbRequest() {}
 
@@ -48,6 +47,14 @@ public class DbRequest
         this.description = description;
     }
 
+    public String getLocationAddress() {
+        return locationAddress;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
     public String getTag() {
         return tag;
     }
@@ -62,13 +69,5 @@ public class DbRequest
 
     public void setState(Long state) {
         this.state = state;
-    }
-
-    public String getLocationAddress() {
-        return locationAddress;
-    }
-
-    public void setLocationAddress(String locationAddress) {
-        this.locationAddress = locationAddress;
     }
 }

@@ -66,13 +66,12 @@ public class RequestFormSummary extends Fragment {
 //            }
 //            tags.setText(formattedTags);
 //        }
-        tags.setText(request.getTag());
+        tags.setText(request.getTag().firstCapitalLetterName());
         desc.setText(request.getDescription());
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: send to db
                 parentActivity.insertIntoDB();
                 parentActivity.finish();
             }

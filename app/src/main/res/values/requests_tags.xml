@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="tags_array">
+        <item>Delivery</item>
+        <item>Loan</item>
+        <item>Repair</item>
+        <item>Activity</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="tags_filter_array">
         <item>All</item>
-        <item>Shopping</item>
-        <item>elo2</item>
-        <item>elo3</item>
-        <item>elo4</item>
-        <item>Others</item>
+        <item>Delivery</item>
+        <item>Loan</item>
+        <item>Repair</item>
+        <item>Activity</item>
+        <item>Other</item>
     </string-array>
 </resources>

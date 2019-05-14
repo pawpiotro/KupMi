@@ -170,7 +170,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         searchView = (SearchView) getView().findViewById(R.id.requests_search_map_searchview);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(parentActivity,
-                R.array.tags_array, android.R.layout.simple_spinner_item);
+                R.array.tags_filter_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tagsSpinner.setAdapter(adapter);
 

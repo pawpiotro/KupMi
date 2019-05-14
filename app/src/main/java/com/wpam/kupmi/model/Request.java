@@ -2,15 +2,9 @@ package com.wpam.kupmi.model;
 
 import android.content.Context;
 import android.util.Pair;
-
 import com.wpam.kupmi.utils.DateUtils;
 import com.wpam.kupmi.utils.UIDUtils;
-
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-
-import static com.wpam.kupmi.utils.DateUtils.getDate;
 
 public class Request {
     private String requestUID;
@@ -18,36 +12,13 @@ public class Request {
     private String supplierUID;
     private Calendar deadline;
     private String description;
-    private String tag;
     private Pair<Double, Double> location;
     private String locationAddress;
+    private RequestTag tag;
     private RequestState state;
 
     public Request() {
         this.requestUID = UIDUtils.getUID();
-    }
-
-    public Request(String requesterUID, String deadlineText, String dateFormat,
-                   Locale locale, String description, String tag, Pair<Double, Double> location, int stateId) {
-        this.requestUID = UIDUtils.getUID();
-        this.requesterUID = requesterUID;
-        this.supplierUID = "";
-        this.deadline = getDate(deadlineText, dateFormat, locale);
-        this.description = description;
-        this.tag = tag;
-        this.location = location;
-        this.state = RequestState.getInstance(stateId);
-    }
-
-    public Request(String requesterUID, String supplierUID, Calendar deadline, String description,
-                   List<String> tags, Pair<Double, Double> location, RequestState state) {
-        this.requesterUID = requesterUID;
-        this.supplierUID = supplierUID;
-        this.deadline = deadline;
-        this.description = description;
-        this.tag = tag;
-        this.location = location;
-        this.state = state;
     }
 
     public String getRequestUID() {
@@ -86,14 +57,6 @@ public class Request {
         this.description = description;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public Pair<Double, Double> getLocation() {
         return location;
     }
@@ -102,20 +65,28 @@ public class Request {
         this.location = location;
     }
 
-    public RequestState getState() {
-        return state;
-    }
-
-    public void setState(RequestState state) {
-        this.state = state;
-    }
-
     public String getLocationAddress() {
         return locationAddress;
     }
 
     public void setLocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
+    }
+
+    public RequestTag getTag() {
+        return tag;
+    }
+
+    public void setTag(RequestTag tag) {
+        this.tag = tag;
+    }
+
+    public RequestState getState() {
+        return state;
+    }
+
+    public void setState(RequestState state) {
+        this.state = state;
     }
 
     public String toString(Context ctx) {
@@ -132,11 +103,11 @@ public class Request {
         stringBuilder.append(lineSeparator);
         stringBuilder.append("Description: ").append(description);
         stringBuilder.append(lineSeparator);
-        stringBuilder.append("Tag: ").append(tag);
-        stringBuilder.append(lineSeparator);
         stringBuilder.append("Location: ").append(location.first).append(" ").append(location.second);
         stringBuilder.append(lineSeparator);
         stringBuilder.append("Location address: ").append(locationAddress);
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Tag: ").append(tag.name());
         stringBuilder.append(lineSeparator);
         stringBuilder.append("State: ").append(state.name());
         stringBuilder.append(lineSeparator);

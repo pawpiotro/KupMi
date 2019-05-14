@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.model.RequestTag;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -69,7 +70,7 @@ public class RequestFormDesc extends Fragment {
             public void onClick(View v) {
                 parentActivity.setDescription(descEditText.getText().toString());
                 Log.i("DESC", tagsSpinner.getSelectedItem().toString());
-                parentActivity.setTag(tagsSpinner.getSelectedItem().toString());
+                parentActivity.setTag(RequestTag.getInstance(tagsSpinner.getSelectedItem().toString()));
                 parentActivity.goToSummary();
             }
         });
