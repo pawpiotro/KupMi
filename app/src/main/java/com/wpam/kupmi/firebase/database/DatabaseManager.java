@@ -14,6 +14,8 @@ import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbModel;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
 import com.wpam.kupmi.model.Request;
+import com.wpam.kupmi.model.RequestState;
+import com.wpam.kupmi.model.RequestTag;
 import com.wpam.kupmi.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +45,34 @@ public class DatabaseManager
         return new DatabaseManager();
     }
 
-    public GeoQuery getRequestsLocationsQuery(Pair<Double, Double> location, double radius, GeoQueryEventListener listener)
+    public Query getUserQuery(String userUID)
+    {
+        if (userUID != null)
+            return dbRef.child(createPath(DbModel.USERS_KEY, userUID));
+
+        return null;
+    }
+
+    public void addQueryListener(Query query, ValueEventListener listener)
+    {
+        if (query != null && listener != null)
+            query.addValueEventListener(listener);
+    }
+
+    public void addSingleQueryListener(Query query, ValueEventListener listener)
+    {
+        if (query != null && listener != null)
+            query.addListenerForSingleValueEvent(listener);
+    }
+
+    public void removeQueryListener(Query query, ValueEventListener listener)
+    {
+        if (query != null && listener != null)
+            query.removeEventListener(listener);
+    }
+
+    public GeoQuery getLocationRequestsQuery(Pair<Double, Double> location, double radius,
+                                             GeoQueryEventListener listener)
     {
         if (location != null && radius >= 0.0f) {
             GeoFire geoRef = new GeoFire(dbRef.child(DbModel.REQUESTS_LOCATIONS_KEY));
@@ -55,7 +84,13 @@ public class DatabaseManager
         return null;
     }
 
-    public void updateLocationRequestsLocationsQuery(GeoQuery geoQuery, Pair<Double, Double> location)
+    public void removeLocationRequestsListener(GeoQuery geoQuery)
+    {
+        if (geoQuery != null)
+            geoQuery.removeAllListeners();
+    }
+
+    public void updateGeoQueryLocation(GeoQuery geoQuery, Pair<Double, Double> location)
     {
         if (geoQuery != null)
         {
@@ -65,28 +100,26 @@ public class DatabaseManager
         }
     }
 
-    public void updateRadiusRequestsLocationsQuery(GeoQuery geoQuery, double radius)
+    public void updateGeoQueryRadius(GeoQuery geoQuery, double radius)
     {
         if (geoQuery != null && radius >= 0.0f)
             geoQuery.setRadius(radius);
     }
 
-    public void removeRequestsLocationsListeners(GeoQuery geoQuery)
-    {
-        if (geoQuery != null)
-            geoQuery.removeAllListeners();
-    }
-
-    public List<Query> getTagsRequestsQuery(HashMap<String, ValueEventListener> tags)
+    public List<Query> getTagsRequestsQuery(HashMap<RequestTag, ValueEventListener> tags, RequestState state)
     {
         List<Query> result = new ArrayList<>();
         if (tags != null)
         {
-            for (Map.Entry<String, ValueEventListener> entry: tags.entrySet())
+            for (Map.Entry<RequestTag, ValueEventListener> entry: tags.entrySet())
             {
-                Query tagQuery = dbRef.child(TAGS_KEY).equalTo(entry.getKey());
-                tagQuery.addListenerForSingleValueEvent(entry.getValue());
-                result.add(tagQuery);
+                RequestTag tag = entry.getKey();
+                if (tag != RequestTag.ALL) {
+                    Query tagQuery = dbRef.child(createPath(TAGS_KEY, tag.lowerCaseName()))
+                            .equalTo(tag.lowerCaseName());
+                    tagQuery.addListenerForSingleValueEvent(entry.getValue());
+                    result.add(tagQuery);
+                }
             }
         }
 

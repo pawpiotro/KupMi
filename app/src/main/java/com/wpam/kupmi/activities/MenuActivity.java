@@ -1,6 +1,5 @@
 package com.wpam.kupmi.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,35 +13,44 @@ import com.google.android.gms.tasks.Task;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.activities.requestForm.RequestFormActivity;
 import com.wpam.kupmi.activities.requestsSearch.RequestsSearchActivity;
+import com.wpam.kupmi.lib.Constants;
+import com.wpam.kupmi.model.User;
+
+import java.util.Objects;
+
+import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class MenuActivity extends AppCompatActivity {
-
-    private Button makeRequest;
-    private Button lookForRequests;
-    private Button viewActive;
-    private Button settings;
-    private Button signOff;
-
     private static final String TAG = "MENU_ACTIVITY";
+
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        makeRequest = (Button) findViewById(R.id.menu_request_button);
-        lookForRequests = (Button) findViewById(R.id.menu_look_for_button);
-        viewActive = (Button) findViewById(R.id.menu_view_active);
-        settings = (Button) findViewById(R.id.menu_settings);
-        signOff = (Button) findViewById(R.id.menu_logout);
+        Button makeRequest = findViewById(R.id.menu_request_button);
+        Button lookForRequests = findViewById(R.id.menu_look_for_button);
+        Button viewActive = findViewById(R.id.menu_view_active);
+        Button settings = findViewById(R.id.menu_settings);
+        Button signOff = findViewById(R.id.menu_logout);
 
-        final Context context = getBaseContext();
+        user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
+        if (user == null)
+        {
+            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
+                    android.R.drawable.ic_dialog_alert);
+            returnToMainActivity();
+        }
 
         makeRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Click, make a request");
-                startActivity(new Intent(context, RequestFormActivity.class));
+                Intent requestFormActivityIntent = getActivityIntent(RequestFormActivity.class);
+                if (requestFormActivityIntent != null)
+                    startActivity(requestFormActivityIntent);
             }
         });
 
@@ -50,7 +58,9 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Click, look for requests");
-                startActivity(new Intent(context, RequestsSearchActivity.class));
+                Intent requestsSearchActivityIntent = getActivityIntent(RequestsSearchActivity.class);
+                if (requestsSearchActivityIntent != null)
+                    startActivity(requestsSearchActivityIntent);
             }
         });
 
@@ -75,14 +85,33 @@ public class MenuActivity extends AppCompatActivity {
                         .signOut(MenuActivity.this)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
-                                MenuActivity.this.startActivity(new Intent(MenuActivity.this,
-                                        MainActivity.class));
-                                MenuActivity.this.finish();
+                                user = null;
+                                MenuActivity.this.returnToMainActivity();
                                 Log.i(TAG, "Click, signed out");
                             }
                         });
             }
         });
 
+    }
+
+    // Private methods
+    private Intent getActivityIntent(Class activityClass)
+    {
+        if (activityClass != null)
+        {
+            Intent intent = new Intent(this, activityClass);
+            intent.putExtra(Constants.USER, user);
+
+            return intent;
+        }
+
+        return null;
+    }
+
+    private void returnToMainActivity()
+    {
+        this.startActivity(new Intent(this, MainActivity.class));
+        this.finish();
     }
 }

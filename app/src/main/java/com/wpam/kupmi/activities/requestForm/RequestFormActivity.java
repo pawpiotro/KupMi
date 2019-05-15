@@ -16,26 +16,28 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.MainActivity;
 import com.wpam.kupmi.firebase.auth.AuthManager;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
+import com.wpam.kupmi.model.User;
 import com.wpam.kupmi.services.FetchAddressIntentService;
-
 import java.util.Calendar;
+import java.util.Objects;
 
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
 import static com.wpam.kupmi.lib.Constants.UPDATE_INTERVAL;
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
+import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class RequestFormActivity extends FragmentActivity {
 
@@ -47,6 +49,8 @@ public class RequestFormActivity extends FragmentActivity {
 
     private Location location;
     private Request request = new Request();
+
+    private User user;
 
     private AddressResultReceiver resultReceiver;
 
@@ -81,6 +85,15 @@ public class RequestFormActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_form);
+
+        user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
+        if (user == null)
+        {
+            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
+                    android.R.drawable.ic_dialog_alert);
+            returnToMainActivity();
+        }
+
         resultReceiver = new AddressResultReceiver(new Handler());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         Log.i(TAG, "On create");
@@ -235,5 +248,11 @@ public class RequestFormActivity extends FragmentActivity {
         intent.putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
         startService(intent);
+    }
+
+    private void returnToMainActivity()
+    {
+        this.startActivity(new Intent(this, MainActivity.class));
+        this.finish();
     }
 }

@@ -29,15 +29,20 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
+import com.wpam.kupmi.model.RequestState;
+import com.wpam.kupmi.model.RequestTag;
 import com.wpam.kupmi.services.GetAddressCoordsIntentService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.wpam.kupmi.lib.Constants.DEF_RADIUS;
 import static com.wpam.kupmi.lib.Constants.MAP_ZOOM;
@@ -48,8 +53,9 @@ import static com.wpam.kupmi.utils.CoordinatesUtils.getLatLng;
 
 public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "REQUESTS_SEARCH_MAP_FRAGMENT";
-    private static final int strokeColor = Color.RED;
-    private static final int fillColor = Color.TRANSPARENT;
+    private static final int STROKE_COLOR = Color.RED;
+    private static final int FILL_COLOR = Color.TRANSPARENT;
+    private static RequestState REQUEST_STATE = RequestState.ACTIVE;
 
     private RequestsSearchActivity parentActivity;
     private LocationResultReceiver resultReceiver;
@@ -60,19 +66,19 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private GoogleMap map;
 
     private LatLng currentLatLng;
-    private Circle currentCircle;
     private double currentRadius = DEF_RADIUS;
+    private Circle currentCircle;
+    private RequestTag currentTag;
 
-    private GeoQuery requestsLocationsQuery;
-    private HashMap<String, GeoLocation> requestsLocationsIds = new HashMap<>();
+    private GeoQuery locationRequestsQuery;
+    private HashMap<String, LatLng> locationRequestsIds = new HashMap<>();
 
-    private List<Query> requestsTagsQueries = new ArrayList<>();
-    private HashMap<String, List<String>> requestsTagsIds = new HashMap<>();
+    private List<Query> tagsRequestsQueries = new ArrayList<>();
+    private HashMap<RequestTag, List<String>> tagsRequestsIds = new HashMap<>();
 
     private HashMap<String, Marker> requestsMapMarkers = new HashMap<>();
 
-
-    class LocationResultReceiver extends ResultReceiver {
+    private class LocationResultReceiver extends ResultReceiver {
         LocationResultReceiver(Handler handler) {
             super(handler);
         }
@@ -100,45 +106,58 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private class RequestsLocationsListener implements GeoQueryEventListener {
+    private class LocationRequestsListener implements GeoQueryEventListener {
         @Override
         public void onKeyEntered(String key, GeoLocation location) {
-            if (map != null) {
-                requestsMapMarkers.put(key, map.addMarker(new MarkerOptions()
-                        .position(getLatLng(location))));
+            if (map != null)
+            {
+                LatLng latLng = getLatLng(location);
+                locationRequestsIds.put(key, getLatLng(location));
+                if (passTagFilter(key))
+                    putMarkerOnMap(key, latLng);
             }
         }
 
         @Override
         public void onKeyExited(String key) {
-            if (map != null) {
-                if (requestsMapMarkers.containsKey(key)) {
-                    Marker requestMarker = requestsMapMarkers.get(key);
-                    if (requestMarker != null)
-                        requestMarker.remove();
-                }
+            if (map != null)
+            {
+                locationRequestsIds.remove(key);
+                removeMarkerFromMap(key);
             }
         }
 
         @Override
         public void onKeyMoved(String key, GeoLocation location) {
-            if (map != null) {
-                if (requestsMapMarkers.containsKey(key)) {
-                    Marker requestMarker = requestsMapMarkers.get(key);
-                    if (requestMarker != null)
-                        requestMarker.setPosition(getLatLng(location));
-                }
+            if (map != null)
+            {
+                LatLng latLng = getLatLng(location);
+                locationRequestsIds.put(key, getLatLng(location));
+                updateMarkerOnMap(key, latLng);
             }
         }
 
         @Override
         public void onGeoQueryReady() {
-
+            Log.e(TAG, "LocationRequestsListener - onGeoQueryReady");
         }
 
         @Override
         public void onGeoQueryError(DatabaseError error) {
-            Log.e(TAG, "DatabaseError: " + error);
+            Log.e(TAG, "LocationRequestsListener - DatabaseError: " + error);
+        }
+    }
+
+    private class TagsRequestsListener implements ValueEventListener {
+
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.i(TAG, "Datasnapshot ref - " + dataSnapshot.getRef().getKey());
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Log.e(TAG, "TagsRequestsListener - onCancelled");
         }
     }
 
@@ -167,19 +186,31 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                 R.array.tags_filter_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tagsSpinner.setAdapter(adapter);
+        Object selectedItem = tagsSpinner.getSelectedItem();
+        if (selectedItem != null)
+            currentTag = RequestTag.getInstance(selectedItem.toString());
 
         tagsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //TODO: update markers
-                //parent.getItemAtPosition(pos)
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                /*RequestTag newTag = RequestTag.getInstance(
+                        tagsSpinner.getItemAtPosition(position).toString());
+                if (currentTag != newTag)
+                {
+                    HashMap<RequestTag, ValueEventListener> tags = new HashMap<>();
+                    DatabaseManager.getInstance().getTagsRequestsQuery()
+                    currentTag = newTag;
+                }*/
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent)
+            {
 
             }
         });
+
 
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
@@ -190,18 +221,18 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     public void onStart() {
         super.onStart();
 
-        requestsLocationsQuery = DatabaseManager.getInstance().getRequestsLocationsQuery(
+        locationRequestsQuery = DatabaseManager.getInstance().getLocationRequestsQuery(
                 getCoordsPair(currentLatLng), currentRadius / 1000,
-                new RequestsLocationsListener());
+                new LocationRequestsListener());
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        if (requestsLocationsQuery != null) {
-            DatabaseManager.getInstance().removeRequestsLocationsListeners(requestsLocationsQuery);
-            requestsLocationsQuery = null;
+        if (locationRequestsQuery != null) {
+            DatabaseManager.getInstance().removeLocationRequestsListener(locationRequestsQuery);
+            locationRequestsQuery = null;
         }
     }
 
@@ -220,7 +251,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                 currentRadius = progressValue * (MAX_RADIUS - MIN_RADIUS) / 100 + MIN_RADIUS;
                 Log.i(TAG, Double.toString(currentRadius));
                 updateCircle();
-                DatabaseManager.getInstance().updateRadiusRequestsLocationsQuery(requestsLocationsQuery,
+                DatabaseManager.getInstance().updateGeoQueryRadius(locationRequestsQuery,
                         currentRadius / 1000);
             }
 
@@ -255,7 +286,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                 Log.i(TAG, currentLatLng.toString());
                 updateCircle();
 
-                DatabaseManager.getInstance().updateLocationRequestsLocationsQuery(requestsLocationsQuery,
+                DatabaseManager.getInstance().updateGeoQueryLocation(locationRequestsQuery,
                         getCoordsPair(currentLatLng));
             }
         });
@@ -275,9 +306,53 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         currentCircle = map.addCircle(new CircleOptions()
                 .center(currentLatLng)
                 .radius(currentRadius)
-                .strokeColor(strokeColor)
-                .fillColor(fillColor));
+                .strokeColor(STROKE_COLOR)
+                .fillColor(FILL_COLOR));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
+    }
+
+    private boolean passTagFilter(String requestUid)
+    {
+        boolean result = false;
+
+        for (Map.Entry<RequestTag, List<String>> tagRequests: tagsRequestsIds.entrySet())
+        {
+            List<String> tagRequestsIds = tagRequests.getValue();
+            if (tagRequestsIds != null && tagRequestsIds.contains(requestUid))
+            {
+                result = true;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private void putMarkerOnMap(String requestUid, LatLng location)
+    {
+        if (requestUid != null && location != null)
+            requestsMapMarkers.put(requestUid, map.addMarker(new MarkerOptions()
+                .position(location)));
+    }
+
+    private void updateMarkerOnMap(String requestUid, LatLng location)
+    {
+        if (requestUid != null && location != null && requestsMapMarkers.containsKey(requestUid))
+        {
+            Marker requestMarker = requestsMapMarkers.get(requestUid);
+            if (requestMarker != null)
+                requestMarker.setPosition(location);
+        }
+    }
+
+    private void removeMarkerFromMap(String requestUid)
+    {
+        if (requestUid != null && requestsMapMarkers.containsKey(requestUid))
+        {
+            Marker requestMarker = requestsMapMarkers.get(requestUid);
+            if (requestMarker != null)
+                requestMarker.remove();
+        }
     }
 
     protected void startIntentService(String strAddress) {

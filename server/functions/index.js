@@ -21,8 +21,9 @@ const ACTIVITY_KEY = 'activity';
 admin.initializeApp();
 
 // Auth listeners
+// TODO: Problem with displayName
 exports.createUser = functions.auth.user().onCreate(async (user) => {
-    await setUser(new DbUser(user.uid, user.email, '', 0))
+    await setUser(new DbUser(user.uid, user.email, '', '', 0))
 });
 
 exports.deleteUser = functions.auth.user().onDelete(async (user) => {
@@ -87,6 +88,7 @@ async function setUser(dbUser)
 {
     await admin.database().ref(USERS_KEY + '/' + dbUser.uid).set({
         email: dbUser.email,
+        name: dbUser.name,
         phoneNumber: dbUser.phoneNumber,
         reputation: dbUser.reputation
     })
@@ -99,10 +101,11 @@ async function setUser(dbUser)
 }
 
 // Database structures constructors
-function DbUser(uid, email, phoneNumber, reputation)
+function DbUser(uid, email, name, phoneNumber, reputation)
 {
     this.uid = uid;
     this.email = email;
+    this.name = name;
     this.phoneNumber = phoneNumber;
     this.reputation = reputation;
 }

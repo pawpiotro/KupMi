@@ -22,4 +22,7 @@ public class Constants
     public static final double DEF_RADIUS = 100.0;
     public static final double MAX_RADIUS = 1000.0;
     public static final double MIN_RADIUS = 10.0;
+
+    // User
+    public static final String USER = PACKAGE_NAME + ".USER";
 }

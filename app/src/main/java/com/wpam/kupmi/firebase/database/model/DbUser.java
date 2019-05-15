@@ -6,6 +6,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class DbUser
 {
     private String email;
+    private String name;
     private String phoneNumber;
     private Long reputation;
 
@@ -17,6 +18,14 @@ public class DbUser
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhoneNumber() {

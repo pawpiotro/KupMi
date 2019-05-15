@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,20 +13,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.MainActivity;
 import com.wpam.kupmi.lib.Constants;
-import com.wpam.kupmi.services.FetchAddressIntentService;
-import com.wpam.kupmi.services.GetAddressCoordsIntentService;
+import com.wpam.kupmi.model.User;
+import java.util.Objects;
 
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
 import static com.wpam.kupmi.lib.Constants.UPDATE_INTERVAL;
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
+import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class RequestsSearchActivity extends AppCompatActivity {
 
@@ -36,10 +35,11 @@ public class RequestsSearchActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
 
-
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private Location location;
+
+    private User user;
 
     private ProgressBar bar;
 
@@ -54,6 +54,13 @@ public class RequestsSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests_search);
 
+        user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
+        if (user == null)
+        {
+            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
+                    android.R.drawable.ic_dialog_alert);
+            returnToMainActivity();
+        }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -141,5 +148,9 @@ public class RequestsSearchActivity extends AppCompatActivity {
     }
 
     // Private / protected methods
-
+    private void returnToMainActivity()
+    {
+        this.startActivity(new Intent(this, MainActivity.class));
+        this.finish();
+    }
 }

@@ -1,6 +1,8 @@
 package com.wpam.kupmi.model;
 
-public class User
+import java.io.Serializable;
+
+public class User implements Serializable
 {
     private String userUID;
     private String name;
