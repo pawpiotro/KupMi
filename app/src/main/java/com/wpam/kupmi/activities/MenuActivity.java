@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.activeRequests.ActiveRequestsActivity;
 import com.wpam.kupmi.activities.requestForm.RequestFormActivity;
 import com.wpam.kupmi.activities.requestsSearch.RequestsSearchActivity;
 import com.wpam.kupmi.lib.Constants;
@@ -37,8 +39,7 @@ public class MenuActivity extends AppCompatActivity {
         Button signOff = findViewById(R.id.menu_logout);
 
         user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
-        if (user == null)
-        {
+        if (user == null) {
             showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
                     android.R.drawable.ic_dialog_alert);
             returnToMainActivity();
@@ -67,6 +68,9 @@ public class MenuActivity extends AppCompatActivity {
         viewActive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent activeRequestsActivityIntent = getActivityIntent(ActiveRequestsActivity.class);
+                if (activeRequestsActivityIntent != null)
+                    startActivity(activeRequestsActivityIntent);
                 Log.i(TAG, "Click, view active requests");
             }
         });
@@ -96,10 +100,8 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     // Private methods
-    private Intent getActivityIntent(Class activityClass)
-    {
-        if (activityClass != null)
-        {
+    private Intent getActivityIntent(Class activityClass) {
+        if (activityClass != null) {
             Intent intent = new Intent(this, activityClass);
             intent.putExtra(Constants.USER, user);
 
@@ -109,8 +111,7 @@ public class MenuActivity extends AppCompatActivity {
         return null;
     }
 
-    private void returnToMainActivity()
-    {
+    private void returnToMainActivity() {
         this.startActivity(new Intent(this, MainActivity.class));
         this.finish();
     }
