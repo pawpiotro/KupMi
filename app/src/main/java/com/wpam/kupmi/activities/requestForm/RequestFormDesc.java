@@ -8,17 +8,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.model.RequestTag;
 
-
 public class RequestFormDesc extends Fragment {
+
+    // Private fields
+    private static final String TAG = "DESC";
 
     private ImageButton next;
     private Spinner tagsSpinner;
@@ -27,6 +27,7 @@ public class RequestFormDesc extends Fragment {
 
     private RequestFormActivity parentActivity;
 
+    // Override Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,23 +50,12 @@ public class RequestFormDesc extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tagsSpinner.setAdapter(adapter);
 
-        /*tagsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });*/
-
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 parentActivity.setDescription(descEditText.getText().toString());
                 parentActivity.setTitle(titleEditText.getText().toString());
-                Log.i("DESC", tagsSpinner.getSelectedItem().toString());
+                Log.i(TAG, tagsSpinner.getSelectedItem().toString());
                 parentActivity.setTag(RequestTag.getInstance(tagsSpinner.getSelectedItem().toString()));
                 parentActivity.goToSummary();
             }

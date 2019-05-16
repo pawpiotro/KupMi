@@ -31,6 +31,7 @@ import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class RequestsSearchActivity extends AppCompatActivity {
 
+    // Private fields
     private static final String TAG = "REQUESTS_SEARCH_ACTIVITY";
 
     private FusedLocationProviderClient fusedLocationClient;

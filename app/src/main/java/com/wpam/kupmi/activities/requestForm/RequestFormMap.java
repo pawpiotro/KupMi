@@ -22,14 +22,15 @@ import static com.wpam.kupmi.lib.Constants.MAP_ZOOM;
 
 public class RequestFormMap extends Fragment implements OnMapReadyCallback {
 
+    // Private fields
     private static final String TAG = "REQUEST_FORM_MAP_FRAGMENT";
-
-    private RequestFormActivity parentActivity;
 
     private TextView coords;
     private GoogleMap map;
 
     private LatLng currentLatLng;
+
+    private RequestFormActivity parentActivity;
 
     // Override Fragment
     @Override

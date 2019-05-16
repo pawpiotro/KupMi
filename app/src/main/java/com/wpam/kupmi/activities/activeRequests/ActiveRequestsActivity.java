@@ -11,14 +11,27 @@ import com.wpam.kupmi.R;
 
 public class ActiveRequestsActivity extends AppCompatActivity {
 
+    // Private fields
     private FragmentManager fragmentManager;
     private ViewPager viewPager;
     private PagerAdapter adapterViewPager;
 
-    public static class PagerAdapter extends FragmentPagerAdapter {
+    // Override AppCompatActivity
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_active_requests);
+        viewPager = findViewById(R.id.activity_active_requests_viewpager);
+        adapterViewPager = new PagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapterViewPager);
+    }
+
+    // Internal / private classes
+    static class PagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 2;
 
-        public PagerAdapter(FragmentManager fragmentManager) {
+        PagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
@@ -51,15 +64,5 @@ public class ActiveRequestsActivity extends AppCompatActivity {
             }
         }
 
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_active_requests);
-        viewPager = (ViewPager) findViewById(R.id.activity_active_requests_viewpager);
-        adapterViewPager = new PagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapterViewPager);
     }
 }

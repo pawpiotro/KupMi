@@ -41,6 +41,7 @@ import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class RequestFormActivity extends FragmentActivity {
 
+    // Private fields
     private static final String TAG = "REQUEST_FORM_ACTIVITY";
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -63,22 +64,6 @@ public class RequestFormActivity extends FragmentActivity {
     private RequestFormSummary requestFormSummary = new RequestFormSummary();
 
     private boolean mapNotCreated = true;
-
-    class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            if (resultData == null) {
-                return;
-            }
-            Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
-            request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));
-        }
-    }
 
     // Override AppCompatActivity
     @Override
@@ -247,8 +232,8 @@ public class RequestFormActivity extends FragmentActivity {
         Log.i(TAG, Integer.toString(fragmentManager.getBackStackEntryCount()));
     }
 
-    // Private / protected methods
-    protected void startIntentService() {
+    // Private methods
+    private void startIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
@@ -259,5 +244,22 @@ public class RequestFormActivity extends FragmentActivity {
     {
         this.startActivity(new Intent(this, MainActivity.class));
         this.finish();
+    }
+
+    // Private classes
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultData == null) {
+                return;
+            }
+            Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
+            request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));
+        }
     }
 }

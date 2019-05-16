@@ -23,10 +23,13 @@ import java.util.Objects;
 import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class MenuActivity extends AppCompatActivity {
+
+    // Private fields
     private static final String TAG = "MENU_ACTIVITY";
 
     private User user;
 
+    // Override AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

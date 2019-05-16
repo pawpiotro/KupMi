@@ -21,13 +21,14 @@ import static com.wpam.kupmi.utils.DialogUtils.*;
 
 public class MainActivity extends Activity implements IUserDataStatus
 {
-    // Firebase authentication section
+    // Private fields
     private static final List<AuthUI.IdpConfig> authProviders = Collections.singletonList(
             new AuthUI.IdpConfig.EmailBuilder().build());
     private static final int RC_SIGN_IN = 0x01;
 
     private UserService userService;
 
+    // Override Activity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {

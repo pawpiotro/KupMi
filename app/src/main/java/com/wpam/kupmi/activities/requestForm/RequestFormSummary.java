@@ -16,6 +16,9 @@ import com.wpam.kupmi.utils.DateUtils;
 
 public class RequestFormSummary extends Fragment {
 
+    // Private Fields
+    private static final String TAG = "REQUEST_FORM_SUMMARY_FRAGMENT";
+
     private ImageButton next;
     private TextView coords;
     private TextView time;
@@ -25,6 +28,7 @@ public class RequestFormSummary extends Fragment {
 
     private RequestFormActivity parentActivity;
 
+    // Override Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,7 +83,6 @@ public class RequestFormSummary extends Fragment {
                 parentActivity.finish();
             }
         });
-
     }
 
 }

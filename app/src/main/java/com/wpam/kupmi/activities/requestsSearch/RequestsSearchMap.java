@@ -55,6 +55,8 @@ import static com.wpam.kupmi.utils.CoordinatesUtils.getCoordsPair;
 import static com.wpam.kupmi.utils.CoordinatesUtils.getLatLng;
 
 public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
+
+    // Private fields
     private static final String TAG = "REQUESTS_SEARCH_MAP_FRAGMENT";
     private static final int STROKE_COLOR = Color.RED;
     private static final int FILL_COLOR = Color.TRANSPARENT;
@@ -207,6 +209,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    // Private methods
     private void updateCircle() {
         if (map == null)
             return;
@@ -337,7 +340,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    protected void startIntentService(String strAddress) {
+    private void startIntentService(String strAddress) {
         Log.i(TAG, strAddress);
         Intent intent = new Intent(parentActivity, GetAddressCoordsIntentService.class);
         intent.putExtra(Constants.GET_ADDRESS_RECEIVER, resultReceiver);

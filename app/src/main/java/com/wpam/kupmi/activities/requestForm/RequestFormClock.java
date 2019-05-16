@@ -1,6 +1,5 @@
 package com.wpam.kupmi.activities.requestForm;
 
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,16 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TimePicker;
-
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.utils.DateUtils;
-
 import java.util.Calendar;
 import java.util.Locale;
 
 
 public class RequestFormClock extends Fragment {
 
+    // Private fields
     private TimePicker timePicker;
     private ImageButton next;
 
@@ -29,7 +27,7 @@ public class RequestFormClock extends Fragment {
 
     private RequestFormActivity parentActivity;
 
-
+    // Override Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

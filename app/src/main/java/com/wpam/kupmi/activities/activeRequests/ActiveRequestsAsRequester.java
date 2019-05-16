@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseError;
@@ -21,37 +20,14 @@ import com.wpam.kupmi.model.Request;
 
 public class ActiveRequestsAsRequester extends Fragment {
 
+    // Private fields
     private Request[] requestsData;
 
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
     private ActiveRequestsActivity parentActivity;
 
-    public class RequesterViewHolder extends RecyclerView.ViewHolder {
-        //TODO: add fields
-
-        private TextView tag;
-        private TextView date;
-        private TextView topic;
-        private TextView address;
-
-        public RequesterViewHolder(View itemLayoutView) {
-            super(itemLayoutView);
-            tag = (TextView) getView().findViewById(R.id.active_requests_requester_tag);
-            date = (TextView) getView().findViewById(R.id.active_requests_requester_date);
-            topic = (TextView) getView().findViewById(R.id.active_requests_requester_topic);
-            address = (TextView) getView().findViewById(R.id.active_requests_requester_address);
-
-        }
-
-        public void bindData(Request viewModel) {
-            tag.setText(viewModel.getTag().toString());
-            date.setText(viewModel.getDeadline().getTime().toString());
-            topic.setText(viewModel.getDescription());
-            address.setText(viewModel.getLocationAddress());
-        }
-    }
-
+    // Override Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -138,5 +114,31 @@ public class ActiveRequestsAsRequester extends Fragment {
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    // Internal / private classes
+    class RequesterViewHolder extends RecyclerView.ViewHolder {
+        //TODO: add fields
+
+        private TextView tag;
+        private TextView date;
+        private TextView topic;
+        private TextView address;
+
+        RequesterViewHolder(View itemLayoutView) {
+            super(itemLayoutView);
+            tag = getView().findViewById(R.id.active_requests_requester_tag);
+            date = getView().findViewById(R.id.active_requests_requester_date);
+            topic = getView().findViewById(R.id.active_requests_requester_topic);
+            address = getView().findViewById(R.id.active_requests_requester_address);
+
+        }
+
+        void bindData(Request viewModel) {
+            tag.setText(viewModel.getTag().toString());
+            date.setText(viewModel.getDeadline().getTime().toString());
+            topic.setText(viewModel.getDescription());
+            address.setText(viewModel.getLocationAddress());
+        }
     }
 }
