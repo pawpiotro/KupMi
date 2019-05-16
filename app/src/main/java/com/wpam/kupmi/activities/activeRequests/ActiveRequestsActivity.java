@@ -1,5 +1,6 @@
 package com.wpam.kupmi.activities.activeRequests;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +9,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.MainActivity;
+import com.wpam.kupmi.lib.Constants;
+import com.wpam.kupmi.model.User;
+
+import java.util.Objects;
+
+import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class ActiveRequestsActivity extends AppCompatActivity {
 
@@ -15,6 +23,7 @@ public class ActiveRequestsActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private ViewPager viewPager;
     private PagerAdapter adapterViewPager;
+    private User user;
 
     // Override AppCompatActivity
     @Override
@@ -22,6 +31,15 @@ public class ActiveRequestsActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_requests);
+
+        user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
+        if (user == null)
+        {
+            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
+                    android.R.drawable.ic_dialog_alert);
+            returnToMainActivity();
+        }
+
         viewPager = findViewById(R.id.activity_active_requests_viewpager);
         adapterViewPager = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
@@ -64,5 +82,15 @@ public class ActiveRequestsActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    private void returnToMainActivity()
+    {
+        this.startActivity(new Intent(this, MainActivity.class));
+        this.finish();
+    }
+
+    public User getUser(){
+        return user;
     }
 }

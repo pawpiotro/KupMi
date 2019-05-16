@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="15dp"
+    android:background="@drawable/border">
 
     <TextView
         android:id="@+id/active_requests_supplier_tag"
@@ -13,6 +14,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
+        android:textSize="18sp"
         tools:text="tag" />
 
     <TextView
@@ -20,13 +22,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_toRightOf="@id/active_requests_supplier_tag"
+        android:layout_toEndOf="@id/active_requests_supplier_tag"
         android:gravity="end"
+        android:textSize="18sp"
         tools:text="date" />
 
     <TextView
@@ -38,28 +39,15 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        android:text="topic" />
+        android:textSize="18sp"
+        tools:text="topic" />
 
-    <TextView
-        android:id="@+id/active_requests_supplier_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/active_requests_supplier_topic"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="address" />
-
+<!--
     <TextView
         android:id="@+id/active_requests_supplier_requester_rep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/active_requests_supplier_address"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_margin="5dp"
         android:text="rep" />
-
+-->
 </RelativeLayout>

@@ -6,22 +6,28 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.firebase.database.model.DbRequest;
 import com.wpam.kupmi.model.Request;
+
+import java.util.ArrayList;
 
 public class ActiveRequestsAsSupplier extends Fragment {
 
     // Private fields
-    private Request[] requestsData;
+    private static final String TAG = "ACTIVE_REQUEST_SUPPLIER";
+    private ArrayList<DbRequest> requests = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
@@ -39,13 +45,14 @@ public class ActiveRequestsAsSupplier extends Fragment {
         return inflater.inflate(R.layout.fragment_active_requests_as_supplier, container, false);
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = (RecyclerView) getView().findViewById(R.id.active_supplier_recycler_view);
         recyclerView.setLayoutManager((new LinearLayoutManager(parentActivity)));
+
+        Log.i(TAG, parentActivity.getUser().getUserUID());
 
         //TODO:
         Query query = FirebaseDatabase.getInstance()
@@ -67,26 +74,30 @@ public class ActiveRequestsAsSupplier extends Fragment {
 
          */
 
-        FirebaseRecyclerOptions<Request> options =
-                new FirebaseRecyclerOptions.Builder<Request>()
-                        .setQuery(query, Request.class)
+        FirebaseRecyclerOptions<DbRequest> options =
+                new FirebaseRecyclerOptions.Builder<DbRequest>()
+                        .setQuery(query, DbRequest.class)
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<Request, ActiveRequestsAsSupplier.SupplierViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<DbRequest, ActiveRequestsAsSupplier.SupplierViewHolder>(options) {
             @Override
             public ActiveRequestsAsSupplier.SupplierViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.active_requests_supplier_item_layout, parent, false);
-                return new ActiveRequestsAsSupplier.SupplierViewHolder(itemLayoutView);
+                View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.active_requests_supplier_item_layout, parent, false);
+                return new ActiveRequestsAsSupplier.SupplierViewHolder(itemView);
             }
 
             @Override
-            protected void onBindViewHolder(ActiveRequestsAsSupplier.SupplierViewHolder holder, int position, Request model) {
-                holder.bindData(model);
-            }
+            protected void onBindViewHolder(ActiveRequestsAsSupplier.SupplierViewHolder holder, final int position, DbRequest model) {
+                if(model != null)
+                    holder.bindData(model);
+                requests.add(position, model);
 
-            @Override
-            public int getItemCount() {
-                return requestsData.length;
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(TAG, "Click: " + position);
+                    }
+                });
             }
 
             @Override
@@ -102,6 +113,8 @@ public class ActiveRequestsAsSupplier extends Fragment {
             }
 
         };
+
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -119,30 +132,39 @@ public class ActiveRequestsAsSupplier extends Fragment {
 
     // Internal / private classes
     class SupplierViewHolder extends RecyclerView.ViewHolder {
-        //TODO: add fields
 
+        private View itemView;
         private TextView tag;
         private TextView date;
         private TextView topic;
-        private TextView address;
-        private TextView rep;
+        //private TextView rep;
 
-        SupplierViewHolder(View itemLayoutView) {
-            super(itemLayoutView);
-            tag = getView().findViewById(R.id.active_requests_supplier_tag);
-            date = getView().findViewById(R.id.active_requests_supplier_date);
-            topic = getView().findViewById(R.id.active_requests_supplier_topic);
-            address = getView().findViewById(R.id.active_requests_supplier_address);
-            rep = getView().findViewById(R.id.active_requests_supplier_requester_rep);
+        SupplierViewHolder(View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+            tag = itemView.findViewById(R.id.active_requests_supplier_tag);
+            date = itemView.findViewById(R.id.active_requests_supplier_date);
+            topic = itemView.findViewById(R.id.active_requests_supplier_topic);
+            //rep = itemView.findViewById(R.id.active_requests_supplier_requester_rep);
 
         }
 
-        void bindData(Request viewModel) {
-            tag.setText(viewModel.getTag().toString());
-            date.setText(viewModel.getDeadline().getTime().toString());
-            topic.setText(viewModel.getDescription());
-            address.setText(viewModel.getLocationAddress());
-            rep.setText("0"); //TODO:
+        void bindData(DbRequest viewModel) {
+            tag.setText(viewModel.getTag());
+            date.setText(viewModel.getDeadline());
+            topic.setText(viewModel.getTitle());
+
+            int state = viewModel.getState().intValue();
+            // change layout depending on state
+            switch(state) {
+                case 0:
+                    itemView.setBackgroundResource(R.drawable.border_red);
+                    break;
+                default:
+                    break;
+            }
+
+            //rep.setText("0");
         }
     }
 }
