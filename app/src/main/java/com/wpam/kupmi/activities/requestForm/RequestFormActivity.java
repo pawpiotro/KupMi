@@ -163,7 +163,7 @@ public class RequestFormActivity extends FragmentActivity {
 
     // Public methods
     public void insertIntoDB() {
-        request.setRequesterUID(AuthManager.getInstance().getCurrentUserUid());
+        request.setRequesterUID(user.getUserUID());
         request.setState(RequestState.ACTIVE);
 
         Log.i(TAG, "INSERTING INTO DATABASE:");
@@ -192,6 +192,11 @@ public class RequestFormActivity extends FragmentActivity {
 
     public void setDeadline(Calendar deadline) {
         request.setDeadline(deadline);
+    }
+
+    public void setTitle(String title)
+    {
+        request.setTitle(title);
     }
 
     public void setDescription(String description) {

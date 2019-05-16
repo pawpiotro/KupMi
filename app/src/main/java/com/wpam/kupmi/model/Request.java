@@ -11,6 +11,7 @@ public class Request {
     private String requesterUID;
     private String supplierUID;
     private Calendar deadline;
+    private String title;
     private String description;
     private Pair<Double, Double> location;
     private String locationAddress;
@@ -47,6 +48,14 @@ public class Request {
 
     public void setDeadline(Calendar deadline) {
         this.deadline = deadline;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -100,6 +109,8 @@ public class Request {
         stringBuilder.append("Supplier UID: ").append(supplierUID);
         stringBuilder.append(lineSeparator);
         stringBuilder.append("Deadline: ").append(DateUtils.getDateText(deadline, ctx));
+        stringBuilder.append(lineSeparator);
+        stringBuilder.append("Title: ").append(title);
         stringBuilder.append(lineSeparator);
         stringBuilder.append("Description: ").append(description);
         stringBuilder.append(lineSeparator);

@@ -5,6 +5,11 @@ const admin = require('firebase-admin');
 const USERS_KEY = 'users';
 
 const REQUESTS_KEY = 'requests';
+const REQUESTER_KEY = "requester";
+const SUPPLIER_KEY = "supplier";
+
+const REQUESTS_DETAILS_KEY = "requests_details";
+
 const ACTIVE_KEY = 'active';
 const ACCEPTED_KEY = 'accepted';
 const DONE_KEY = 'done';
@@ -37,10 +42,12 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
 });
 
 // Database listeners
-exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{state}/{requestUid}/tag')
+/*exports.changeRequestTags = functions.database.ref(REQUESTS_KEY +
+    '/{userKind}/{userUID}/{requestUID}/tag')
 .onWrite(async (change, context) => {
-    const requestUid = context.params.requestUid;
-    const state = context.params.state;
+    const userKind = context.params.userKind;
+    const userUID = context.params.userUID;
+    const requestUID = context.params.requestUID;
 
     if (!change.before.exists())
     {
@@ -52,13 +59,13 @@ exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{state}/{req
     }
     else if (!change.after.exists())
     {
-        const deletedTag = change.before.val();
+        const deletedTag = ;
         if (deletedTag != null && typeof deletedTag == 'string')
         {
             await admin.database().ref(TAGS_KEY + '/' + deletedTag + '/' +
-            state + '/' + requestUid).remove()
+            state + '/' + requestUID).remove()
             .then(function() {
-              console.log('Removing request: ' + requestUid + ' from tag: ' + deletedTag + ' succeeded.');
+              console.log('Removing request: ' + requestUID + ' from tag: ' + deletedTag + ' succeeded.');
             })
             .catch(function(error) {
               console.log('Removing request from tag: ' + deletedTag + ' failed: ' + error.message);
@@ -69,18 +76,65 @@ exports.changeRequestTags = functions.database.ref(REQUESTS_KEY + '/{state}/{req
             console.log('Wrong deletedTag value.');
         }
     }
-});
+});*/
 
-exports.deleteRequest = functions.database.ref(REQUESTS_KEY + '/{state}/{requestUid}').onDelete(async (snapshot, context) => {
-    const deletedRequestUid = context.params.requestUid;
-    const state = context.params.state;
-    await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + state + '/' + deletedRequestUid).remove()
-    .then(function() {
-      console.log('Removing request: ' + deletedRequestUid + ' location succeeded.');
-    })
-    .catch(function(error) {
-      console.log('Removing request location failed: ' + error.message);
-    });
+exports.deleteRequest = functions.database.ref(REQUESTS_KEY +
+    '/{userKind}/{userUID}/{requestUID}').onDelete(async (snapshot, context) => {
+    const userKind = context.params.userKind;
+    const otherUserKind = getOtherUserKind(userKind);
+    const userUID = context.params.userUID;
+    const requestUID = context.params.requestUID;
+
+    const request = snapshot.val()
+
+    if (request != null)
+    {
+        const otherUserUID = request.UserUID;
+        const stateName = getStateName(request.state);
+        const tag = request.tag;
+
+        if (otherUserUID)
+        {
+            await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
+            otherUserUID + '/' + requestUID).remove()
+            .then(function() {
+              console.log('Removing request: ' + requestUID + ' from ' + otherUserKind + ' succeeded.');
+            })
+            .catch(function(error) {
+              console.log('Removing request from ' + otherUserKind + ' failed: ' + error.message);
+            })
+        }
+
+        await admin.database().ref(REQUESTS_DETAILS_KEY + '/' + requestUID).remove()
+        .then(function() {
+          console.log('Removing request: ' + requestUID + ' details succeeded.');
+        })
+        .catch(function(error) {
+          console.log('Removing request location failed: ' + error.message);
+        });
+
+        if (stateName)
+        {
+            await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + stateName + '/' + requestUID).remove()
+            .then(function() {
+              console.log('Removing request: ' + requestUID + ' location succeeded.');
+            })
+            .catch(function(error) {
+              console.log('Removing request location failed: ' + error.message);
+            });
+
+            if (tag)
+            {
+                await admin.database().ref(TAGS_KEY + '/' + tag + '/' + stateName + '/' + requestUID).remove()
+                .then(function() {
+                  console.log('Removing request: ' + requestUID + ' from tag: ' + tag + ' succeeded.');
+                })
+                .catch(function(error) {
+                  console.log('Removing request from tag: ' + tag + ' failed: ' + error.message);
+                });
+            }
+        }
+    }
 });
 
 // Methods
@@ -98,6 +152,31 @@ async function setUser(dbUser)
     .catch(function(error) {
       console.log('Adding/updating failed: ' + error.message);
     });
+}
+
+function getStateName(state)
+{
+    switch (state)
+    {
+        case 0:
+            return ACTIVE_KEY;
+        case 1:
+            return ACCEPTED_KEY;
+        case 2:
+            return DONE_KEY;
+        case 3:
+            return UNDONE_KEY;
+        default:
+            return "";
+    }
+}
+
+function getOtherUserKind(userKind)
+{
+    if (userKind == REQUESTER_KEY)
+        return SUPPLIER_KEY;
+    else
+        return REQUESTER_KEY;
 }
 
 // Database structures constructors

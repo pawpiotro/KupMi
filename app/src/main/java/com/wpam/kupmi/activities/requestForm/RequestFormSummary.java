@@ -20,6 +20,7 @@ public class RequestFormSummary extends Fragment {
     private TextView coords;
     private TextView time;
     private TextView tags;
+    private TextView title;
     private TextView desc;
 
     private RequestFormActivity parentActivity;
@@ -34,11 +35,12 @@ public class RequestFormSummary extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        next = (ImageButton) getView().findViewById(R.id.request_form_summary_next_button);
-        coords = (TextView) getView().findViewById(R.id.request_form_summary_coords);
-        time = (TextView) getView().findViewById(R.id.request_form_summary_time);
-        tags = (TextView) getView().findViewById(R.id.request_form_summary_tags);
-        desc = (TextView) getView().findViewById(R.id.request_form_summary_desc);
+        next = getView().findViewById(R.id.request_form_summary_next_button);
+        coords = getView().findViewById(R.id.request_form_summary_coords);
+        time = getView().findViewById(R.id.request_form_summary_time);
+        tags = getView().findViewById(R.id.request_form_summary_tags);
+        title = getView().findViewById(R.id.request_form_summary_title);
+        desc = getView().findViewById(R.id.request_form_summary_desc);
 
         parentActivity = (RequestFormActivity) getActivity();
         Request request = parentActivity.getRequest();
@@ -67,6 +69,7 @@ public class RequestFormSummary extends Fragment {
 //            tags.setText(formattedTags);
 //        }
         tags.setText(request.getTag().firstCapitalLetterName());
+        title.setText(request.getTitle());
         desc.setText(request.getDescription());
 
         next.setOnClickListener(new View.OnClickListener() {

@@ -5,30 +5,22 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class DbRequest
 {
-    private String requesterUID;
-    private String supplierUID;
+    // If app client is requester, userUID = supplier UID
+    // If app client is supplier, userUID = requester UID
+    private String userUID;
     private String deadline;
-    private String description;
-    private String locationAddress;
+    private String title;
     private String tag;
     private Long state;
 
     public DbRequest() {}
 
-    public String getRequesterUID() {
-        return requesterUID;
+    public String getUserUID() {
+        return userUID;
     }
 
-    public void setRequesterUID(String requesterUID) {
-        this.requesterUID = requesterUID;
-    }
-
-    public String getSupplierUID() {
-        return supplierUID;
-    }
-
-    public void setSupplierUID(String supplierUID) {
-        this.supplierUID = supplierUID;
+    public void setUserUID(String userUID) {
+        this.userUID = userUID;
     }
 
     public String getDeadline() {
@@ -39,20 +31,12 @@ public class DbRequest
         this.deadline = deadline;
     }
 
-    public String getDescription() {
-        return description;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getLocationAddress() {
-        return locationAddress;
-    }
-
-    public void setLocationAddress(String locationAddress) {
-        this.locationAddress = locationAddress;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getTag() {

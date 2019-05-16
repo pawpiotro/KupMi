@@ -2,10 +2,15 @@
     <string name="app_name">KupMi</string>
     <!-- Map -->
     <string name="title_activity_maps">Map</string>
+    <!-- Request Form -->
     <string name="coordinates_label_name">Coordinates</string>
     <string name="time_label_name">Time</string>
-    <string name="request_label_name">Description</string>
+    <string name="title_label_name">Title</string>
+    <string name="description_label_name">Description</string>
     <string name="tags_label_name">Tags</string>
+
+    <string name="title_hint">New request</string>
+    <string name="description_hint">What\'s the problem?</string>
     <!-- Dialog -->
     <string name="error_title">Error</string>
     <string name="info_title">Info</string>

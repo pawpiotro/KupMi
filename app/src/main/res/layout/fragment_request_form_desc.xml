@@ -32,6 +32,38 @@
         </Spinner>
 
         <TextView
+            android:id="@+id/request_form_title_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#D2D2D2"
+            android:padding="5dp"
+            android:text="@string/title_label_name"
+            android:textAlignment="viewStart"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/request_form_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="top"
+            android:hint="@string/title_hint"
+            android:inputType="text"
+            android:padding="1dp"
+            android:paddingStart="2dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="2dp"
+            android:paddingRight="2dp"
+            android:paddingBottom="5dp"
+            android:textSize="20sp"
+            android:maxLength="25"
+            android:background="@android:color/transparent"
+            />
+
+        <TextView
             android:id="@+id/request_form_desc_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,7 +71,7 @@
             android:layout_marginBottom="5dp"
             android:background="#D2D2D2"
             android:padding="5dp"
-            android:text="@string/request_label_name"
+            android:text="@string/description_label_name"
             android:textAlignment="viewStart"
             android:textSize="24sp" />
 
@@ -49,7 +81,7 @@
             android:layout_height="match_parent"
             android:layout_margin="1dp"
             android:gravity="top"
-            android:hint="..."
+            android:hint="@string/description_hint"
             android:inputType="textMultiLine"
             android:padding="1dp"
             android:paddingStart="2dp"
@@ -59,7 +91,7 @@
             android:paddingRight="2dp"
             android:paddingBottom="5dp"
             android:singleLine="false"
-            android:textSize="20sp" />
+            android:background="@android:color/transparent" />
     </LinearLayout>
 
     <FrameLayout

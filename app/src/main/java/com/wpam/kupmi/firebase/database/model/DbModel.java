@@ -9,6 +9,11 @@ public class DbModel
     public static final String USERS_KEY = "users";
 
     public static final String REQUESTS_KEY = "requests";
+    public static final String REQUESTER_KEY = "requester";
+    public static final String SUPPLIER_KEY = "supplier";
+
+    public static final String REQUESTS_DETAILS_KEY = "requests_details";
+
     public static final String ACTIVE_KEY = RequestState.ACTIVE.lowerCaseName();
     public static final String ACCEPTED_KEY = RequestState.ACCEPTED.lowerCaseName();
     public static final String DONE_KEY = RequestState.DONE.lowerCaseName();

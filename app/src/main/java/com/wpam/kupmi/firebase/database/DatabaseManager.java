@@ -13,6 +13,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbModel;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
+import com.wpam.kupmi.firebase.database.model.DbRequestDetails;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
@@ -129,28 +130,34 @@ public class DatabaseManager
     public void addRequest(Request request)
     {
         DbRequest dbRequest = new DbRequest();
-        dbRequest.setRequesterUID(request.getRequesterUID());
-        dbRequest.setSupplierUID(request.getSupplierUID());
+        dbRequest.setUserUID("");
         dbRequest.setDeadline(DateUtils.getDateText(request.getDeadline(), DatabaseConfig.DATE_FORMAT,
                 DatabaseConfig.DATE_FORMAT_CULTURE));
-        dbRequest.setDescription(request.getDescription());
-        dbRequest.setLocationAddress(request.getLocationAddress());
+        dbRequest.setTitle(request.getTitle());
         dbRequest.setTag(request.getTag().lowerCaseName());
         dbRequest.setState((long) request.getState().getStateId());
+
+        DbRequestDetails dbRequestDetails = new DbRequestDetails();
+        dbRequestDetails.setDescription(request.getDescription());
+        dbRequestDetails.setLocationAddress(request.getLocationAddress());
 
         Pair<Double, Double> requestLoc = request.getLocation();
         GeoHash locHash = new GeoHash(getGeoLocation(requestLoc));
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put(createPath(DbModel.REQUESTS_KEY, request.getState().lowerCaseName(),
+        updates.put(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, request.getRequesterUID(),
                 request.getRequestUID()), dbRequest);
+
+        updates.put(createPath(DbModel.REQUESTS_DETAILS_KEY, request.getRequestUID()), dbRequestDetails);
+
         updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getState().lowerCaseName(),
                 request.getRequestUID(), "/g"), locHash.getGeoHashString());
         updates.put(createPath(DbModel.REQUESTS_LOCATIONS_KEY, request.getState().lowerCaseName(),
                 request.getRequestUID(), "/l"), Arrays.asList(requestLoc.first, requestLoc.second));
-        // Problem with adding new item to existing list - empty string value
+
         updates.put(createPath(TAGS_KEY, request.getTag().lowerCaseName(), request.getState().lowerCaseName(),
-                request.getRequestUID()), "");
+                request.getRequestUID()), request.getRequesterUID());
+
         dbRef.updateChildren(updates);
     }
 
