@@ -76,6 +76,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     private RequestTag currentTag;
 
     private GeoQuery locationRequestsQuery;
+    private GeoQueryEventListener locationRequestsQueryListener;
     private HashMap<String, LatLng> locationRequestsIds = new HashMap<>();
 
     private HashMap<RequestTag, List<Pair<String, String>>> tagsRequestsIds = new HashMap<>();
@@ -138,18 +139,29 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     public void onStart() {
         super.onStart();
 
-        locationRequestsQuery = DatabaseManager.getInstance().getLocationRequestsQuery(
-                getCoordsPair(currentLatLng), currentRadius / 1000, REQUEST_STATE,
-                new LocationRequestsListener());
+        DatabaseManager dbManager = DatabaseManager.getInstance();
+
+        if (locationRequestsQuery == null)
+        {
+            locationRequestsQueryListener = new LocationRequestsListener();
+            locationRequestsQuery = dbManager.getLocationRequestsQuery(
+                    getCoordsPair(currentLatLng), currentRadius / 1000, REQUEST_STATE,
+                    locationRequestsQueryListener);
+        }
+        else
+        {
+            dbManager.addLocationRequestsListener(locationRequestsQuery,
+                    locationRequestsQueryListener);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        if (locationRequestsQuery != null) {
-            DatabaseManager.getInstance().removeLocationRequestsListener(locationRequestsQuery);
-            locationRequestsQuery = null;
+        if (locationRequestsQuery != null)
+        {
+            DatabaseManager.getInstance().removeLocationRequestsListeners(locationRequestsQuery);
         }
     }
 
@@ -256,7 +268,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
 
     private void putMarkerOnMap(String requestUid, LatLng location)
     {
-        if (requestUid != null && location != null)
+        if (requestUid != null && location != null && !requestsMapMarkers.containsKey(requestUid))
             requestsMapMarkers.put(requestUid, map.addMarker(new MarkerOptions()
                 .position(location)));
     }
@@ -278,6 +290,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             Marker requestMarker = requestsMapMarkers.get(requestUid);
             if (requestMarker != null)
                 requestMarker.remove();
+            requestsMapMarkers.remove(requestUid);
         }
     }
 
@@ -383,7 +396,8 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             if (map != null)
             {
                 LatLng latLng = getLatLng(location);
-                locationRequestsIds.put(key, getLatLng(location));
+                if (!locationRequestsIds.containsKey(key))
+                    locationRequestsIds.put(key, getLatLng(location));
                 if (passTagFilter(key))
                     putMarkerOnMap(key, latLng);
             }

@@ -86,7 +86,13 @@ public class DatabaseManager
         return null;
     }
 
-    public void removeLocationRequestsListener(GeoQuery geoQuery)
+    public void addLocationRequestsListener(GeoQuery geoQuery, GeoQueryEventListener listener)
+    {
+        if (geoQuery != null && listener != null)
+            geoQuery.addGeoQueryEventListener(listener);
+    }
+
+    public void removeLocationRequestsListeners(GeoQuery geoQuery)
     {
         if (geoQuery != null)
             geoQuery.removeAllListeners();
