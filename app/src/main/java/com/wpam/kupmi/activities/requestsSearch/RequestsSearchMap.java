@@ -450,7 +450,8 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                         String requestUID = child.getKey();
                         String requesterUID = child.getValue(String.class);
 
-                        if (requestUID != null && requesterUID != null)
+                        if (requestUID != null && requesterUID != null &&
+                                !Objects.equals(requesterUID, parentActivity.getUser().getUserUID()))
                         {
                             tagRequests.add(Pair.create(requestUID, requesterUID));
 
