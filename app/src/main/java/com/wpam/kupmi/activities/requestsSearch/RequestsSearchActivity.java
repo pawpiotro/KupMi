@@ -147,6 +147,11 @@ public class RequestsSearchActivity extends AppCompatActivity {
             bar.setVisibility(View.GONE);
     }
 
+    public User getUser()
+    {
+        return user;
+    }
+
     // Private / protected methods
     private void returnToMainActivity()
     {

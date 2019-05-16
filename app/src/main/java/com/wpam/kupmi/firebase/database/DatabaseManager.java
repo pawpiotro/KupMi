@@ -73,10 +73,11 @@ public class DatabaseManager
     }
 
     public GeoQuery getLocationRequestsQuery(Pair<Double, Double> location, double radius,
-                                             GeoQueryEventListener listener)
+                                             RequestState state, GeoQueryEventListener listener)
     {
         if (location != null && radius >= 0.0f) {
-            GeoFire geoRef = new GeoFire(dbRef.child(DbModel.REQUESTS_LOCATIONS_KEY));
+            GeoFire geoRef = new GeoFire(dbRef.child(
+                    createPath(DbModel.REQUESTS_LOCATIONS_KEY, state.lowerCaseName())));
             GeoQuery geoQuery = geoRef.queryAtLocation(getGeoLocation(location), radius);
             geoQuery.addGeoQueryEventListener(listener);
 
@@ -116,8 +117,8 @@ public class DatabaseManager
             {
                 RequestTag tag = entry.getKey();
                 if (tag != RequestTag.ALL) {
-                    Query tagQuery = dbRef.child(createPath(TAGS_KEY, tag.lowerCaseName()))
-                            .equalTo(tag.lowerCaseName());
+                    Query tagQuery = dbRef.child(createPath(TAGS_KEY, tag.lowerCaseName(),
+                            state.lowerCaseName()));
                     tagQuery.addListenerForSingleValueEvent(entry.getValue());
                     result.add(tagQuery);
                 }
