@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.requestsSearch.RequestsSearchActivity"></activity>
+        <activity android:name=".activities.activeRequests.ActiveRequestsActivity"></activity>
+        <activity android:name=".activities.requestsSearch.RequestsSearchActivity" />
         <activity android:name=".activities.MenuActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
@@ -41,11 +42,9 @@
         <service
             android:name=".services.FetchAddressIntentService"
             android:exported="false" />
-
         <service
             android:name=".services.GetAddressCoordsIntentService"
             android:exported="false" />
-
     </application>
 
 </manifest>
