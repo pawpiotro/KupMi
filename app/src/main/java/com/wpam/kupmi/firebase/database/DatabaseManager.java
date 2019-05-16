@@ -17,6 +17,7 @@ import com.wpam.kupmi.firebase.database.model.DbRequestDetails;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
+import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +51,17 @@ public class DatabaseManager
     {
         if (userUID != null)
             return dbRef.child(createPath(DbModel.USERS_KEY, userUID));
+
+        return null;
+    }
+
+    public Query getRequestQuery(RequestUserKind userKind, String userUID)
+    {
+        if (userKind != null && userUID != null)
+        {
+            return dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
+                    userUID));
+        }
 
         return null;
     }

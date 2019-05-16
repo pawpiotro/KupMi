@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.activities.MainActivity;
 import com.wpam.kupmi.lib.Constants;
+import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
 
 import java.util.Objects;
@@ -74,9 +75,9 @@ public class ActiveRequestsActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Requester";
+                    return RequestUserKind.REQUESTER.firstCapitalLetterName();
                 case 1:
-                    return "Supplier";
+                    return RequestUserKind.SUPPLIER.firstCapitalLetterName();
                 default:
                     return null;
             }
@@ -90,7 +91,7 @@ public class ActiveRequestsActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public User getUser(){
+    public User getUser() {
         return user;
     }
 }

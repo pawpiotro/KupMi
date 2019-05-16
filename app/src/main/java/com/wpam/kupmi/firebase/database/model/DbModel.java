@@ -2,6 +2,7 @@ package com.wpam.kupmi.firebase.database.model;
 
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
+import com.wpam.kupmi.model.RequestUserKind;
 
 public class DbModel
 {
@@ -9,8 +10,8 @@ public class DbModel
     public static final String USERS_KEY = "users";
 
     public static final String REQUESTS_KEY = "requests";
-    public static final String REQUESTER_KEY = "requester";
-    public static final String SUPPLIER_KEY = "supplier";
+    public static final String REQUESTER_KEY = RequestUserKind.REQUESTER.lowerCaseName();
+    public static final String SUPPLIER_KEY = RequestUserKind.SUPPLIER.lowerCaseName();
 
     public static final String REQUESTS_DETAILS_KEY = "requests_details";
 
