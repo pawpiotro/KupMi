@@ -7,20 +7,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.activities.MainActivity;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
-
 import java.util.Objects;
 
 import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class ActiveRequestsActivity extends AppCompatActivity {
 
+    // Public consts
+    public static final String USER_KIND_PARAM = "userKind";
+
     // Private fields
+
     private FragmentManager fragmentManager;
     private ViewPager viewPager;
     private PagerAdapter adapterViewPager;
@@ -63,9 +65,9 @@ public class ActiveRequestsActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new ActiveRequestsAsRequester();
+                    return getActiveRequestsFragmentNewInstance(RequestUserKind.REQUESTER);
                 case 1:
-                    return new ActiveRequestsAsSupplier();
+                    return getActiveRequestsFragmentNewInstance(RequestUserKind.SUPPLIER);
                 default:
                     return null;
             }
@@ -85,13 +87,26 @@ public class ActiveRequestsActivity extends AppCompatActivity {
 
     }
 
+    // Public methods
+    public User getUser() {
+        return user;
+    }
+
+    // Private methods
     private void returnToMainActivity()
     {
         this.startActivity(new Intent(this, MainActivity.class));
         this.finish();
     }
 
-    public User getUser() {
-        return user;
+    private static ActiveRequestsFragment getActiveRequestsFragmentNewInstance(RequestUserKind userKind)
+    {
+        ActiveRequestsFragment fragment = new ActiveRequestsFragment();
+
+        Bundle args = new Bundle();
+        args.putString(USER_KIND_PARAM, userKind.name());
+        fragment.setArguments(args);
+
+        return fragment;
     }
 }

@@ -22,6 +22,11 @@ public class Request {
         this.requestUID = UIDUtils.getUID();
     }
 
+    public Request(String requestUID)
+    {
+        this.requestUID = requestUID;
+    }
+
     public String getRequestUID() {
         return requestUID;
     }

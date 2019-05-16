@@ -13,36 +13,46 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
+import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
+import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
+import com.wpam.kupmi.model.RequestTag;
 import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
+import com.wpam.kupmi.utils.DateUtils;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
-public class ActiveRequestsAsRequester extends Fragment {
+public class ActiveRequestsFragment extends Fragment {
 
     // Private fields
     private static final String TAG = "ACTIVE_REQUEST_REQUESTER";
-    private ArrayList<DbRequest> requests = new ArrayList<>();
+    private HashMap<String, Request> requests = new HashMap<>();
+    private RequestUserKind userKind;
 
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter adapter;
     private ActiveRequestsActivity parentActivity;
 
-    // Override Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         parentActivity = (ActiveRequestsActivity) getActivity();
+        userKind = getArguments() != null ?
+                RequestUserKind.getInstance(Objects.requireNonNull(
+                        getArguments().getString(ActiveRequestsActivity.USER_KIND_PARAM))) : RequestUserKind.UNKNOWN;
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_active_requests_as_requester, container, false);
+        return inflater.inflate(R.layout.fragment_active_requests_fragment, container, false);
     }
 
     @Override
@@ -50,34 +60,55 @@ public class ActiveRequestsAsRequester extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = getView().findViewById(R.id.active_requester_recycler_view);
-        recyclerView.setLayoutManager((new LinearLayoutManager(parentActivity)));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(parentActivity);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         Log.i(TAG, parentActivity.getUser().getUserUID());
 
         User user = parentActivity.getUser();
 
-        if (user != null) {
-            Query query = DatabaseManager.getInstance().getRequestQuery(RequestUserKind.REQUESTER,
+        if (user != null && userKind != RequestUserKind.UNKNOWN) {
+            Query query = DatabaseManager.getInstance().getRequestQuery(userKind,
                     user.getUserUID());
 
-        /*
+            FirebaseRecyclerOptions<Request> options =
+                    new FirebaseRecyclerOptions.Builder<Request>()
+                            .setQuery(query, new SnapshotParser<Request>() {
+                                @NonNull
+                                @Override
+                                public Request parseSnapshot(@NonNull DataSnapshot snapshot)
+                                {
+                                    DbRequest dbRequest = snapshot.getValue(DbRequest.class);
 
-        .setQuery(..., new SnapshotParser<Chat>() {
-            @NonNull
-            @Override
-            public Chat parseSnapshot(@NonNull DataSnapshot snapshot) {
-                return ...;
-            }
-        });
+                                    if (dbRequest != null)
+                                    {
+                                        Request request = new Request(snapshot.getKey());
 
-         */
+                                        if (userKind == RequestUserKind.REQUESTER)
+                                            request.setRequesterUID(dbRequest.getUserUID());
+                                        else if (userKind == RequestUserKind.SUPPLIER)
+                                            request.setSupplierUID(dbRequest.getUserUID());
+                                        request.setDeadline(
+                                                DateUtils.getDate(
+                                                        dbRequest.getDeadline(),
+                                                        DatabaseConfig.DATE_FORMAT,
+                                                        DatabaseConfig.DATE_FORMAT_CULTURE));
+                                        request.setTitle(dbRequest.getTitle());
+                                        request.setTag(RequestTag.getInstance(dbRequest.getTag()));
+                                        request.setState(RequestState.getInstance(
+                                                dbRequest.getState().intValue()));
 
-            FirebaseRecyclerOptions<DbRequest> options =
-                    new FirebaseRecyclerOptions.Builder<DbRequest>()
-                            .setQuery(query, DbRequest.class)
+                                        return request;
+                                    }
+
+                                    return null;
+                                }
+                            })
                             .build();
 
-            adapter = new FirebaseRecyclerAdapter<DbRequest, RequesterViewHolder>(options) {
+            adapter = new FirebaseRecyclerAdapter<Request, RequesterViewHolder>(options) {
                 @Override
                 public RequesterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                     View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.active_requests_requester_item_layout, parent, false);
@@ -85,17 +116,19 @@ public class ActiveRequestsAsRequester extends Fragment {
                 }
 
                 @Override
-                protected void onBindViewHolder(RequesterViewHolder holder, final int position, DbRequest model) {
+                protected void onBindViewHolder(RequesterViewHolder holder, final int position, Request model) {
                     if (model != null)
+                    {
                         holder.bindData(model);
-                    requests.add(position, model);
+                        requests.put(model.getRequestUID(), model);
 
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.i(TAG, "Click: " + position);
-                        }
-                    });
+                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Log.i(TAG, "Click: " + position);
+                            }
+                        });
+                    }
                 }
 
                 @Override
@@ -148,11 +181,11 @@ public class ActiveRequestsAsRequester extends Fragment {
             topic = itemView.findViewById(R.id.active_requests_requester_topic);
         }
 
-        void bindData(DbRequest viewModel) {
-            tag.setText(viewModel.getTag());
-            date.setText(viewModel.getDeadline());
+        void bindData(Request viewModel) {
+            tag.setText(viewModel.getTag().firstCapitalLetterName());
+            date.setText(DateUtils.getDateText(viewModel.getDeadline(), getContext()));
             topic.setText(viewModel.getTitle());
-            RequestState state = RequestState.getInstance(viewModel.getState().intValue());
+            RequestState state = viewModel.getState();
 
             // change layout depending on state
             switch (state)

@@ -60,7 +60,7 @@ public class DatabaseManager
         if (userKind != null && userUID != null)
         {
             return dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
-                    userUID));
+                    userUID)).orderByChild(DbModel.DEADLINE_KEY);
         }
 
         return null;

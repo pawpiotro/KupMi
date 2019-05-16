@@ -4,6 +4,6 @@
     android:id="@+id/active_requester_recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.activeRequests.ActiveRequestsAsRequester">
+    tools:context=".activities.activeRequests.ActiveRequestsFragment">
 
 </android.support.v7.widget.RecyclerView>

@@ -2,8 +2,8 @@ package com.wpam.kupmi.model;
 
 public enum RequestState
 {
-    ACTIVE(0),
-    ACCEPTED(1),
+    ACTIVE(1),
+    ACCEPTED(0),
     DONE(2),
     UNDONE(3),
     UNKNOWN(-1);
@@ -31,9 +31,9 @@ public enum RequestState
         switch (stateId)
         {
             case 0:
-                return ACTIVE;
-            case 1:
                 return ACCEPTED;
+            case 1:
+                return ACTIVE;
             case 2:
                 return DONE;
             case 3:
