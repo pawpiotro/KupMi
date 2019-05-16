@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.FirebaseApp;
 import com.wpam.kupmi.R;
@@ -27,20 +29,23 @@ public class MainActivity extends Activity implements IUserDataStatus
     private static final int RC_SIGN_IN = 0x01;
 
     private UserService userService;
+    private ProgressBar bar;
 
     // Override Activity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         FirebaseApp.initializeApp(this);
         userService = new UserService();
 
         setContentView(R.layout.activity_main);
+        bar = (ProgressBar) findViewById(R.id.main_activity_progress_bar);
 
         if (AuthManager.getInstance().isSignIn())
         {
-            // TODO: Loading view
+            setBarVisible(true);
             userService.enableUserQuery(true, this);
         }
         else
@@ -58,7 +63,7 @@ public class MainActivity extends Activity implements IUserDataStatus
         {
             if (resultCode == RESULT_OK)
             {
-                // TODO: Loading view
+                setBarVisible(true);
                 userService.enableUserQuery(true, this);
             }
             else
@@ -82,6 +87,7 @@ public class MainActivity extends Activity implements IUserDataStatus
         }
         else
         {
+            setBarVisible(false);
             Intent intent = new Intent(this, MenuActivity.class);
             intent.putExtra(Constants.USER, user);
             startActivity(intent);
@@ -114,5 +120,18 @@ public class MainActivity extends Activity implements IUserDataStatus
                 }
             }
         });
+    }
+
+    // Public methods
+
+    public void setBarVisible(boolean b) {
+        if (bar == null)
+            return;
+        if (b) {
+            bar.bringToFront();
+            bar.setVisibility(View.VISIBLE);
+        } else {
+            bar.setVisibility(View.GONE);
+        }
     }
 }
