@@ -8,6 +8,10 @@ const REQUESTS_KEY = 'requests';
 const REQUESTER_KEY = "requester";
 const SUPPLIER_KEY = "supplier";
 
+const USER_UID_KEY = "userUID";
+const DEADLINE_KEY = "deadline";
+const STATE_KEY = "state";
+
 const REQUESTS_DETAILS_KEY = "requests_details";
 
 const ACTIVE_KEY = 'active';
@@ -78,18 +82,125 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
     }
 });*/
 
-exports.deleteRequest = functions.database.ref(REQUESTS_KEY +
-    '/{userKind}/{userUID}/{requestUID}').onDelete(async (snapshot, context) => {
-    const userKind = context.params.userKind;
-    const otherUserKind = getOtherUserKind(userKind);
+// Only state and deadline change
+exports.changeRequest = functions.database.ref(REQUESTS_KEY +
+    '/' + REQUESTER_KEY + '/{userUID}/{requestUID}')
+.onWrite(async (change, context) => {
+
+    const userKind = REQUESTS_KEY;
+    const otherUserKind = SUPPLIER_KEY;
+    const userUID = context.params.userUID;
+    const requestUID = context.params.requestsUID;
+
+    if (change.before.exists() && change.after.exists())
+    {
+        const oldRequest = change.before.val();
+        const oldUserUID = oldRequest.userUID;
+        const oldState = oldRequest.state;
+        const oldStateName = getStateName(oldState);
+        const oldTag = oldRequest.tag;
+
+        const request = change.after.val();
+        const otherUserUID = request.userUID;
+        const deadline = request.deadline;
+        const title = request.title;
+        const state = request.state;
+        const tag = request.tag;
+        const stateName = getStateName(state);
+
+        if (otherUserUID && oldStateName && stateName)
+        {
+            if (stateName == ACCEPTED_KEY && oldState == state)
+            {
+                // TODO: Send info to user
+                console.log('Other user accepted this request: ' + requestUID);
+            }
+            else
+            {
+                if (state != oldState && stateName == ACTIVE_KEY)
+                {
+                    await admin.database().ref(REQUESTS_KEY + '/' + userKind + '/' +
+                    userUID + '/' + requestUID + '/' + USER_UID_KEY).set('')
+                    .then(function() {
+                      console.log('Clear supplier UID for request: ' + requestUID + ' succeeded.');
+                    })
+                    .catch(function(error) {
+                      console.log('Clear supplier UID for request: ' + requestUID + ' failed: '
+                      + error.message);
+                    });
+
+                    await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
+                    otherUserUID + '/' + requestUID).remove()
+                    .then(function() {
+                      console.log('Removing request: ' + requestUID + ' from ' + otherUserKind + ' succeeded.');
+                    })
+                    .catch(function(error) {
+                      console.log('Removing request from ' + otherUserKind + ' failed: ' + error.message);
+                    });
+                }
+                else
+                {
+                    await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
+                    otherUserUID + '/' + requestUID).set(
+                        new DbRequest(userUID, deadline, title, tag, state)
+                    )
+                    .then(function() {
+                      console.log('Adding / updating request : ' + requestUID + ' for supplier succeeded.');
+                    })
+                    .catch(function(error) {
+                      console.log('Adding / updating request: ' + requestUID + ' for supplier failed: '
+                      + error.message);
+                    });
+                }
+
+                if (state != oldState)
+                {
+                    const oldRequestLocationPath = REQUESTS_LOCATIONS_KEY + '/' + oldStateName + '/' + requestUID;
+                    const newRequestLocationPath = REQUESTS_LOCATIONS_KEY + '/' + stateName + '/' + requestUID;
+
+                    moveDataToAnotherState(oldRequestLocationPath, newRequestLocationPath,
+                    'Removing old location data during moving request: ' + requestUID +
+                    ' to another state failed: ',
+                    'Setting new location data during moving request: ' + requestUID +
+                    ' to another state failed: ',
+                    'Moving request: ' + requestUID + ' to another state succedded.');
+                }
+
+                if (state != oldState || tag != oldTag)
+                {
+                    const oldRequestTagPath = REQUESTS_TAG_KEY + '/' + oldTag + '/' +
+                    oldStateName + '/' + requestUID;
+                    const newRequestTagPath = REQUESTS_TAG_KEY + '/' + tag + '/' + stateName + '/' + requestUID;
+
+                    moveDataToAnotherState(oldRequestTagPath, newRequestTagPath,
+                    'Removing old tag data during moving request: ' + requestUID +
+                    ' to another state failed: ',
+                    'Setting new tag data during moving request: ' + requestUID +
+                    ' to another state failed: ',
+                    'Moving request: ' + requestUID + ' to another state succedded.');
+                }
+            }
+        }
+        else
+        {
+            console.log('Invalid data: otherUserUID - ' + otherUserUID + ', oldStateName - ' +
+            oldStateName + ', stateName - ' + stateName);
+        }
+    }
+});
+
+exports.deleteRequesterRequest = functions.database.ref(REQUESTS_KEY +
+    '/' + REQUESTER_KEY + '/{userUID}/{requestUID}').onDelete(async (snapshot, context) => {
+
+    const otherUserKind = SUPPLIER_KEY;
     const userUID = context.params.userUID;
     const requestUID = context.params.requestUID;
 
-    const request = snapshot.val()
+    const request = snapshot.val();
 
     if (request != null)
     {
-        const otherUserUID = request.UserUID;
+        const otherUserUID = request.userUID;
         const stateName = getStateName(request.state);
         const tag = request.tag;
 
@@ -110,7 +221,7 @@ exports.deleteRequest = functions.database.ref(REQUESTS_KEY +
           console.log('Removing request: ' + requestUID + ' details succeeded.');
         })
         .catch(function(error) {
-          console.log('Removing request location failed: ' + error.message);
+          console.log('Removing request details failed: ' + error.message);
         });
 
         if (stateName)
@@ -137,6 +248,31 @@ exports.deleteRequest = functions.database.ref(REQUESTS_KEY +
     }
 });
 
+exports.deleteSupplierRequest = functions.database.ref(REQUESTS_KEY +
+    '/' + SUPPLIER_KEY + '/{userUID}/{requestUID}').onDelete(async (snapshot, context) => {
+
+    const otherUserKind = REQUESTER_KEY;
+    const requestUID = context.params.requestUID;
+
+    const request = snapshot.val()
+
+    if (request != null)
+    {
+        const otherUserUID = request.userUID;
+        const dbRequest = new DbRequest("", request.deadline, request.title, request.tag, 1);
+
+        await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
+        otherUserUID + '/' + requestUID).set(dbRequest)
+        .then(function() {
+          console.log('Removing supplier UID for request: ' + requestUID + ' succeeded.');
+        })
+        .catch(function(error) {
+          console.log('Removing supplier UID for request: ' + requestUID + ' failed: '
+          + error.message);
+        });
+    }
+});
+
 // Methods
 async function setUser(dbUser)
 {
@@ -159,9 +295,9 @@ function getStateName(state)
     switch (state)
     {
         case 0:
-            return ACTIVE_KEY;
-        case 1:
             return ACCEPTED_KEY;
+        case 1:
+            return ACTIVE_KEY;
         case 2:
             return DONE_KEY;
         case 3:
@@ -179,6 +315,38 @@ function getOtherUserKind(userKind)
         return REQUESTER_KEY;
 }
 
+function moveDataToAnotherState(oldPath, newPath, removingErrorLog, settingErrorLog,
+successLog)
+{
+    const objectToMove = null;
+
+    admin.database.ref(oldPath)
+    .then(function (dataSnapshot)
+    {
+        objectToMove = dataSnapshot.val();
+        if (objectToMove != null)
+        {
+            admin.database().ref(oldPath).remove()
+            .then(function()
+            {
+                admin.database().ref(newPath).set(objectToMove)
+                .then(function()
+                {
+                    console.log(successLog);
+                })
+                .catch(function(error)
+                {
+                  console.log(settingErrorLog + error.message);
+                });
+            })
+            .catch(function(error)
+            {
+              console.log(removingErrorLog + error.message);
+            });
+        }
+    });
+}
+
 // Database structures constructors
 function DbUser(uid, email, name, phoneNumber, reputation)
 {
@@ -187,4 +355,13 @@ function DbUser(uid, email, name, phoneNumber, reputation)
     this.name = name;
     this.phoneNumber = phoneNumber;
     this.reputation = reputation;
+}
+
+function DbRequest(userUID, deadline, title, tag, state)
+{
+    this.userUID = userUID;
+    this.deadline = deadline;
+    this.title = title;
+    this.tag = tag;
+    this.state = state;
 }
