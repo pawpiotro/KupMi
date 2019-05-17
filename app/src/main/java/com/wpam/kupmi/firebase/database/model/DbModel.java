@@ -13,6 +13,7 @@ public class DbModel
     public static final String REQUESTER_KEY = RequestUserKind.REQUESTER.lowerCaseName();
     public static final String SUPPLIER_KEY = RequestUserKind.SUPPLIER.lowerCaseName();
 
+    public static final String USER_UID_KEY = "userUID";
     public static final String DEADLINE_KEY = "deadline";
     public static final String STATE_KEY = "state";
 

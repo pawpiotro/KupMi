@@ -5,6 +5,7 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.geofire.LocationCallback;
 import com.firebase.geofire.core.GeoHash;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -21,6 +22,7 @@ import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,16 @@ public class DatabaseManager
         return null;
     }
 
+    public Query getRequestDetailsQuery(String requestUID)
+    {
+        if (requestUID != null)
+        {
+            return dbRef.child(createPath(DbModel.REQUESTS_DETAILS_KEY, requestUID));
+        }
+
+        return null;
+    }
+
     public void addQueryListener(Query query, ValueEventListener listener)
     {
         if (query != null && listener != null)
@@ -82,6 +94,17 @@ public class DatabaseManager
     {
         if (query != null && listener != null)
             query.removeEventListener(listener);
+    }
+
+    public void getRequestLocationQuery(String requestUID, RequestState state,
+                                            LocationCallback callback)
+    {
+        if (requestUID != null && state != RequestState.UNKNOWN)
+        {
+            GeoFire geoRef = new GeoFire(dbRef.child(
+                    createPath(DbModel.REQUESTS_LOCATIONS_KEY, state.lowerCaseName())));
+            geoRef.getLocation(requestUID, callback);
+        }
     }
 
     public GeoQuery getLocationRequestsQuery(Pair<Double, Double> location, double radius,
@@ -178,6 +201,37 @@ public class DatabaseManager
                 request.getRequestUID()), request.getRequesterUID());
 
         dbRef.updateChildren(updates);
+    }
+
+    public void updateRequestState(String requestUID, String requesterUID, String supplierUID,
+                                   RequestState state)
+    {
+        if (requestUID != null && requesterUID != null && state != null && state != RequestState.UNKNOWN)
+        {
+            int requestStateId = state.getStateId();
+
+            Map<String, Object> updates = new HashMap<>();
+
+            // For ACCEPTED state
+            if (state != RequestState.ACCEPTED && supplierUID != null && !supplierUID.equals(""))
+                updates.put(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY,
+                        requesterUID, DbModel.USER_UID_KEY), supplierUID);
+
+            updates.put(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, requesterUID,
+                    requestUID, DbModel.STATE_KEY), requestStateId);
+
+            dbRef.updateChildren(updates);
+        }
+    }
+
+    public void updateRequestDeadline(String requestUID, String requesterUID, Calendar deadline)
+    {
+        if (requestUID != null && deadline != null)
+        {
+            dbRef.child(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, requesterUID,
+                    DbModel.DEADLINE_KEY)).setValue(DateUtils.getDateText(deadline, DatabaseConfig.DATE_FORMAT,
+                    DatabaseConfig.DATE_FORMAT_CULTURE), null);
+        }
     }
 
     // Private methods
