@@ -91,7 +91,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i(TAG, "OnCreateView");
-        currentLatLng = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lon"));
+        currentLatLng = new LatLng(getArguments().getDouble(Constants.MAP_LAT), getArguments().getDouble(Constants.MAP_LON));
         return inflater.inflate(R.layout.fragment_requests_search_map, container, false);
     }
 

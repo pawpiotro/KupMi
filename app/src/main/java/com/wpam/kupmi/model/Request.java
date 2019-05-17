@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Pair;
 import com.wpam.kupmi.utils.DateUtils;
 import com.wpam.kupmi.utils.UIDUtils;
+
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class Request {
+public class Request implements Serializable {
     private String requestUID;
     private String requesterUID;
     private String supplierUID;

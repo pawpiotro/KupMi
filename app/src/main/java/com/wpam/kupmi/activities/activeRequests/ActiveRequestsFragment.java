@@ -1,5 +1,6 @@
 package com.wpam.kupmi.activities.activeRequests;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,9 +19,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.singleRequest.SingleRequestActivity;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
+import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
@@ -122,12 +125,6 @@ public class ActiveRequestsFragment extends Fragment {
                         holder.bindData(model);
                         requests.put(model.getRequestUID(), model);
 
-                        holder.itemView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i(TAG, "Click: " + position);
-                            }
-                        });
                     }
                 }
 
@@ -174,6 +171,8 @@ public class ActiveRequestsFragment extends Fragment {
         private TextView date;
         private TextView topic;
 
+        private String requestUID;
+
         RequesterViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
@@ -187,6 +186,7 @@ public class ActiveRequestsFragment extends Fragment {
             date.setText(DateUtils.getDateText(viewModel.getDeadline(), getContext()));
             topic.setText(viewModel.getTitle());
             RequestState state = viewModel.getState();
+            requestUID = viewModel.getRequestUID();
 
             // change layout depending on state
             switch (state)
@@ -203,6 +203,18 @@ public class ActiveRequestsFragment extends Fragment {
                 default:
                     break;
             }
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Request request = requests.get(requestUID);
+                    Intent intent = new Intent(parentActivity, SingleRequestActivity.class);
+                    intent.putExtra(Constants.REQUEST, request);
+                    intent.putExtra(Constants.REQUEST_FLAG, true);
+                    startActivity(intent);
+                }
+            });
+
         }
     }
 }

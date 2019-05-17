@@ -18,6 +18,8 @@ public class Constants
     public static final String ADDRESS_DATA_EXTRA = PACKAGE_NAME + ".ADDRESS_DATA_EXTRA";
 
     // Map
+    public static final String MAP_LAT = PACKAGE_NAME + ".MAP_LAT";
+    public static final String MAP_LON = PACKAGE_NAME + ".MAP_LON";
     public static final float MAP_ZOOM = 15.0f;
     public static final double DEF_RADIUS = 100.0;
     public static final double MAX_RADIUS = 1000.0;
@@ -25,4 +27,11 @@ public class Constants
 
     // User
     public static final String USER = PACKAGE_NAME + ".USER";
+
+    // Request
+    public static final String REQUEST_PACKAGE = ".SINGLE_REQUEST";
+    public static final String REQUEST = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST";
+    public static final String REQUEST_FLAG = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_FLAG";
+    public static final String REQUEST_UID = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_UID";
+    public static final String REQUEST_USER_ID = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_USER_ID";
 }

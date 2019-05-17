@@ -221,8 +221,8 @@ public class RequestFormActivity extends FragmentActivity {
 
     public void goToMap() {
         Bundle bundle = new Bundle();
-        bundle.putDouble("lat", location.getLatitude());
-        bundle.putDouble("lon", location.getLongitude());
+        bundle.putDouble(Constants.MAP_LAT, location.getLatitude());
+        bundle.putDouble(Constants.MAP_LON, location.getLongitude());
 
         requestFormMap.setArguments(bundle);
         FragmentTransaction transaction = fragmentManager.beginTransaction();

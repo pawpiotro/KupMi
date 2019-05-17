@@ -150,8 +150,8 @@ public class RequestsSearchActivity extends AppCompatActivity {
     // Public methods
     public void goToMap() {
         Bundle bundle = new Bundle();
-        bundle.putDouble("lat", location.getLatitude());
-        bundle.putDouble("lon", location.getLongitude());
+        bundle.putDouble(Constants.MAP_LAT, location.getLatitude());
+        bundle.putDouble(Constants.MAP_LON, location.getLongitude());
 
         requestsSearchMap.setArguments(bundle);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
