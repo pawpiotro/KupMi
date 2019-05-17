@@ -35,9 +35,8 @@ public class UserService
     }
 
     // Public methods
-    public void enableUserQuery(boolean isSingleListener, IUserDataStatus dataStatus)
+    public void enableUserQuery(String userUID, boolean isSingleListener, IUserDataStatus dataStatus)
     {
-        String userUID = AuthManager.getInstance().getCurrentUserUid();
         if (userUID != null)
         {
             userQuery = dbManager.getUserQuery(userUID);

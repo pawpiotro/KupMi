@@ -43,10 +43,12 @@ public class MainActivity extends Activity implements IUserDataStatus
         setContentView(R.layout.activity_main);
         bar = (ProgressBar) findViewById(R.id.main_activity_progress_bar);
 
+        AuthManager authManager = AuthManager.getInstance();
         if (AuthManager.getInstance().isSignIn())
         {
             setBarVisible(true);
-            userService.enableUserQuery(true, this);
+            String userUID = authManager.getCurrentUserUid();
+            userService.enableUserQuery(userUID, true, this);
         }
         else
         {
@@ -64,7 +66,8 @@ public class MainActivity extends Activity implements IUserDataStatus
             if (resultCode == RESULT_OK)
             {
                 setBarVisible(true);
-                userService.enableUserQuery(true, this);
+                userService.enableUserQuery(AuthManager.getInstance().getCurrentUserUid(),
+                        true, this);
             }
             else
             {
