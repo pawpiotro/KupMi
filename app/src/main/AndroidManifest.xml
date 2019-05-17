@@ -19,7 +19,6 @@
         <activity android:name=".activities.singleRequest.SingleRequestActivity"></activity>
         <activity android:name=".activities.activeRequests.ActiveRequestsActivity" />
         <activity android:name=".activities.settings.SettingsActivity"></activity>
-        <activity android:name=".activities.activeRequests.ActiveRequestsActivity" />
         <activity android:name=".activities.requestsSearch.RequestsSearchActivity" />
         <activity android:name=".activities.MenuActivity" />
         <activity android:name=".activities.MainActivity">
