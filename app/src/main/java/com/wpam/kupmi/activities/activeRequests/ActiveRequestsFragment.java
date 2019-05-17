@@ -143,6 +143,7 @@ public class ActiveRequestsFragment extends Fragment {
                     //TODO:
                 }
 
+                
             };
 
             recyclerView.setAdapter(adapter);

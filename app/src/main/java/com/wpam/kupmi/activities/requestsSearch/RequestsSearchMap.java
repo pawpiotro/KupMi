@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Toast;
+
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
@@ -179,7 +181,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
                 currentRadius = progressValue * (MAX_RADIUS - MIN_RADIUS) / 100 + MIN_RADIUS;
                 Log.i(TAG, Double.toString(currentRadius));
-                updateCircle();
+                updateCircle(false);
                 DatabaseManager.getInstance().updateGeoQueryRadius(locationRequestsQuery,
                         currentRadius / 1000);
             }
@@ -213,7 +215,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             public void onMapClick(LatLng latLng) {
                 currentLatLng = latLng;
                 Log.i(TAG, currentLatLng.toString());
-                updateCircle();
+                updateCircle(false);
 
                 DatabaseManager.getInstance().updateGeoQueryLocation(locationRequestsQuery,
                         getCoordsPair(currentLatLng));
@@ -222,7 +224,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
     }
 
     // Private methods
-    private void updateCircle() {
+    private void updateCircle(boolean moveCamera) {
         if (map == null)
             return;
 
@@ -238,7 +240,8 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                 .radius(currentRadius)
                 .strokeColor(STROKE_COLOR)
                 .fillColor(FILL_COLOR));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
+        if(moveCamera)
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
     }
 
     private boolean passTagFilter(String requestUID)
@@ -376,6 +379,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
 
             if (resultCode == Constants.FAILURE_RESULT) {
                 Log.w(TAG, "Location not found");
+                Toast.makeText(parentActivity, "Location not found", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -386,7 +390,7 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             Log.i(TAG, Double.toString(lon));
 
             currentLatLng = new LatLng(lat, lon);
-            updateCircle();
+            updateCircle(true);
         }
     }
 

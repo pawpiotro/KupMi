@@ -1,6 +1,7 @@
 package com.wpam.kupmi.activities.requestForm;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -64,12 +66,14 @@ public class RequestFormActivity extends FragmentActivity {
     private RequestFormSummary requestFormSummary = new RequestFormSummary();
 
     private boolean mapNotCreated = true;
+    private Context context;
 
     // Override AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_form);
+        context = getApplicationContext();
 
         user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
         if (user == null)
@@ -86,7 +90,7 @@ public class RequestFormActivity extends FragmentActivity {
         fragmentManager = getSupportFragmentManager();
 
         bar = (ProgressBar) findViewById(R.id.request_form_progress_bar);
-        bar.setVisibility(View.VISIBLE);
+        setBarVisible(true);
 
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -97,9 +101,26 @@ public class RequestFormActivity extends FragmentActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 location = locationResult.getLastLocation();
+                Log.i(TAG,"LOCATION RESULT!!!!");
+                if(location == null){
+                    Toast.makeText(context, "Localization doesn't work", Toast.LENGTH_SHORT).show();
+                    setBarVisible(false);
+                    finish();
+                }
                 // we want only one result
                 fusedLocationClient.removeLocationUpdates(locationCallback);
                 goToMap();
+            }
+
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+                if(!locationAvailability.isLocationAvailable()) {
+                    fusedLocationClient.removeLocationUpdates(locationCallback);
+                    Toast.makeText(context, "Localization doesn't work", Toast.LENGTH_SHORT).show();
+                    setBarVisible(false);
+                    finish();
+                }
             }
         };
 
@@ -160,10 +181,12 @@ public class RequestFormActivity extends FragmentActivity {
     public void setBarVisible(boolean b) {
         if (bar == null)
             return;
-        if (b)
+        if (b) {
+            bar.bringToFront();
             bar.setVisibility(View.VISIBLE);
-        else
+        } else {
             bar.setVisibility(View.GONE);
+        }
     }
 
     public void setLocation(double lat, double lon) {
@@ -258,6 +281,14 @@ public class RequestFormActivity extends FragmentActivity {
             if (resultData == null) {
                 return;
             }
+
+            if (resultCode == Constants.FAILURE_RESULT) {
+                Log.w(TAG, "Address not found");
+                Toast.makeText(context, "Address not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+
             Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
             request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));
         }
