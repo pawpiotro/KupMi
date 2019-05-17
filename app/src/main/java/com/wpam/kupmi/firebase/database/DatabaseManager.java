@@ -57,7 +57,18 @@ public class DatabaseManager
         return null;
     }
 
-    public Query getRequestQuery(RequestUserKind userKind, String userUID)
+    public Query getRequestQuery(RequestUserKind userKind, String userUID, String requestUID)
+    {
+        if (userKind != null && userUID != null && requestUID != null)
+        {
+            return dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
+                    userUID, requestUID));
+        }
+
+        return null;
+    }
+
+    public Query getRequestsQuery(RequestUserKind userKind, String userUID)
     {
         if (userKind != null && userUID != null)
         {
