@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static com.wpam.kupmi.firebase.database.model.DbModel.TAGS_KEY;
 import static com.wpam.kupmi.utils.CoordinatesUtils.getGeoLocation;
+import static com.wpam.kupmi.utils.FirebaseUtils.createPath;
 
 public class DatabaseManager
 {
@@ -254,20 +255,5 @@ public class DatabaseManager
     private void setObjectAttribute(String structureKey, String objectKey, String attributeName, Object newValue)
     {
         dbRef.child(structureKey).child(objectKey).child(attributeName).setValue(newValue);
-    }
-
-    private static String createPath(String... elements)
-    {
-        StringBuilder res = new StringBuilder();
-        String separator = "/";
-        String prefix = "";
-
-        for (String element: elements)
-        {
-            res.append(prefix).append(element);
-            prefix = separator;
-        }
-
-        return res.toString();
     }
 }
