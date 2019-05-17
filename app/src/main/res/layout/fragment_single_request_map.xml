@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/request_form_map"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.singleRequest.SingleRequestMapFragment">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/single_request_map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="#F0F0F0"
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/single_request_map_textview"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:background="@drawable/border"
+            android:padding="4dp"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/single_request_map_progress_bar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66C8C8C8"
+        android:indeterminateDrawable="@drawable/progress"
+        android:padding="150dp"
+        android:visibility="gone" />
+
+</RelativeLayout>

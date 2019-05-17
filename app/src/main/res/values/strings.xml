@@ -23,4 +23,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="single_request_user_name_label">Username:</string>
+    <string name="single_request_user_email_label">E-mail address:</string>
+    <string name="single_request_user_phone_label">Phone number:</string>
+    <string name="single_request_user_reputation_label">Reputation:</string>
 </resources>

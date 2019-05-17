@@ -17,6 +17,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.lib.Constants;
 
 import static com.wpam.kupmi.lib.Constants.MAP_ZOOM;
 
@@ -38,7 +39,7 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i(TAG, "OnCreateView");
-        currentLatLng = new LatLng(getArguments().getDouble("lat"), getArguments().getDouble("lon"));
+        currentLatLng = new LatLng(getArguments().getDouble(Constants.MAP_LAT), getArguments().getDouble(Constants.MAP_LON));
         return inflater.inflate(R.layout.fragment_request_form_map, container, false);
     }
 
