@@ -1,5 +1,6 @@
 package com.wpam.kupmi.activities.activeRequests;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,12 +8,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.MainActivity;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
 import java.util.Objects;
 
-import static com.wpam.kupmi.utils.ActivityUtils.returnToMainActivity;
 import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class ActiveRequestsActivity extends AppCompatActivity {
@@ -39,7 +40,7 @@ public class ActiveRequestsActivity extends AppCompatActivity {
         {
             showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
                     android.R.drawable.ic_dialog_alert);
-            returnToMainActivity(this);
+            returnToMainActivity();
         }
 
         viewPager = findViewById(R.id.activity_active_requests_viewpager);
@@ -92,7 +93,6 @@ public class ActiveRequestsActivity extends AppCompatActivity {
     }
 
     // Private methods
-
     private static ActiveRequestsFragment getActiveRequestsFragmentNewInstance(RequestUserKind userKind)
     {
         ActiveRequestsFragment fragment = new ActiveRequestsFragment();

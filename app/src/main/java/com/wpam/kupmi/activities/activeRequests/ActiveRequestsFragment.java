@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -52,7 +53,7 @@ public class ActiveRequestsFragment extends Fragment {
         parentActivity = (ActiveRequestsActivity) getActivity();
         userKind = getArguments() != null ?
                 RequestUserKind.getInstance(Objects.requireNonNull(
-                        getArguments().getString(ActiveRequestsActivity.USER_KIND_PARAM))) : RequestUserKind.UNKNOWN;
+                        getArguments().getString(Constants.USER_KIND_PARAM))) : RequestUserKind.UNKNOWN;
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_active_requests_fragment, container, false);
@@ -81,12 +82,10 @@ public class ActiveRequestsFragment extends Fragment {
                             .setQuery(query, new SnapshotParser<Request>() {
                                 @NonNull
                                 @Override
-                                public Request parseSnapshot(@NonNull DataSnapshot snapshot)
-                                {
+                                public Request parseSnapshot(@NonNull DataSnapshot snapshot) {
                                     DbRequest dbRequest = snapshot.getValue(DbRequest.class);
 
-                                    if (dbRequest != null)
-                                    {
+                                    if (dbRequest != null) {
                                         Request request = new Request(snapshot.getKey());
 
                                         if (userKind == RequestUserKind.REQUESTER)
@@ -120,8 +119,7 @@ public class ActiveRequestsFragment extends Fragment {
 
                 @Override
                 protected void onBindViewHolder(RequesterViewHolder holder, final int position, Request model) {
-                    if (model != null)
-                    {
+                    if (model != null) {
                         holder.bindData(model);
                         requests.put(model.getRequestUID(), model);
 
@@ -140,7 +138,7 @@ public class ActiveRequestsFragment extends Fragment {
                     //TODO:
                 }
 
-                
+
             };
 
             recyclerView.setAdapter(adapter);
@@ -189,8 +187,7 @@ public class ActiveRequestsFragment extends Fragment {
             requestUID = viewModel.getRequestUID();
 
             // change layout depending on state
-            switch (state)
-            {
+            switch (state) {
                 case ACTIVE:
                     itemView.setBackgroundResource(R.drawable.border_blue);
                     break;
@@ -210,7 +207,8 @@ public class ActiveRequestsFragment extends Fragment {
                     Request request = requests.get(requestUID);
                     Intent intent = new Intent(parentActivity, SingleRequestActivity.class);
                     intent.putExtra(Constants.REQUEST, request);
-                    intent.putExtra(Constants.REQUEST_FLAG, true);
+                    intent.putExtra(Constants.REQUEST_PARTIAL_DATA_FLAG, true);
+                    intent.putExtra(Constants.USER_KIND_PARAM, userKind);
                     startActivity(intent);
                 }
             });

@@ -27,11 +27,12 @@ public class Constants
 
     // User
     public static final String USER = PACKAGE_NAME + ".USER";
+    public static final String USER_KIND_PARAM = PACKAGE_NAME + ".USER_KIND";
 
     // Request
     public static final String REQUEST_PACKAGE = ".SINGLE_REQUEST";
     public static final String REQUEST = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST";
-    public static final String REQUEST_FLAG = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_FLAG";
+    public static final String REQUEST_PARTIAL_DATA_FLAG = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_FLAG";
     public static final String REQUEST_UID = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_UID";
     public static final String REQUEST_USER_ID = PACKAGE_NAME + REQUEST_PACKAGE + ".REQUEST_USER_ID";
 }
