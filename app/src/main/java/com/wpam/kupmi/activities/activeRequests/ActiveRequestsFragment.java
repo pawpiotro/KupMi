@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -35,6 +34,8 @@ import com.wpam.kupmi.utils.DateUtils;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.wpam.kupmi.activities.activeRequests.ActiveRequestsActivity.USER_KIND_PARAM;
+
 public class ActiveRequestsFragment extends Fragment {
 
     // Private fields
@@ -51,9 +52,10 @@ public class ActiveRequestsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         parentActivity = (ActiveRequestsActivity) getActivity();
-        userKind = getArguments() != null ?
+        Bundle arguments = getArguments();
+        userKind = arguments != null ?
                 RequestUserKind.getInstance(Objects.requireNonNull(
-                        getArguments().getString(Constants.USER_KIND_PARAM))) : RequestUserKind.UNKNOWN;
+                        arguments.getString(USER_KIND_PARAM))) : RequestUserKind.UNKNOWN;
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_active_requests_fragment, container, false);
