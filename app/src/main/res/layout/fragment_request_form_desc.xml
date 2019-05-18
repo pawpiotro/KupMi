@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F0F0">
+    android:background="#F0F0F0"
+    android:backgroundTint="@color/color_basic_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,85 +15,119 @@
             android:id="@+id/request_form_tags_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="#D2D2D2"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
             android:padding="5dp"
             android:text="@string/tags_label_name"
             android:textAlignment="viewStart"
-            android:textSize="24sp" />
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#E1FFFFFF"
+            android:textSize="18sp" />
 
-        <Spinner
-            android:id="@+id/request_form_tag_selection"
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="2dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="2dp"
-            android:paddingBottom="5dp">
+            android:layout_height="wrap_content">
 
-        </Spinner>
+            <Spinner
+                android:id="@+id/request_form_tag_selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:backgroundTint="#FFFFFF"
+                android:paddingStart="2dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="2dp"
+                android:paddingBottom="5dp">
+
+            </Spinner>
+
+            <ImageView
+                android:id="@+id/request_form_tag_selection_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:paddingTop="10dp"
+                android:paddingEnd="30dp"
+                app:srcCompat="@android:drawable/arrow_down_float" />
+
+        </RelativeLayout>
+
+
 
         <TextView
             android:id="@+id/request_form_title_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:background="#D2D2D2"
+            android:layout_marginRight="10dp"
             android:padding="5dp"
             android:text="@string/title_label_name"
             android:textAlignment="viewStart"
-            android:textSize="24sp" />
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#E1FFFFFF"
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/request_form_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_corners"
             android:gravity="top"
             android:hint="@string/title_hint"
             android:inputType="text"
-            android:padding="1dp"
-            android:paddingStart="2dp"
-            android:paddingLeft="2dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="2dp"
-            android:paddingRight="2dp"
-            android:paddingBottom="5dp"
-            android:textSize="20sp"
             android:maxLength="25"
-            android:background="@android:color/transparent"
-            />
+            android:padding="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#E1FFFFFF"
+            android:textColorHint="#BCFFFFFF"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/request_form_desc_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:background="#D2D2D2"
+            android:layout_marginRight="10dp"
             android:padding="5dp"
             android:text="@string/description_label_name"
             android:textAlignment="viewStart"
-            android:textSize="24sp" />
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#E1FFFFFF"
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/request_form_desc"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_corners"
             android:gravity="top"
             android:hint="@string/description_hint"
             android:inputType="textMultiLine"
-            android:padding="1dp"
-            android:paddingStart="2dp"
-            android:paddingLeft="2dp"
+            android:padding="5dp"
             android:paddingTop="5dp"
-            android:paddingEnd="2dp"
-            android:paddingRight="2dp"
             android:paddingBottom="5dp"
             android:singleLine="false"
-            android:background="@android:color/transparent" />
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#E1FFFFFF"
+            android:textColorHint="#BCFFFFFF"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <FrameLayout
@@ -106,7 +142,8 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="8dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/color_third"
             android:clickable="true"
             android:elevation="5dp"
             android:scaleType="fitXY"

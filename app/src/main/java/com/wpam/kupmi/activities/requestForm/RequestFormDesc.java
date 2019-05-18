@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.model.RequestTag;
@@ -46,7 +47,7 @@ public class RequestFormDesc extends Fragment {
         descEditText = getView().findViewById(R.id.request_form_desc);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(parentActivity,
-                R.array.tags_array, android.R.layout.simple_spinner_item);
+                R.array.tags_array, R.layout.spinner_item); //android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tagsSpinner.setAdapter(adapter);
 

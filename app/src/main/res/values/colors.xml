@@ -8,4 +8,5 @@
     <color name="color_preloader_end">#00574B</color>
     <color name="color_text_input">#7E7E7E</color>
     <color name="color_basic_background">#4E4E4E</color>
+    <color name="color_third">#D81B60</color>
 </resources>

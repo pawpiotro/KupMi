@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F0F0"
+    android:background="@color/color_basic_background"
     tools:context=".activities.requestForm.RequestFormClock">
 
     <TimePicker
         android:id="@+id/request_form_clock_input"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <FrameLayout
         android:id="@+id/request_search_inputs_layout"
@@ -23,7 +23,8 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="8dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/color_third"
             android:clickable="true"
             android:elevation="5dp"
             android:scaleType="fitXY"
