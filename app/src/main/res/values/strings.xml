@@ -34,4 +34,8 @@
     <string name="delete_user_success">Your account has been deleted.</string>
     <string name="delete_user_failure">Oops…Your account has not been deleted.</string>
 
+    <string name="single_request_desc_label">Description</string>
+    <string name="single_request_address_label">Address</string>
+    <string name="single_request_deadline_label">Deadline</string>
+
 </resources>

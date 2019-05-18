@@ -18,9 +18,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.firebase.auth.AuthManager;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
+import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
 import com.wpam.kupmi.firebase.database.model.DbRequestDetails;
 import com.wpam.kupmi.model.RequestState;
+import com.wpam.kupmi.model.RequestTag;
+import com.wpam.kupmi.utils.DateUtils;
+
+import java.util.Calendar;
 
 public class SingleRequestFragment extends Fragment {
 
@@ -89,8 +94,9 @@ public class SingleRequestFragment extends Fragment {
                 DbRequest dbRequest = dataSnapshot.getValue(DbRequest.class);
                 if (dbRequest != null) {
                     titleView.setText(dbRequest.getTitle());
-                    tagView.setText(dbRequest.getTag());
-                    deadlineView.setText(dbRequest.getDeadline());
+                    tagView.setText(RequestTag.getInstance(dbRequest.getTag()).hashtagName());
+                    Calendar deadline = DateUtils.getDate(dbRequest.getDeadline(), DatabaseConfig.DATE_FORMAT, DatabaseConfig.DATE_FORMAT_CULTURE);
+                    deadlineView.setText(DateUtils.getDateText(deadline, parentActivity));
                     Long state = dbRequest.getState();
                     stateView.setText(RequestState.getInstance(state.intValue()).firstCapitalLetterName());
                     updateButtons(RequestState.getInstance(state.intValue()));
@@ -142,7 +148,6 @@ public class SingleRequestFragment extends Fragment {
                 break;
             case ACTIVE:
                 //TODO: check if from ActiveRequests or Search
-                Log.i(TAG, "elo");
                 showAcceptButton();
                 break;
             case UNKNOWN:
@@ -156,7 +161,6 @@ public class SingleRequestFragment extends Fragment {
 
     private void showAcceptButton() {
         if (acceptButton != null) {
-            Log.i(TAG, "not null");
             acceptButton.bringToFront();
             acceptButton.setVisibility(View.VISIBLE);
             cancelButton.setVisibility(View.GONE);

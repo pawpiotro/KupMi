@@ -22,6 +22,7 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
     private SingleRequestActivity parentActivity;
 
     private ImageView imageView;
+    private ImageView userPlaceholder;
     private TextView nameView;
     private TextView emailView;
     private TextView phoneView;
@@ -47,6 +48,7 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
 
         parentActivity = (SingleRequestActivity) getActivity();
         imageView = getView().findViewById(R.id.single_request_user_imageview);
+        userPlaceholder = getView().findViewById(R.id.single_request_user_placeholder);
         nameView = getView().findViewById(R.id.single_request_user_name);
         emailView = getView().findViewById(R.id.single_request_user_email);
         phoneView = getView().findViewById(R.id.single_request_user_phone);
@@ -55,6 +57,8 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         upButton = getView().findViewById(R.id.single_request_user_up_button);
         downButton = getView().findViewById(R.id.single_request_user_down_button);
         callButton = getView().findViewById(R.id.single_request_user_call_button);
+
+        showPlaceholder(true);
 
         String userID = parentActivity.getRequest().getRequesterUID();
         UserService userService = new UserService();
@@ -97,10 +101,30 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         nameView.setText(user.getName());
         emailView.setText(user.getEmail());
         phoneView.setText(user.getPhoneNumber());
-        if (user.getReputation() != null)
-            repView.setText(user.getReputation().toString());
+        Long rep = user.getReputation();
+        if (rep != null)
+            repView.setText(rep.toString());
+        showPlaceholder(false);
         imageView.setImageResource(R.mipmap.sample_avatar);
     }
+
+    @Override
+    public void DataIsLoaded(User user) {
+        this.user = user;
+        setData(user);
+    }
+
+    private void showPlaceholder(boolean b) {
+        if (userPlaceholder == null)
+            return;
+        if (b) {
+            userPlaceholder.bringToFront();
+            userPlaceholder.setVisibility(View.VISIBLE);
+        } else {
+            userPlaceholder.setVisibility(View.GONE);
+        }
+    }
+
 
     private void updateButtons(RequestState state) {
         switch (state) {
@@ -147,11 +171,5 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
             }
 
         }
-    }
-
-    @Override
-    public void DataIsLoaded(User user) {
-        this.user = user;
-        setData(user);
     }
 }
