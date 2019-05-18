@@ -4,28 +4,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.R;
-import com.wpam.kupmi.firebase.database.DatabaseManager;
-import com.wpam.kupmi.firebase.database.model.DbUser;
-import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.User;
 import com.wpam.kupmi.services.user.IUserDataStatus;
 import com.wpam.kupmi.services.user.UserService;
 
-public class SingleRequestUserFragment extends Fragment implements IUserDataStatus{
+public class SingleRequestUserFragment extends Fragment implements IUserDataStatus {
     private static final String TAG = "SINGLE_REQUEST_USER_FRAGMENT";
     private SingleRequestActivity parentActivity;
 
@@ -70,24 +62,8 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         userService.getUser();
 
         RequestState state = parentActivity.getRequest().getState();
-
-        switch(state){
-            case DONE:
-            case UNDONE:
-                showRepButtons(true);
-                showCallButton(false);
-                break;
-            case ACCEPTED:
-                showRepButtons(false);
-                showCallButton(true);
-                break;
-            case ACTIVE:
-            case UNKNOWN:
-                showCallButton(false);
-                showRepButtons(false);
-            default:
-                break;
-        }
+        if (parentActivity.isPartialDataAvailable())
+            updateButtons(state);
 
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,28 +88,48 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
     }
 
 
-    private void setData(User user){
-        if(user == null)
+    private void setData(User user) {
+        if (user == null)
             return;
-        if(nameView == null || emailView == null
-            || phoneView == null || repView == null)
+        if (nameView == null || emailView == null
+                || phoneView == null || repView == null)
             return;
         nameView.setText(user.getName());
         emailView.setText(user.getEmail());
         phoneView.setText(user.getPhoneNumber());
-        if(user.getReputation() != null)
+        if (user.getReputation() != null)
             repView.setText(user.getReputation().toString());
+        imageView.setImageResource(R.mipmap.sample_avatar);
     }
 
-    private void showRepButtons(boolean b){
-        if(upButton != null && downButton != null){
-            if(b) {
+    private void updateButtons(RequestState state) {
+        switch (state) {
+            case DONE:
+            case UNDONE:
+                showRepButtons(true);
+                showCallButton(false);
+                break;
+            case ACCEPTED:
+                showRepButtons(false);
+                showCallButton(true);
+                break;
+            case ACTIVE:
+            case UNKNOWN:
+                showCallButton(false);
+                showRepButtons(false);
+            default:
+                break;
+        }
+    }
+
+    private void showRepButtons(boolean b) {
+        if (upButton != null && downButton != null) {
+            if (b) {
                 upButton.bringToFront();
                 downButton.bringToFront();
                 upButton.setVisibility(View.VISIBLE);
                 downButton.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 upButton.setVisibility(View.GONE);
                 downButton.setVisibility(View.GONE);
             }
@@ -141,13 +137,12 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         }
     }
 
-    private void showCallButton(boolean b){
-        if(callButton != null){
-            if(b) {
+    private void showCallButton(boolean b) {
+        if (callButton != null) {
+            if (b) {
                 callButton.bringToFront();
                 callButton.setVisibility(View.VISIBLE);
-            }
-            else{
+            } else {
                 callButton.setVisibility(View.GONE);
             }
 

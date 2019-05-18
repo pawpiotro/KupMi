@@ -3,11 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_basic_background"
     android:orientation="vertical"
     android:textAlignment="center"
     tools:context=".activities.singleRequest.SingleRequestUserFragment">
-
-    <!-- TODO: Update blank fragment layout -->
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -39,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
+            android:background="@drawable/rounded_corners"
             android:gravity="center_horizontal">
 
             <TextView
@@ -48,6 +48,7 @@
                 android:layout_margin="5dp"
                 android:text="@string/single_request_user_name_label"
                 android:textAlignment="viewEnd"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
 
             <TextView
@@ -55,6 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
         </TableRow>
 
@@ -62,6 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
+            android:background="@drawable/rounded_corners"
             android:gravity="center_horizontal">
 
             <TextView
@@ -71,6 +74,7 @@
                 android:layout_margin="5dp"
                 android:text="@string/single_request_user_email_label"
                 android:textAlignment="viewEnd"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
 
             <TextView
@@ -78,6 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
         </TableRow>
 
@@ -85,6 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
+            android:background="@drawable/rounded_corners"
             android:gravity="center_horizontal">
 
             <TextView
@@ -94,6 +100,7 @@
                 android:layout_margin="5dp"
                 android:text="@string/single_request_user_phone_label"
                 android:textAlignment="viewEnd"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
 
             <TextView
@@ -101,6 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
         </TableRow>
 
@@ -108,6 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
+            android:background="@drawable/rounded_corners"
             android:gravity="center_horizontal">
 
             <TextView
@@ -117,6 +126,7 @@
                 android:layout_margin="5dp"
                 android:text="@string/single_request_user_reputation_label"
                 android:textAlignment="viewEnd"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
 
             <TextView
@@ -124,6 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
         </TableRow>
     </TableLayout>
@@ -138,8 +149,9 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="bottom|end"
-            android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/color_text_input"
             android:clickable="true"
             android:elevation="5dp"
             android:focusable="true"
@@ -148,15 +160,18 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/color_text_input"
+            android:gravity="bottom">
 
             <ImageButton
                 android:id="@+id/single_request_user_up_button"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="bottom|left"
-                android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/color_text_input"
                 android:clickable="true"
                 android:elevation="5dp"
                 android:focusable="true"
@@ -169,6 +184,7 @@
                 android:layout_height="60dp"
                 android:layout_marginBottom="10dp"
                 android:layout_toRightOf="@id/single_request_user_up_button"
+                android:backgroundTint="@color/color_text_input"
                 android:clickable="true"
                 android:elevation="5dp"
                 android:focusable="true"

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
+import com.wpam.kupmi.model.RequestUserKind;
 
 import java.util.Objects;
 
@@ -19,7 +20,8 @@ public class SingleRequestActivity extends AppCompatActivity {
     private SingleRequestActivity.PagerAdapter adapterViewPager;
 
     private Request request;
-    private boolean partialDataAvailable;
+    private boolean partialDataAvailable = false;
+    private RequestUserKind requestUserKind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,8 @@ public class SingleRequestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_single_request);
 
         request = (Request) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.REQUEST);
-        partialDataAvailable = getIntent().getExtras().getBoolean(Constants.REQUEST_FLAG);
+        partialDataAvailable = getIntent().getExtras().getBoolean(Constants.REQUEST_PARTIAL_DATA_FLAG);
+        requestUserKind = (RequestUserKind) getIntent().getExtras().getSerializable(Constants.USER_KIND_PARAM);
 
         viewPager = findViewById(R.id.single_request_viewpager);
         adapterViewPager = new SingleRequestActivity.PagerAdapter(getSupportFragmentManager());
@@ -76,8 +79,16 @@ public class SingleRequestActivity extends AppCompatActivity {
 
     }
 
-    public Request getRequest(){
+    public Request getRequest() {
         return request;
+    }
+
+    public boolean isPartialDataAvailable() {
+        return partialDataAvailable;
+    }
+
+    public RequestUserKind getRequestUserKind() {
+        return requestUserKind;
     }
 
 }
