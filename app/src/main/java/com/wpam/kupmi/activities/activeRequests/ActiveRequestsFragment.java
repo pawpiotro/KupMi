@@ -74,7 +74,7 @@ public class ActiveRequestsFragment extends Fragment {
 
         if (user != null && userKind != RequestUserKind.UNKNOWN) {
             Query query = DatabaseManager.getInstance().getRequestsQuery(userKind,
-                    user.getUserUID());
+                    user.getUserUID(), true);
 
             FirebaseRecyclerOptions<Request> options =
                     new FirebaseRecyclerOptions.Builder<Request>()

@@ -15,11 +15,14 @@ import com.wpam.kupmi.R;
 import com.wpam.kupmi.activities.activeRequests.ActiveRequestsActivity;
 import com.wpam.kupmi.activities.requestForm.RequestFormActivity;
 import com.wpam.kupmi.activities.requestsSearch.RequestsSearchActivity;
+import com.wpam.kupmi.activities.settings.SettingsActivity;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.User;
+import com.wpam.kupmi.utils.ActivityUtils;
 
 import java.util.Objects;
 
+import static com.wpam.kupmi.utils.ActivityUtils.returnToMainActivity;
 import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class MenuActivity extends AppCompatActivity {
@@ -45,7 +48,7 @@ public class MenuActivity extends AppCompatActivity {
         if (user == null) {
             showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
                     android.R.drawable.ic_dialog_alert);
-            returnToMainActivity();
+            returnToMainActivity(this);
         }
 
         makeRequest.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +84,9 @@ public class MenuActivity extends AppCompatActivity {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent settingsActivityIntent = getActivityIntent(SettingsActivity.class);
+                if (settingsActivityIntent != null)
+                    startActivity(settingsActivityIntent);
                 Log.i(TAG, "Click, settings");
             }
         });
@@ -93,7 +99,7 @@ public class MenuActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
                                 user = null;
-                                MenuActivity.this.returnToMainActivity();
+                                returnToMainActivity(MenuActivity.this);
                                 Log.i(TAG, "Click, signed out");
                             }
                         });
@@ -112,10 +118,5 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         return null;
-    }
-
-    private void returnToMainActivity() {
-        this.startActivity(new Intent(this, MainActivity.class));
-        this.finish();
     }
 }

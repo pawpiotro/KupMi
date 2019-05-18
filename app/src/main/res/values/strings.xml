@@ -20,12 +20,18 @@
     <string name="authorize_user_error">Unable to authorize user.</string>
     <string name="deactivated_user">Your account is deactivated.</string>
 
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="single_request_user_name_label">Username:</string>
-    <string name="single_request_user_email_label">E-mail address:</string>
-    <string name="single_request_user_phone_label">Phone number:</string>
-    <string name="single_request_user_reputation_label">Reputation:</string>
+    <string name="user_name_label">Name:</string>
+    <string name="user_email_label">E-mail address:</string>
+    <string name="user_phone_label">Phone number:</string>
+    <string name="user_reputation_label">Reputation:</string>
+
+    <string name="user_avatar_text">User avatar</string>
+    <string name="delete_user_text">Delete account</string>
+    <string name="delete_user_question">Are you sure to delete account?</string>
+    <string name="delete_user_success">Your account has been deleted.</string>
+    <string name="delete_user_failure">Oops…Your account has not been deleted.</string>
+
 </resources>

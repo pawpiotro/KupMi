@@ -69,12 +69,16 @@ public class DatabaseManager
         return null;
     }
 
-    public Query getRequestsQuery(RequestUserKind userKind, String userUID)
+    public Query getRequestsQuery(RequestUserKind userKind, String userUID, boolean isOrderByChild)
     {
         if (userKind != null && userUID != null)
         {
-            return dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
-                    userUID)).orderByChild(DbModel.DEADLINE_KEY);
+            DatabaseReference requestsRef = dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
+                    userUID));
+            if (isOrderByChild)
+                return requestsRef.orderByChild(DbModel.DEADLINE_KEY);
+            else
+                return requestsRef;
         }
 
         return null;

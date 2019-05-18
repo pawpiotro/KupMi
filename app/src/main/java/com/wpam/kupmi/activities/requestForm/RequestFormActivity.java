@@ -24,8 +24,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
-import com.wpam.kupmi.activities.MainActivity;
-import com.wpam.kupmi.firebase.auth.AuthManager;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.Request;
@@ -39,6 +37,7 @@ import java.util.Objects;
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
 import static com.wpam.kupmi.lib.Constants.UPDATE_INTERVAL;
 import static com.wpam.kupmi.lib.PermissionsClassLib.LOCATION_ACCESS_PERMISSIONS_CODE;
+import static com.wpam.kupmi.utils.ActivityUtils.returnToMainActivity;
 import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class RequestFormActivity extends FragmentActivity {
@@ -80,7 +79,7 @@ public class RequestFormActivity extends FragmentActivity {
         {
             showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
                     android.R.drawable.ic_dialog_alert);
-            returnToMainActivity();
+            returnToMainActivity(this);
         }
 
         resultReceiver = new AddressResultReceiver(new Handler());
@@ -261,12 +260,6 @@ public class RequestFormActivity extends FragmentActivity {
         intent.putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
         startService(intent);
-    }
-
-    private void returnToMainActivity()
-    {
-        this.startActivity(new Intent(this, MainActivity.class));
-        this.finish();
     }
 
     // Private classes

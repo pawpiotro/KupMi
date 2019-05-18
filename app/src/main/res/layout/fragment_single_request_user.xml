@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:visibility="visible"
-            tools:src="@tools:sample/avatars"
+            android:src="@drawable/default_avatar"
             tools:visibility="visible" />
 
     </FrameLayout>
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="@string/single_request_user_name_label"
+                android:text="@string/user_name_label"
                 android:textAlignment="viewEnd"
                 android:textSize="18sp" />
 
@@ -69,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="@string/single_request_user_email_label"
+                android:text="@string/user_email_label"
                 android:textAlignment="viewEnd"
                 android:textSize="18sp" />
 
@@ -92,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="@string/single_request_user_phone_label"
+                android:text="@string/user_phone_label"
                 android:textAlignment="viewEnd"
                 android:textSize="18sp" />
 
@@ -115,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="@string/single_request_user_reputation_label"
+                android:text="@string/user_reputation_label"
                 android:textAlignment="viewEnd"
                 android:textSize="18sp" />
 

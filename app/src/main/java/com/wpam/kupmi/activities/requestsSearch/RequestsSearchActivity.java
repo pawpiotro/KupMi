@@ -2,7 +2,6 @@ package com.wpam.kupmi.activities.requestsSearch;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
@@ -21,9 +20,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.wpam.kupmi.R;
-import com.wpam.kupmi.activities.MainActivity;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.User;
+import com.wpam.kupmi.utils.ActivityUtils;
 import java.util.Objects;
 
 import static com.wpam.kupmi.lib.Constants.FASTEST_INTERVAL;
@@ -64,7 +63,7 @@ public class RequestsSearchActivity extends AppCompatActivity {
         {
             showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
                     android.R.drawable.ic_dialog_alert);
-            returnToMainActivity();
+            ActivityUtils.returnToMainActivity(this);
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -176,9 +175,4 @@ public class RequestsSearchActivity extends AppCompatActivity {
     }
 
     // Private / protected methods
-    private void returnToMainActivity()
-    {
-        this.startActivity(new Intent(this, MainActivity.class));
-        this.finish();
-    }
 }
