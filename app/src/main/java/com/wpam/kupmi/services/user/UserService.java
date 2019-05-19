@@ -11,6 +11,8 @@ import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.firebase.database.model.DbUser;
 import com.wpam.kupmi.model.User;
 
+import java.util.Objects;
+
 public class UserService
 {
     // Private fields
@@ -37,7 +39,7 @@ public class UserService
     // Public methods
     public void enableUserQuery(String userUID, boolean isSingleListener, IUserDataStatus dataStatus)
     {
-        if (userUID != null)
+        if (userUID != null && !Objects.equals(userUID, ""))
         {
             userQuery = dbManager.getUserQuery(userUID);
             if (userQuery != null)

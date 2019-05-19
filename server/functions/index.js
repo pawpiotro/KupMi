@@ -4,6 +4,11 @@ const admin = require('firebase-admin');
 // Data structures keys
 const USERS_KEY = 'users';
 
+const EMAIL_KEY = "email";
+const NAME_KEY = "name";
+const PHONE_NUMBER_KEY = "phoneNumber";
+const REPUTATION_KEY = "reputation";
+
 const REQUESTS_KEY = 'requests';
 const REQUESTER_KEY = "requester";
 const SUPPLIER_KEY = "supplier";
@@ -32,17 +37,15 @@ admin.initializeApp();
 // Auth listeners
 // TODO: Problem with displayName
 exports.createUser = functions.auth.user().onCreate(async (user) => {
-    await setUser(new DbUser(user.uid, user.email, '', '', 0))
+    await setUser(new DbUser(user.uid, user.email, '', '', 0));
 });
 
 exports.deleteUser = functions.auth.user().onDelete(async (user) => {
-  await admin.database().ref(USERS_KEY + '/' + user.uid).remove()
-  .then(function() {
-    console.log('Removing user: ' + user.email + ' succeeded.');
-  })
-  .catch(function(error) {
-    console.log('Removing user failed: ' + error.message);
-  });
+    // Clear user data
+    await setUser(new DbUser(user.uid, '', '', '', 0));
+
+    await deleteUserRequests(user.uid, REQUESTER_KEY);
+    await deleteUserRequests(user.uid, SUPPLIER_KEY);
 });
 
 // Database listeners
@@ -72,7 +75,7 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
               console.log('Removing request: ' + requestUID + ' from tag: ' + deletedTag + ' succeeded.');
             })
             .catch(function(error) {
-              console.log('Removing request from tag: ' + deletedTag + ' failed: ' + error.message);
+              console.error('Removing request from tag: ' + deletedTag + ' failed: ' + error.message);
             });
         }
         else
@@ -110,10 +113,20 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
 
         if (otherUserUID && oldStateName && stateName)
         {
-            if (stateName == ACCEPTED_KEY && oldState == state)
+            if ((stateName == ACCEPTED_KEY && oldState == state))
             {
                 // TODO: Send info to user
                 console.log('Other user accepted this request: ' + requestUID);
+            }
+            else if (stateName == ACCEPTED_KEY && oldState == UNDONE_KEY)
+            {
+                // TODO: Send info to user
+                console.log('Requester cancelled this request: ' + requestUID);
+            }
+            else if (stateName == UNDONE_KEY && oldState == ACCEPTED_KEY)
+            {
+                // TODO: Send info to user
+                console.log('Other user just accepted this request: ' + requestUID);
             }
             else
             {
@@ -125,7 +138,7 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
                       console.log('Clear supplier UID for request: ' + requestUID + ' succeeded.');
                     })
                     .catch(function(error) {
-                      console.log('Clear supplier UID for request: ' + requestUID + ' failed: '
+                      console.error('Clear supplier UID for request: ' + requestUID + ' failed: '
                       + error.message);
                     });
 
@@ -135,7 +148,7 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
                       console.log('Removing request: ' + requestUID + ' from ' + otherUserKind + ' succeeded.');
                     })
                     .catch(function(error) {
-                      console.log('Removing request from ' + otherUserKind + ' failed: ' + error.message);
+                      console.error('Removing request from ' + otherUserKind + ' failed: ' + error.message);
                     });
                 }
                 else
@@ -148,7 +161,7 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
                       console.log('Adding / updating request : ' + requestUID + ' for supplier succeeded.');
                     })
                     .catch(function(error) {
-                      console.log('Adding / updating request: ' + requestUID + ' for supplier failed: '
+                      console.error('Adding / updating request: ' + requestUID + ' for supplier failed: '
                       + error.message);
                     });
                 }
@@ -192,46 +205,30 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
 exports.deleteRequesterRequest = functions.database.ref(REQUESTS_KEY +
     '/' + REQUESTER_KEY + '/{userUID}/{requestUID}').onDelete(async (snapshot, context) => {
 
-    const otherUserKind = SUPPLIER_KEY;
-    const userUID = context.params.userUID;
     const requestUID = context.params.requestUID;
 
     const request = snapshot.val();
-
     if (request != null)
     {
-        const otherUserUID = request.userUID;
         const stateName = getStateName(request.state);
         const tag = request.tag;
 
-        if (otherUserUID)
+        if (stateName && stateName == ACTIVE_KEY)
         {
-            await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
-            otherUserUID + '/' + requestUID).remove()
+            await admin.database().ref(REQUESTS_DETAILS_KEY + '/' + requestUID).remove()
             .then(function() {
-              console.log('Removing request: ' + requestUID + ' from ' + otherUserKind + ' succeeded.');
+              console.log('Removing request: ' + requestUID + ' details succeeded.');
             })
             .catch(function(error) {
-              console.log('Removing request from ' + otherUserKind + ' failed: ' + error.message);
-            })
-        }
+              console.error('Removing request details failed: ' + error.message);
+            });
 
-        await admin.database().ref(REQUESTS_DETAILS_KEY + '/' + requestUID).remove()
-        .then(function() {
-          console.log('Removing request: ' + requestUID + ' details succeeded.');
-        })
-        .catch(function(error) {
-          console.log('Removing request details failed: ' + error.message);
-        });
-
-        if (stateName)
-        {
             await admin.database().ref(REQUESTS_LOCATIONS_KEY + '/' + stateName + '/' + requestUID).remove()
             .then(function() {
               console.log('Removing request: ' + requestUID + ' location succeeded.');
             })
             .catch(function(error) {
-              console.log('Removing request location failed: ' + error.message);
+              console.error('Removing request location failed: ' + error.message);
             });
 
             if (tag)
@@ -241,7 +238,7 @@ exports.deleteRequesterRequest = functions.database.ref(REQUESTS_KEY +
                   console.log('Removing request: ' + requestUID + ' from tag: ' + tag + ' succeeded.');
                 })
                 .catch(function(error) {
-                  console.log('Removing request from tag: ' + tag + ' failed: ' + error.message);
+                  console.error('Removing request from tag: ' + tag + ' failed: ' + error.message);
                 });
             }
         }
@@ -251,23 +248,23 @@ exports.deleteRequesterRequest = functions.database.ref(REQUESTS_KEY +
 exports.deleteSupplierRequest = functions.database.ref(REQUESTS_KEY +
     '/' + SUPPLIER_KEY + '/{userUID}/{requestUID}').onDelete(async (snapshot, context) => {
 
-    const otherUserKind = REQUESTER_KEY;
     const requestUID = context.params.requestUID;
 
     const request = snapshot.val()
-
     if (request != null)
     {
         const otherUserUID = request.userUID;
         const dbRequest = new DbRequest("", request.deadline, request.title, request.tag, 1);
 
-        await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
-        otherUserUID + '/' + requestUID).set(dbRequest)
+        const path = REQUESTS_KEY + '/' + REQUESTER_KEY + '/' +
+        otherUserUID + '/' + requestUID;
+
+        await admin.database().ref(path).set(dbRequest)
         .then(function() {
           console.log('Removing supplier UID for request: ' + requestUID + ' succeeded.');
         })
         .catch(function(error) {
-          console.log('Removing supplier UID for request: ' + requestUID + ' failed: '
+          console.error('Removing supplier UID for request: ' + requestUID + ' failed: '
           + error.message);
         });
     }
@@ -286,7 +283,53 @@ async function setUser(dbUser)
       console.log('Adding/updating user: ' + dbUser.email + ' succeeded.');
     })
     .catch(function(error) {
-      console.log('Adding/updating failed: ' + error.message);
+      console.error('Adding/updating failed: ' + error.message);
+    });
+}
+
+async function deleteUserRequests(userUID, userKind)
+{
+    const path = REQUESTS_KEY + '/' + userKind + '/' + userUID;
+
+    await admin.database().ref(path).remove()
+    .then(function() {
+      console.log('Removing all requests of user: ' + userUID + ' from ' + userKind + ' branch succeeded.');
+    })
+    .catch(function(error) {
+      console.error('Removing all requests of user: ' + userUID + ' from ' + userKind + ' branch failed: '
+      + error.message);
+    });
+}
+
+function moveDataToAnotherState(oldPath, newPath, removingErrorLog, settingErrorLog,
+successLog)
+{
+    const objectToMove = null;
+
+    admin.database.ref(oldPath)
+    .then(function (dataSnapshot)
+    {
+        objectToMove = dataSnapshot.val();
+        if (objectToMove != null)
+        {
+            admin.database().ref(oldPath).remove()
+            .then(function()
+            {
+                admin.database().ref(newPath).set(objectToMove)
+                .then(function()
+                {
+                    console.log(successLog);
+                })
+                .catch(function(error)
+                {
+                  console.error(settingErrorLog + error.message);
+                });
+            })
+            .catch(function(error)
+            {
+              console.error(removingErrorLog + error.message);
+            });
+        }
     });
 }
 
@@ -313,38 +356,6 @@ function getOtherUserKind(userKind)
         return SUPPLIER_KEY;
     else
         return REQUESTER_KEY;
-}
-
-function moveDataToAnotherState(oldPath, newPath, removingErrorLog, settingErrorLog,
-successLog)
-{
-    const objectToMove = null;
-
-    admin.database.ref(oldPath)
-    .then(function (dataSnapshot)
-    {
-        objectToMove = dataSnapshot.val();
-        if (objectToMove != null)
-        {
-            admin.database().ref(oldPath).remove()
-            .then(function()
-            {
-                admin.database().ref(newPath).set(objectToMove)
-                .then(function()
-                {
-                    console.log(successLog);
-                })
-                .catch(function(error)
-                {
-                  console.log(settingErrorLog + error.message);
-                });
-            })
-            .catch(function(error)
-            {
-              console.log(removingErrorLog + error.message);
-            });
-        }
-    });
 }
 
 // Database structures constructors

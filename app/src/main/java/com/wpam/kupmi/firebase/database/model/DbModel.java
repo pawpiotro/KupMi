@@ -9,6 +9,11 @@ public class DbModel
     // Data structures keys
     public static final String USERS_KEY = "users";
 
+    public static final String EMAIL_KEY = "email";
+    public static final String NAME_KEY = "name";
+    public static final String PHONE_NUMBER_KEY = "phoneNumber";
+    public static final String REPUTATION_KEY = "reputation";
+
     public static final String REQUESTS_KEY = "requests";
     public static final String REQUESTER_KEY = RequestUserKind.REQUESTER.lowerCaseName();
     public static final String SUPPLIER_KEY = RequestUserKind.SUPPLIER.lowerCaseName();

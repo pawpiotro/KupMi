@@ -7,6 +7,7 @@ import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.geofire.LocationCallback;
 import com.firebase.geofire.core.GeoHash;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -15,10 +16,12 @@ import com.wpam.kupmi.firebase.database.config.DatabaseConfig;
 import com.wpam.kupmi.firebase.database.model.DbModel;
 import com.wpam.kupmi.firebase.database.model.DbRequest;
 import com.wpam.kupmi.firebase.database.model.DbRequestDetails;
+import com.wpam.kupmi.firebase.database.model.DbUser;
 import com.wpam.kupmi.model.Request;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
 import com.wpam.kupmi.model.RequestUserKind;
+import com.wpam.kupmi.model.User;
 import com.wpam.kupmi.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +29,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.wpam.kupmi.firebase.database.model.DbModel.TAGS_KEY;
 import static com.wpam.kupmi.utils.CoordinatesUtils.getGeoLocation;
@@ -185,6 +189,21 @@ public class DatabaseManager
         return result;
     }
 
+    public RequestState getRequestState(DataSnapshot snapshot)
+    {
+        if (snapshot != null)
+        {
+            DbRequest dbRequest = snapshot.getValue(DbRequest.class);
+
+            if (dbRequest != null)
+            {
+                return RequestState.getInstance(dbRequest.getState().intValue());
+            }
+        }
+
+        return RequestState.UNKNOWN;
+    }
+
     public void addRequest(Request request)
     {
         DbRequest dbRequest = new DbRequest();
@@ -247,6 +266,38 @@ public class DatabaseManager
             dbRef.child(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, requesterUID,
                     DbModel.DEADLINE_KEY)).setValue(DateUtils.getDateText(deadline, DatabaseConfig.DATE_FORMAT,
                     DatabaseConfig.DATE_FORMAT_CULTURE), null);
+        }
+    }
+
+    public void updateUser(User user)
+    {
+        if (user != null)
+        {
+            String userUID = user.getUserUID();
+
+            if (userUID != null && !Objects.equals(userUID, "")) {
+                DbUser dbUser = new DbUser();
+                dbUser.setEmail(user.getEmail());
+                dbUser.setName(user.getName());
+                dbUser.setPhoneNumber(user.getPhoneNumber());
+                dbUser.setReputation(user.getReputation());
+
+                dbRef.child(createPath(DbModel.USERS_KEY, userUID)).setValue(dbUser, null);
+            }
+        }
+    }
+
+    public void updateUserName(String userUID, String name)
+    {
+        if (userUID != null && !Objects.equals(userUID, "") && name != null) {
+            dbRef.child(createPath(DbModel.USERS_KEY, userUID, DbModel.NAME_KEY)).setValue(name, null);
+        }
+    }
+
+    public void updateUserPhoneNumber(String userUID, String phoneNumber)
+    {
+        if (userUID != null && !Objects.equals(userUID, "") && phoneNumber != null) {
+            dbRef.child(createPath(DbModel.USERS_KEY, userUID, DbModel.PHONE_NUMBER_KEY)).setValue(phoneNumber, null);
         }
     }
 

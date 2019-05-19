@@ -14,6 +14,7 @@
     <!-- Dialog -->
     <string name="error_title">Error</string>
     <string name="info_title">Info</string>
+    <string name="question_title">Question</string>
     <!-- Network -->
     <string name="no_network_connection">There\'s no network connection.</string>
     <!-- User -->
@@ -29,9 +30,16 @@
     <string name="user_reputation_label">Reputation:</string>
 
     <string name="user_avatar_text">User avatar</string>
+    <string name="delete_user_invalid_password">Invalid password. Your account cannot be deleted.</string>
     <string name="delete_user_text">Delete account</string>
-    <string name="delete_user_question">Are you sure to delete account?</string>
+    <string name="delete_user_question">Are you sure to delete account? If yes, enter password.</string>
     <string name="delete_user_success">Your account has been deleted.</string>
     <string name="delete_user_failure">Oops…Your account has not been deleted.</string>
+    <string name="delete_user_accepted_requests">Your account cannot be deleted due to your accepted requests.</string>
 
+    <!-- Basic -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>
