@@ -195,10 +195,13 @@ public class ActiveRequestsFragment extends Fragment {
                     break;
                 case ACCEPTED:
                     itemView.setBackgroundResource(R.drawable.border_red);
+                    break;
                 case DONE:
                     itemView.setBackgroundResource(R.drawable.border_green);
+                    break;
                 case UNDONE:
                     itemView.setBackgroundResource(R.drawable.border_black);
+                    break;
                 default:
                     break;
             }
