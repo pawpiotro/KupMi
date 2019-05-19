@@ -241,7 +241,8 @@ public class DatabaseManager
     public void updateRequestState(String requestUID, String requesterUID, String supplierUID,
                                    RequestState state)
     {
-        if (requestUID != null && requesterUID != null && state != null && state != RequestState.UNKNOWN)
+        if (requestUID != null && !requestUID.equals("") && requesterUID != null && !requesterUID.equals("")
+                && state != null && state != RequestState.UNKNOWN)
         {
             int requestStateId = state.getStateId();
 
