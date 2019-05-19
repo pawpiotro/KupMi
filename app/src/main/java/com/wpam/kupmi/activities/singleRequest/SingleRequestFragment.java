@@ -48,6 +48,7 @@ public class SingleRequestFragment extends Fragment {
 
     private ImageButton cancelButton;
     private ImageButton acceptButton;
+    private ImageButton confirmButton;
 
     private Query requestQuery;
     private Query requestsDetailsQuery;
@@ -75,6 +76,7 @@ public class SingleRequestFragment extends Fragment {
 
         cancelButton = getView().findViewById(R.id.single_request_cancel_button);
         acceptButton = getView().findViewById(R.id.single_request_accept_button);
+        confirmButton = getView().findViewById(R.id.single_request_confirm_button);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +106,35 @@ public class SingleRequestFragment extends Fragment {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(parentActivity, "Accepting request failed!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                requestQuery.removeEventListener(requestQueryListener);
+                requestQuery.removeEventListener(requestsDetailsQueryListener);
+                parentActivity.finish();
+            }
+        });
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseManager dbManager = DatabaseManager.getInstance();
+                Log.i(TAG, "request uid:"+ parentActivity.getRequest().getRequestUID());
+                Log.i(TAG, "requester uid:" + parentActivity.getRequest().getRequesterUID());
+                Log.i(TAG, "supplier uid:" + parentActivity.getRequest().getSupplierUID());
+                dbManager.updateRequestState(parentActivity.getRequest().getRequestUID(),
+                        AuthManager.getInstance().getCurrentUserUid(),
+                        "",
+                        RequestState.DONE, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(parentActivity, "Request fulfilled!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(parentActivity, "Fulfilling request failed!", Toast.LENGTH_SHORT).show();
                             }
                         });
                 requestQuery.removeEventListener(requestQueryListener);
@@ -199,11 +230,14 @@ public class SingleRequestFragment extends Fragment {
     private void updateButtons(RequestState state) {
         switch (state) {
             case ACCEPTED:
-                showCancelButton();
+                if(parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
+                    showCancelAndConfirmButtons();
+                else
+                    showCancelButton();
                 break;
             case ACTIVE:
-                //TODO: check if from ActiveRequests or Search
-                showAcceptButton();
+                if(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER))
+                    showAcceptButton();
                 break;
             case UNKNOWN:
             case DONE:
@@ -215,18 +249,28 @@ public class SingleRequestFragment extends Fragment {
     }
 
     private void showAcceptButton() {
+        hideButtons();
         if (acceptButton != null) {
             acceptButton.bringToFront();
             acceptButton.setVisibility(View.VISIBLE);
-            cancelButton.setVisibility(View.GONE);
         }
     }
 
     private void showCancelButton() {
+        hideButtons();
         if (cancelButton != null) {
             cancelButton.bringToFront();
             cancelButton.setVisibility(View.VISIBLE);
-            acceptButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void showCancelAndConfirmButtons(){
+        hideButtons();
+        if (cancelButton != null && confirmButton != null) {
+            cancelButton.bringToFront();
+            confirmButton.bringToFront();
+            cancelButton.setVisibility(View.VISIBLE);
+            confirmButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -235,6 +279,8 @@ public class SingleRequestFragment extends Fragment {
             cancelButton.setVisibility(View.GONE);
         if (acceptButton != null)
             acceptButton.setVisibility(View.GONE);
+        if (confirmButton != null)
+            confirmButton.setVisibility(View.GONE);
     }
 
 

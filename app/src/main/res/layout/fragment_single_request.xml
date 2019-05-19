@@ -194,17 +194,30 @@
             android:layout_margin="10dp"
             android:backgroundTint="@color/color_text_input"
             android:src="@android:drawable/ic_menu_send"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/single_request_confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/color_text_input"
+            android:src="@android:drawable/btn_star_big_off"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/single_request_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
+            android:layout_gravity="bottom|start"
             android:layout_margin="5dp"
             android:backgroundTint="@color/color_text_input"
             android:src="@android:drawable/btn_dialog"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
     </FrameLayout>
 
 
