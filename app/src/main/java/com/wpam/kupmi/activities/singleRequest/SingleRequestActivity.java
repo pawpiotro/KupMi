@@ -1,5 +1,6 @@
 package com.wpam.kupmi.activities.singleRequest;
 
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +24,10 @@ public class SingleRequestActivity extends AppCompatActivity {
     private boolean partialDataAvailable = false;
     private RequestUserKind requestUserKind;
 
+    private SingleRequestFragment singleRequestFragment = new SingleRequestFragment();
+    private SingleRequestUserFragment singleRequestUserFragment = new SingleRequestUserFragment();
+    private SingleRequestMapFragment singleRequestMapFragment = new SingleRequestMapFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,10 +40,11 @@ public class SingleRequestActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.single_request_viewpager);
         adapterViewPager = new SingleRequestActivity.PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
+
     }
 
-    static class PagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+    class PagerAdapter extends FragmentPagerAdapter {
+        private int NUM_ITEMS = 3;
 
         PagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -53,11 +59,11 @@ public class SingleRequestActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new SingleRequestFragment();
+                    return singleRequestFragment;
                 case 1:
-                    return new SingleRequestUserFragment();
+                    return singleRequestUserFragment;
                 case 2:
-                    return new SingleRequestMapFragment();
+                    return singleRequestMapFragment;
                 default:
                     return null;
             }
@@ -89,6 +95,10 @@ public class SingleRequestActivity extends AppCompatActivity {
 
     public RequestUserKind getRequestUserKind() {
         return requestUserKind;
+    }
+
+    public void updateUserData(){
+        singleRequestUserFragment.updateUserData();
     }
 
 }

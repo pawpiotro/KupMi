@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.model.RequestState;
+import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
 import com.wpam.kupmi.services.user.IUserDataStatus;
 import com.wpam.kupmi.services.user.UserService;
@@ -59,15 +60,7 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         callButton = getView().findViewById(R.id.single_request_user_call_button);
 
         showPlaceholder(true);
-
-        String userID = parentActivity.getRequest().getRequesterUID();
-        UserService userService = new UserService();
-        userService.enableUserQuery(userID, true, this);
-        userService.getUser();
-
-        RequestState state = parentActivity.getRequest().getState();
-        if (parentActivity.isPartialDataAvailable())
-            updateButtons(state);
+        updateUserData();
 
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +84,17 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         });
     }
 
+    public void updateUserData(){
+        String userID;
+        if(parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
+            userID = parentActivity.getRequest().getSupplierUID();
+        else
+            userID = parentActivity.getRequest().getRequesterUID();
+        UserService userService = new UserService();
+        userService.enableUserQuery(userID, false, this);
+        userService.getUser();
+        updateButtons(parentActivity.getRequest().getState());
+    }
 
     private void setData(User user) {
         if (user == null)
@@ -98,12 +102,14 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         if (nameView == null || emailView == null
                 || phoneView == null || repView == null)
             return;
+
         nameView.setText(user.getName());
         emailView.setText(user.getEmail());
         phoneView.setText(user.getPhoneNumber());
         Long rep = user.getReputation();
         if (rep != null)
             repView.setText(rep.toString());
+
         showPlaceholder(false);
         imageView.setImageResource(R.mipmap.sample_avatar);
     }
@@ -172,4 +178,5 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
 
         }
     }
+
 }

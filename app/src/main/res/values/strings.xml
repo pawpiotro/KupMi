@@ -46,4 +46,7 @@
     <string name="no">No</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+
+    <string name="default_notification_channel_id">default_channel</string>
+
 </resources>

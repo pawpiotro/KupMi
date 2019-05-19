@@ -10,7 +10,10 @@ import android.widget.Button;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.activities.activeRequests.ActiveRequestsActivity;
 import com.wpam.kupmi.activities.requestForm.RequestFormActivity;
@@ -37,6 +40,16 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MenuActivity.this,  new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String newToken = instanceIdResult.getToken();
+                Log.i("NEW_TOKEN",newToken);
+                //TODO: send to server
+            }
+        });
+
 
         Button makeRequest = findViewById(R.id.menu_request_button);
         Button lookForRequests = findViewById(R.id.menu_look_for_button);

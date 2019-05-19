@@ -23,6 +23,7 @@ import com.wpam.kupmi.firebase.database.model.DbRequest;
 import com.wpam.kupmi.firebase.database.model.DbRequestDetails;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestTag;
+import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.utils.DateUtils;
 
 import java.util.Calendar;
@@ -78,30 +79,58 @@ public class SingleRequestFragment extends Fragment {
             }
         });
 
-        final RequestState state = parentActivity.getRequest().getState();
-        if (parentActivity.isPartialDataAvailable())
-            updateButtons(state);
-
+        updateButtons(((SingleRequestActivity) getActivity()).getRequest().getState());
         DatabaseManager dbManager = DatabaseManager.getInstance();
-        AuthManager authManager = AuthManager.getInstance();
-        Query requestQuery = dbManager.getRequestQuery(parentActivity.getRequestUserKind(),
-                authManager.getCurrentUserUid(), parentActivity.getRequest().getRequestUID());
 
-        requestQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Log.i(TAG, parentActivity.getRequestUserKind().firstCapitalLetterName());
+        Log.i(TAG, parentActivity.getRequest().getState().firstCapitalLetterName());
+
+        Query requestQuery;
+
+        if(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER)
+            && parentActivity.getRequest().getState().equals(RequestState.ACTIVE)){
+            requestQuery = dbManager.getRequestQuery(RequestUserKind.REQUESTER,
+                    parentActivity.getRequest().getRequesterUID(),
+                    parentActivity.getRequest().getRequestUID());
+        } else {
+            AuthManager authManager = AuthManager.getInstance();
+            requestQuery = dbManager.getRequestQuery(parentActivity.getRequestUserKind(),
+                    authManager.getCurrentUserUid(),
+                    parentActivity.getRequest().getRequestUID());
+        }
+        requestQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //String dbRequestUID = dataSnapshot.getKey();
                 DbRequest dbRequest = dataSnapshot.getValue(DbRequest.class);
                 if (dbRequest != null) {
-                    titleView.setText(dbRequest.getTitle());
-                    tagView.setText(RequestTag.getInstance(dbRequest.getTag()).hashtagName());
-                    Calendar deadline = DateUtils.getDate(dbRequest.getDeadline(), DatabaseConfig.DATE_FORMAT, DatabaseConfig.DATE_FORMAT_CULTURE);
-                    deadlineView.setText(DateUtils.getDateText(deadline, parentActivity));
+
+                    String userUID = dbRequest.getUserUID();
+                    String deadline = dbRequest.getDeadline();
+                    String title = dbRequest.getTitle();
+                    String tag = dbRequest.getTag();
                     Long state = dbRequest.getState();
-                    stateView.setText(RequestState.getInstance(state.intValue()).firstCapitalLetterName());
-                    updateButtons(RequestState.getInstance(state.intValue()));
+
+                    Calendar deadlineCal = DateUtils.getDate(deadline, DatabaseConfig.DATE_FORMAT, DatabaseConfig.DATE_FORMAT_CULTURE);
+                    RequestState reqState = RequestState.getInstance(state.intValue());
+
+                    titleView.setText(title);
+                    tagView.setText(RequestTag.getInstance(tag).hashtagName());
+                    deadlineView.setText(DateUtils.getDateText(deadlineCal, parentActivity));
+                    stateView.setText(reqState.firstCapitalLetterName());
+
+                    parentActivity.getRequest().setTag(RequestTag.getInstance(tag));
+                    parentActivity.getRequest().setTitle(title);
+                    parentActivity.getRequest().setState(reqState);
+                    parentActivity.getRequest().setDeadline(deadlineCal);
+                    if(parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
+                        parentActivity.getRequest().setSupplierUID(userUID);
+                    else
+                        parentActivity.getRequest().setRequesterUID(userUID);
+
+                    updateButtons(reqState);
+                    parentActivity.updateUserData();
                 }
-                //TODO: chcemy trzymac aktualny request gdzies?
             }
 
             @Override
