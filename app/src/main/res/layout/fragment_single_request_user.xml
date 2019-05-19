@@ -29,7 +29,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
-                android:src="@drawable/default_avatar"
+                android:src="@mipmap/sample_avatar"
                 android:visibility="visible"
                 tools:visibility="visible" />
 
@@ -55,7 +55,7 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="5dp"
                     android:text="@string/user_name_label"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="viewStart"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp" />
 
@@ -81,7 +81,7 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="5dp"
                     android:text="@string/user_email_label"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="viewStart"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp" />
 
@@ -107,7 +107,7 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="5dp"
                     android:text="@string/user_phone_label"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="viewStart"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp" />
 
@@ -133,7 +133,7 @@
                     android:layout_margin="5dp"
                     android:paddingLeft="5dp"
                     android:text="@string/user_reputation_label"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="viewStart"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp" />
 

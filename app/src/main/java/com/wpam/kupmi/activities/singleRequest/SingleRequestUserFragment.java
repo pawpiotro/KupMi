@@ -111,7 +111,7 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
             repView.setText(rep.toString());
 
         showPlaceholder(false);
-        imageView.setImageResource(R.mipmap.sample_avatar);
+        //imageView.setImageResource(R.mipmap.sample_avatar);
     }
 
     @Override
