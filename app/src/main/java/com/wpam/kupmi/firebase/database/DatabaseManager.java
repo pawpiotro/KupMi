@@ -248,7 +248,7 @@ public class DatabaseManager
             Map<String, Object> updates = new HashMap<>();
 
             // For ACCEPTED state
-            if (state != RequestState.ACCEPTED && supplierUID != null && !supplierUID.equals(""))
+            if (state == RequestState.ACCEPTED && supplierUID != null && !supplierUID.equals(""))
                 updates.put(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY,
                         requesterUID, DbModel.USER_UID_KEY), supplierUID);
 
