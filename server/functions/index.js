@@ -90,15 +90,15 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
     '/' + REQUESTER_KEY + '/{userUID}/{requestUID}')
 .onWrite(async (change, context) => {
 
-    const userKind = REQUESTS_KEY;
+    const userKind = REQUESTER_KEY;
     const otherUserKind = SUPPLIER_KEY;
     const userUID = context.params.userUID;
-    const requestUID = context.params.requestsUID;
+    const requestUID = context.params.requestUID;
 
     if (change.before.exists() && change.after.exists())
     {
         const oldRequest = change.before.val();
-        const oldUserUID = oldRequest.userUID;
+        const oldOtherUserUID = oldRequest.userUID;
         const oldState = oldRequest.state;
         const oldStateName = getStateName(oldState);
         const oldTag = oldRequest.tag;
@@ -111,9 +111,9 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
         const tag = request.tag;
         const stateName = getStateName(state);
 
-        if (otherUserUID && oldStateName && stateName)
+        if (oldStateName && stateName)
         {
-            if ((stateName == ACCEPTED_KEY && oldState == state))
+            if (stateName == ACCEPTED_KEY && oldState == state)
             {
                 // TODO: Send info to user
                 console.log('Other user accepted this request: ' + requestUID);
@@ -130,7 +130,7 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
             }
             else
             {
-                if (state != oldState && stateName == ACTIVE_KEY)
+                if (oldOtherUserUID && state != oldState && stateName == ACTIVE_KEY)
                 {
                     await admin.database().ref(REQUESTS_KEY + '/' + userKind + '/' +
                     userUID + '/' + requestUID + '/' + USER_UID_KEY).set('')
@@ -143,7 +143,7 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
                     });
 
                     await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
-                    otherUserUID + '/' + requestUID).remove()
+                    oldOtherUserUID + '/' + requestUID).remove()
                     .then(function() {
                       console.log('Removing request: ' + requestUID + ' from ' + otherUserKind + ' succeeded.');
                     })
@@ -151,10 +151,10 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
                       console.error('Removing request from ' + otherUserKind + ' failed: ' + error.message);
                     });
                 }
-                else
+                else if (otherUserUID)
                 {
                     await admin.database().ref(REQUESTS_KEY + '/' + otherUserKind + '/' +
-                    otherUserUID + '/' + requestUID).set(
+                    otherUserUID + '/' + requestUID).update(
                         new DbRequest(userUID, deadline, title, tag, state)
                     )
                     .then(function() {
@@ -181,9 +181,9 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
 
                 if (state != oldState || tag != oldTag)
                 {
-                    const oldRequestTagPath = REQUESTS_TAG_KEY + '/' + oldTag + '/' +
+                    const oldRequestTagPath = TAGS_KEY + '/' + oldTag + '/' +
                     oldStateName + '/' + requestUID;
-                    const newRequestTagPath = REQUESTS_TAG_KEY + '/' + tag + '/' + stateName + '/' + requestUID;
+                    const newRequestTagPath = TAGS_KEY + '/' + tag + '/' + stateName + '/' + requestUID;
 
                     moveDataToAnotherState(oldRequestTagPath, newRequestTagPath,
                     'Removing old tag data during moving request: ' + requestUID +
@@ -196,8 +196,8 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
         }
         else
         {
-            console.log('Invalid data: otherUserUID - ' + otherUserUID + ', oldStateName - ' +
-            oldStateName + ', stateName - ' + stateName);
+            console.log('Invalid data: oldStateName - ' + oldStateName +
+                ', stateName - ' + stateName);
         }
     }
 });
@@ -259,7 +259,7 @@ exports.deleteSupplierRequest = functions.database.ref(REQUESTS_KEY +
         const path = REQUESTS_KEY + '/' + REQUESTER_KEY + '/' +
         otherUserUID + '/' + requestUID;
 
-        await admin.database().ref(path).set(dbRequest)
+        await admin.database().ref(path).update(dbRequest)
         .then(function() {
           console.log('Removing supplier UID for request: ' + requestUID + ' succeeded.');
         })
@@ -304,9 +304,9 @@ async function deleteUserRequests(userUID, userKind)
 function moveDataToAnotherState(oldPath, newPath, removingErrorLog, settingErrorLog,
 successLog)
 {
-    const objectToMove = null;
+    var objectToMove = null;
 
-    admin.database.ref(oldPath)
+    admin.database().ref(oldPath).once('value')
     .then(function (dataSnapshot)
     {
         objectToMove = dataSnapshot.val();
@@ -322,14 +322,18 @@ successLog)
                 })
                 .catch(function(error)
                 {
-                  console.error(settingErrorLog + error.message);
+                    console.error(settingErrorLog + error.message);
                 });
             })
             .catch(function(error)
             {
-              console.error(removingErrorLog + error.message);
+                console.error(removingErrorLog + error.message);
             });
         }
+    })
+    .catch(function(error)
+    {
+        console.error('Reading from path: ' + oldPath + ' failed: ' + error.message);
     });
 }
 

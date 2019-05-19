@@ -7,6 +7,8 @@ import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.geofire.LocationCallback;
 import com.firebase.geofire.core.GeoHash;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -240,7 +242,8 @@ public class DatabaseManager
     }
 
     public void updateRequestState(String requestUID, String requesterUID, String supplierUID,
-                                   RequestState state)
+                                   RequestState state, OnCompleteListener<Void> completeListener,
+                                   OnFailureListener failureListener)
     {
         if (!isNullOrEmpty(requestUID) && !isNullOrEmpty(requesterUID) && state != null
                 && state != RequestState.UNKNOWN)
@@ -252,22 +255,24 @@ public class DatabaseManager
             // For ACCEPTED state
             if (state == RequestState.ACCEPTED && supplierUID != null && !supplierUID.equals(""))
                 updates.put(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY,
-                        requesterUID, DbModel.USER_UID_KEY), supplierUID);
+                        requesterUID, requestUID, DbModel.USER_UID_KEY), supplierUID);
 
             updates.put(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, requesterUID,
                     requestUID, DbModel.STATE_KEY), requestStateId);
 
-            dbRef.updateChildren(updates);
+            dbRef.updateChildren(updates).addOnCompleteListener(completeListener)
+                    .addOnFailureListener(failureListener);
         }
     }
 
-    public void updateRequestDeadline(String requestUID, String requesterUID, Calendar deadline)
+    public void updateRequestDeadline(String requestUID, String requesterUID, Calendar deadline,
+                                      OnCompleteListener<Void> listener)
     {
         if (!isNullOrEmpty(requestUID) && !isNullOrEmpty(requesterUID) && deadline != null)
         {
             dbRef.child(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, requesterUID,
                     DbModel.DEADLINE_KEY)).setValue(DateUtils.getDateText(deadline, DatabaseConfig.DATE_FORMAT,
-                    DatabaseConfig.DATE_FORMAT_CULTURE), null);
+                    DatabaseConfig.DATE_FORMAT_CULTURE), listener);
         }
     }
 

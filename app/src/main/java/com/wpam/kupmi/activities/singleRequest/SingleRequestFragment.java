@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
@@ -90,8 +93,17 @@ public class SingleRequestFragment extends Fragment {
                 dbManager.updateRequestState(parentActivity.getRequest().getRequestUID(),
                         parentActivity.getRequest().getRequesterUID(),
                         AuthManager.getInstance().getCurrentUserUid(),
-                        RequestState.ACCEPTED);
-                Toast.makeText(parentActivity, "Request accepted!", Toast.LENGTH_SHORT).show();
+                        RequestState.ACCEPTED, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(parentActivity, "Request accepted!", Toast.LENGTH_SHORT).show();
+                            }
+                        }, new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(parentActivity, "Accepting request failed!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 requestQuery.removeEventListener(requestQueryListener);
                 requestQuery.removeEventListener(requestsDetailsQueryListener);
                 parentActivity.finish();
