@@ -182,7 +182,7 @@ public class ActiveRequestsFragment extends Fragment {
         }
 
         void bindData(Request viewModel) {
-            tag.setText(viewModel.getTag().firstCapitalLetterName());
+            tag.setText(viewModel.getTag().hashtagName());
             date.setText(DateUtils.getDateText(viewModel.getDeadline(), getContext()));
             topic.setText(viewModel.getTitle());
             RequestState state = viewModel.getState();

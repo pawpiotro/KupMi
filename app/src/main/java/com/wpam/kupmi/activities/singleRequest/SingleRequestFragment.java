@@ -1,6 +1,7 @@
 package com.wpam.kupmi.activities.singleRequest;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
@@ -43,6 +46,11 @@ public class SingleRequestFragment extends Fragment {
     private ImageButton cancelButton;
     private ImageButton acceptButton;
 
+    private Query requestQuery;
+    private Query requestsDetailsQuery;
+
+    private ValueEventListener requestQueryListener;
+    private ValueEventListener requestsDetailsQueryListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,7 +83,18 @@ public class SingleRequestFragment extends Fragment {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                DatabaseManager dbManager = DatabaseManager.getInstance();
+                Log.i(TAG, "request uid:"+ parentActivity.getRequest().getRequestUID());
+                Log.i(TAG, "requester uid:" + parentActivity.getRequest().getRequesterUID());
+                Log.i(TAG, "supplier uid:" + AuthManager.getInstance().getCurrentUserUid());
+                dbManager.updateRequestState(parentActivity.getRequest().getRequestUID(),
+                        parentActivity.getRequest().getRequesterUID(),
+                        AuthManager.getInstance().getCurrentUserUid(),
+                        RequestState.ACCEPTED);
+                Toast.makeText(parentActivity, "Request accepted!", Toast.LENGTH_SHORT).show();
+                requestQuery.removeEventListener(requestQueryListener);
+                requestQuery.removeEventListener(requestsDetailsQueryListener);
+                parentActivity.finish();
             }
         });
 
@@ -85,7 +104,7 @@ public class SingleRequestFragment extends Fragment {
         Log.i(TAG, parentActivity.getRequestUserKind().firstCapitalLetterName());
         Log.i(TAG, parentActivity.getRequest().getState().firstCapitalLetterName());
 
-        Query requestQuery;
+
 
         if(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER)
             && parentActivity.getRequest().getState().equals(RequestState.ACTIVE)){
@@ -98,7 +117,7 @@ public class SingleRequestFragment extends Fragment {
                     authManager.getCurrentUserUid(),
                     parentActivity.getRequest().getRequestUID());
         }
-        requestQuery.addValueEventListener(new ValueEventListener() {
+        requestQueryListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //String dbRequestUID = dataSnapshot.getKey();
@@ -123,10 +142,13 @@ public class SingleRequestFragment extends Fragment {
                     parentActivity.getRequest().setTitle(title);
                     parentActivity.getRequest().setState(reqState);
                     parentActivity.getRequest().setDeadline(deadlineCal);
-                    if(parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
-                        parentActivity.getRequest().setSupplierUID(userUID);
-                    else
-                        parentActivity.getRequest().setRequesterUID(userUID);
+                    if(!(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER)
+                            && parentActivity.getRequest().getState().equals(RequestState.ACTIVE))) {
+                        if (parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
+                            parentActivity.getRequest().setSupplierUID(userUID);
+                        else
+                            parentActivity.getRequest().setRequesterUID(userUID);
+                    }
 
                     updateButtons(reqState);
                     parentActivity.updateUserData();
@@ -137,10 +159,12 @@ public class SingleRequestFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.i(TAG, "onCancelled - databaseError: " + databaseError.getMessage());
             }
-        });
+        };
 
-        Query requestsDetailsQuery = dbManager.getRequestDetailsQuery(parentActivity.getRequest().getRequestUID());
-        requestsDetailsQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        requestQuery.addValueEventListener(requestQueryListener);
+
+        requestsDetailsQuery = dbManager.getRequestDetailsQuery(parentActivity.getRequest().getRequestUID());
+        requestsDetailsQueryListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DbRequestDetails dbRequestDetails = dataSnapshot.getValue(DbRequestDetails.class);
@@ -154,20 +178,8 @@ public class SingleRequestFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.i(TAG, "onCancelled - databaseError: " + databaseError.getMessage());
             }
-        });
-//
-//        descView.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod" +
-//                " tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " +
-//                "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." +
-//                " Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu " +
-//                "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in " +
-//                "culpa qui officia deserunt mollit anim id est laborum." +
-//                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod" +
-//                " tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " +
-//                "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." +
-//                " Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu " +
-//                "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in " +
-//                "culpa qui officia deserunt mollit anim id est laborum.");
+        };
+        requestsDetailsQuery.addValueEventListener(requestsDetailsQueryListener);
     }
 
     private void updateButtons(RequestState state) {

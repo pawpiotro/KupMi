@@ -247,6 +247,10 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
                 String tag = tmp[1];
                 String requesterUID = tmp[2];
 
+                Log.i(TAG, "requestUID:"+ requestUID);
+                Log.i(TAG, "tag:"+tag);
+                Log.i(TAG, "requesterUID:"+ requesterUID);
+
                 if (requestUID != null && tag != null && requesterUID != null) {
                     Request request = new Request(requestUID);
                     request.setState(RequestState.ACTIVE);
