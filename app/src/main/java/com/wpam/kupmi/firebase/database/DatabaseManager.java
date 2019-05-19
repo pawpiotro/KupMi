@@ -34,6 +34,7 @@ import java.util.Objects;
 import static com.wpam.kupmi.firebase.database.model.DbModel.TAGS_KEY;
 import static com.wpam.kupmi.utils.CoordinatesUtils.getGeoLocation;
 import static com.wpam.kupmi.utils.FirebaseUtils.createPath;
+import static com.wpam.kupmi.utils.StringUtils.isNullOrEmpty;
 
 public class DatabaseManager
 {
@@ -241,8 +242,8 @@ public class DatabaseManager
     public void updateRequestState(String requestUID, String requesterUID, String supplierUID,
                                    RequestState state)
     {
-        if (requestUID != null && !requestUID.equals("") && requesterUID != null && !requesterUID.equals("")
-                && state != null && state != RequestState.UNKNOWN)
+        if (!isNullOrEmpty(requestUID) && !isNullOrEmpty(requesterUID) && state != null
+                && state != RequestState.UNKNOWN)
         {
             int requestStateId = state.getStateId();
 
@@ -262,7 +263,7 @@ public class DatabaseManager
 
     public void updateRequestDeadline(String requestUID, String requesterUID, Calendar deadline)
     {
-        if (requestUID != null && deadline != null)
+        if (!isNullOrEmpty(requestUID) && !isNullOrEmpty(requesterUID) && deadline != null)
         {
             dbRef.child(createPath(DbModel.REQUESTS_KEY, DbModel.REQUESTER_KEY, requesterUID,
                     DbModel.DEADLINE_KEY)).setValue(DateUtils.getDateText(deadline, DatabaseConfig.DATE_FORMAT,
@@ -276,7 +277,7 @@ public class DatabaseManager
         {
             String userUID = user.getUserUID();
 
-            if (userUID != null && !Objects.equals(userUID, "")) {
+            if (!isNullOrEmpty(userUID)) {
                 DbUser dbUser = new DbUser();
                 dbUser.setEmail(user.getEmail());
                 dbUser.setName(user.getName());
@@ -290,14 +291,14 @@ public class DatabaseManager
 
     public void updateUserName(String userUID, String name)
     {
-        if (userUID != null && !Objects.equals(userUID, "") && name != null) {
+        if (!isNullOrEmpty(userUID) && name != null) {
             dbRef.child(createPath(DbModel.USERS_KEY, userUID, DbModel.NAME_KEY)).setValue(name, null);
         }
     }
 
     public void updateUserPhoneNumber(String userUID, String phoneNumber)
     {
-        if (userUID != null && !Objects.equals(userUID, "") && phoneNumber != null) {
+        if (!isNullOrEmpty(userUID) && phoneNumber != null) {
             dbRef.child(createPath(DbModel.USERS_KEY, userUID, DbModel.PHONE_NUMBER_KEY)).setValue(phoneNumber, null);
         }
     }
