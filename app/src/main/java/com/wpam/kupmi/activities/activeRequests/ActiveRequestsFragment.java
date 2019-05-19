@@ -91,9 +91,9 @@ public class ActiveRequestsFragment extends Fragment {
                                         Request request = new Request(snapshot.getKey());
 
                                         if (userKind == RequestUserKind.REQUESTER)
-                                            request.setRequesterUID(dbRequest.getUserUID());
-                                        else if (userKind == RequestUserKind.SUPPLIER)
                                             request.setSupplierUID(dbRequest.getUserUID());
+                                        else if (userKind == RequestUserKind.SUPPLIER)
+                                            request.setRequesterUID(dbRequest.getUserUID());
                                         request.setDeadline(
                                                 DateUtils.getDate(
                                                         dbRequest.getDeadline(),
@@ -107,7 +107,7 @@ public class ActiveRequestsFragment extends Fragment {
                                         return request;
                                     }
 
-                                    return null;
+                                    return new Request();
                                 }
                             })
                             .build();
@@ -121,10 +121,11 @@ public class ActiveRequestsFragment extends Fragment {
 
                 @Override
                 protected void onBindViewHolder(RequesterViewHolder holder, final int position, Request model) {
-                    if (model != null) {
+                    if (model != null && model.getTag() != null && model.getTag() != RequestTag.ALL
+                    && model.getState() != null && model.getState() != RequestState.UNKNOWN)
+                    {
                         holder.bindData(model);
                         requests.put(model.getRequestUID(), model);
-
                     }
                 }
 

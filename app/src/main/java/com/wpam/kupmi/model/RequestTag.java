@@ -1,5 +1,7 @@
 package com.wpam.kupmi.model;
 
+import static com.wpam.kupmi.utils.StringUtils.isNullOrEmpty;
+
 public enum RequestTag {
     DELIVERY,
     LOAN,
@@ -23,6 +25,10 @@ public enum RequestTag {
     }
 
     public static RequestTag getInstance(String tagName) {
+
+        if (isNullOrEmpty(tagName))
+            return ALL;
+
         switch (tagName.toUpperCase()) {
             case "DELIVERY":
                 return DELIVERY;

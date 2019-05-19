@@ -2,12 +2,13 @@ package com.wpam.kupmi.utils;
 
 import android.content.Context;
 import android.text.format.DateFormat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import static com.wpam.kupmi.utils.StringUtils.isNullOrEmpty;
 
 public class DateUtils
 {
@@ -15,12 +16,16 @@ public class DateUtils
     {
         try
         {
-            Calendar date = Calendar.getInstance(locale);
-            final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);
+            if (!isNullOrEmpty(dateText)) {
+                Calendar date = Calendar.getInstance(locale);
+                final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);
 
-            date.setTime(format.parse(dateText));
+                date.setTime(format.parse(dateText));
 
-            return date;
+                return date;
+            }
+
+            return null;
         }
         catch (ParseException e)
         {
@@ -30,17 +35,26 @@ public class DateUtils
 
     public static int getHour(Calendar date)
     {
-        return date.get(Calendar.HOUR);
+        if (date != null)
+            return date.get(Calendar.HOUR);
+
+        return -1;
     }
 
     public static int getHourOfDay(Calendar date)
     {
-        return date.get(Calendar.HOUR_OF_DAY);
+        if (date != null)
+            return date.get(Calendar.HOUR_OF_DAY);
+
+        return -1;
     }
 
     public static int getMinute(Calendar date)
     {
-        return date.get(Calendar.MINUTE);
+        if (date != null)
+            return date.get(Calendar.MINUTE);
+
+        return -1;
     }
 
     public static void updateDate(Calendar date, Locale locale)
@@ -62,14 +76,22 @@ public class DateUtils
 
     public static String getDateText(Calendar date, String dateFormat, Locale locale)
     {
-        final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);
-        return format.format(date.getTime());
+        if (date != null && isNullOrEmpty(dateFormat)) {
+            final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);
+            return format.format(date.getTime());
+        }
+
+        return "";
     }
 
     public static String getDateText(Calendar date, Context ctx)
     {
-        Date dateTime = date.getTime();
-        return DateFormat.getDateFormat(ctx).format(dateTime) + " " +
-                DateFormat.getTimeFormat(ctx).format(dateTime);
+        if (date != null && ctx != null) {
+            Date dateTime = date.getTime();
+            return DateFormat.getDateFormat(ctx).format(dateTime) + " " +
+                    DateFormat.getTimeFormat(ctx).format(dateTime);
+        }
+
+        return "";
     }
 }
