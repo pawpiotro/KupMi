@@ -1,7 +1,6 @@
 package com.wpam.kupmi.model;
 
-public enum RequestTag
-{
+public enum RequestTag {
     DELIVERY,
     LOAN,
     REPAIR,
@@ -9,19 +8,22 @@ public enum RequestTag
     OTHER,
     ALL;
 
-    public String lowerCaseName() { return name().toLowerCase(); }
+    public String lowerCaseName() {
+        return name().toLowerCase();
+    }
 
-    public String firstCapitalLetterName()
-    {
+    public String firstCapitalLetterName() {
         String lowerCaseName = lowerCaseName();
 
         return lowerCaseName.substring(0, 1).toUpperCase() + lowerCaseName.substring(1);
     }
 
-    public static RequestTag getInstance(String tagName)
-    {
-        switch (tagName.toUpperCase())
-        {
+    public String hashtagName() {
+        return "#" + firstCapitalLetterName();
+    }
+
+    public static RequestTag getInstance(String tagName) {
+        switch (tagName.toUpperCase()) {
             case "DELIVERY":
                 return DELIVERY;
             case "LOAN":
@@ -37,5 +39,5 @@ public enum RequestTag
         }
     }
 
-    public static RequestTag[] ALL_TAGS = { DELIVERY, LOAN, REPAIR, ACTIVITY, OTHER };
+    public static RequestTag[] ALL_TAGS = {DELIVERY, LOAN, REPAIR, ACTIVITY, OTHER};
 }

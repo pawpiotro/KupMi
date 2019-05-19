@@ -17,7 +17,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
-        android:background="#F0F0F0"
+        android:background="#00F0F0F0"
         android:padding="2dp">
 
         <TextView
@@ -25,8 +25,10 @@
             android:layout_width="match_parent"
             android:layout_height="34dp"
             android:background="@drawable/border"
+            android:backgroundTint="#DDDDDD"
             android:padding="4dp"
             android:textAlignment="center"
+            android:textColor="#000000"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -42,7 +44,8 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="8dp"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/color_third"
             android:clickable="true"
             android:elevation="5dp"
             android:focusable="true"

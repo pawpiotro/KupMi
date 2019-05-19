@@ -6,11 +6,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.wpam.kupmi.firebase.auth.AuthManager;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.firebase.database.model.DbUser;
 import com.wpam.kupmi.model.User;
-
 import java.util.Objects;
 
 public class UserService
@@ -37,8 +35,7 @@ public class UserService
     }
 
     // Public methods
-    public void enableUserQuery(String userUID, boolean isSingleListener, IUserDataStatus dataStatus)
-    {
+    public void enableUserQuery(String userUID, boolean isSingleListener, IUserDataStatus dataStatus) {
         if (userUID != null && !Objects.equals(userUID, ""))
         {
             userQuery = dbManager.getUserQuery(userUID);
