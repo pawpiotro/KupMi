@@ -1,17 +1,25 @@
 package com.wpam.kupmi.activities.singleRequest;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.lib.PermissionsClassLib;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
@@ -79,9 +87,32 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (ActivityCompat.checkSelfPermission(parentActivity, Manifest.permission.CALL_PHONE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "No call permission");
+                    requestPermissions(new String[]{Manifest.permission.CALL_PHONE},
+                            PermissionsClassLib.CALL_PHONE_PERMISSION_CODE);
+                } else {
+                    callPhoneNumber();
+                }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.i(TAG, "elo:" + requestCode);
+        switch (requestCode) {
+            case PermissionsClassLib.CALL_PHONE_PERMISSION_CODE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission granted");
+                    callPhoneNumber();
+                } else {
+                    Toast.makeText(parentActivity, "You can't call without this permission.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
     public void updateUserData(){
@@ -176,6 +207,16 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
                 callButton.setVisibility(View.GONE);
             }
 
+        }
+    }
+
+    private void callPhoneNumber(){
+        String phone = phoneView.getText().toString();
+        if(!phone.equals("")){
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+            startActivity(intent);
+        } else {
+            Toast.makeText(parentActivity, "No phone number given.", Toast.LENGTH_SHORT).show();
         }
     }
 
