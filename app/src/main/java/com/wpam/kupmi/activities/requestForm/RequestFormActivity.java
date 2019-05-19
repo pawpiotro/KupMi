@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +24,9 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.Constants;
@@ -77,8 +81,8 @@ public class RequestFormActivity extends FragmentActivity {
         user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
         if (user == null)
         {
-            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
-                    android.R.drawable.ic_dialog_alert);
+            Toast.makeText(this,
+                    R.string.authorize_user_error, Toast.LENGTH_SHORT).show();
             returnToMainActivity(this);
         }
 
@@ -167,14 +171,29 @@ public class RequestFormActivity extends FragmentActivity {
     }
 
     // Public methods
-    public void insertIntoDB() {
+    public void insertIntoDB()
+    {
         request.setRequesterUID(user.getUserUID());
         request.setState(RequestState.ACTIVE);
 
         Log.i(TAG, "INSERTING INTO DATABASE:");
         Log.i(TAG, request.toString(this));
 
-        DatabaseManager.getInstance().addRequest(request);
+        DatabaseManager.getInstance().addRequest(request, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(RequestFormActivity.this,
+                            R.string.new_request_success, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(RequestFormActivity.this,
+                        R.string.new_request_failure, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void setBarVisible(boolean b) {

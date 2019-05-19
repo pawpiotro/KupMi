@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 import com.wpam.kupmi.R;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.RequestUserKind;
@@ -13,7 +14,6 @@ import com.wpam.kupmi.model.User;
 import java.util.Objects;
 
 import static com.wpam.kupmi.utils.ActivityUtils.returnToMainActivity;
-import static com.wpam.kupmi.utils.DialogUtils.showOKDialog;
 
 public class ActiveRequestsActivity extends AppCompatActivity {
 
@@ -37,8 +37,8 @@ public class ActiveRequestsActivity extends AppCompatActivity {
         user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
         if (user == null)
         {
-            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
-                    android.R.drawable.ic_dialog_alert);
+            Toast.makeText(this,
+                    R.string.authorize_user_error, Toast.LENGTH_SHORT).show();
             returnToMainActivity(this);
         }
 

@@ -207,7 +207,8 @@ public class DatabaseManager
         return RequestState.UNKNOWN;
     }
 
-    public void addRequest(Request request)
+    public void addRequest(Request request, OnCompleteListener<Void> completeListener,
+                           OnFailureListener failureListener)
     {
         DbRequest dbRequest = new DbRequest();
         dbRequest.setUserUID("");
@@ -238,7 +239,8 @@ public class DatabaseManager
         updates.put(createPath(TAGS_KEY, request.getTag().lowerCaseName(), request.getState().lowerCaseName(),
                 request.getRequestUID()), request.getRequesterUID());
 
-        dbRef.updateChildren(updates);
+        dbRef.updateChildren(updates).addOnCompleteListener(completeListener)
+                .addOnFailureListener(failureListener);
     }
 
     public void updateRequestState(String requestUID, String requesterUID, String supplierUID,

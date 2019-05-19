@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-
+import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.FirebaseApp;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.activities.settings.SettingsActivity;
 import com.wpam.kupmi.firebase.auth.AuthManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.User;
@@ -85,8 +86,8 @@ public class MainActivity extends Activity implements IUserDataStatus
         setBarVisible(false);
         if (user == null)
         {
-            showOKDialog(this, R.string.info_title, R.string.deactivated_user,
-                    android.R.drawable.ic_dialog_alert);
+            Toast.makeText(this,
+                    R.string.deactivated_user, Toast.LENGTH_SHORT).show();
             setAuthView();
         }
         else
@@ -119,8 +120,8 @@ public class MainActivity extends Activity implements IUserDataStatus
                 else
                 {
                     setBarVisible(false);
-                    showOKDialog(MainActivity.this, R.string.error_title, R.string.no_network_connection,
-                            android.R.drawable.ic_dialog_alert);
+                    Toast.makeText(MainActivity.this,
+                            R.string.no_network_connection, Toast.LENGTH_SHORT).show();
                 }
             }
         });

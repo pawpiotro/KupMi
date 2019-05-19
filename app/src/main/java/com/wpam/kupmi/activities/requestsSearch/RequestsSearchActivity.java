@@ -61,8 +61,8 @@ public class RequestsSearchActivity extends AppCompatActivity {
         user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
         if (user == null)
         {
-            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
-                    android.R.drawable.ic_dialog_alert);
+            Toast.makeText(this,
+                    R.string.authorize_user_error, Toast.LENGTH_SHORT).show();
             ActivityUtils.returnToMainActivity(this);
         }
 

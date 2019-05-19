@@ -8,6 +8,8 @@
     <string name="title_label_name">Title</string>
     <string name="description_label_name">Description</string>
     <string name="tags_label_name">Tag</string>
+    <string name="new_request_success">Added new request!</string>
+    <string name="new_request_failure">Adding new request failed!</string>
 
     <string name="title_hint">New request</string>
     <string name="description_hint">What\'s the problem?</string>

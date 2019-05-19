@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -53,8 +55,8 @@ public class SettingsActivity extends AppCompatActivity implements IUserDataStat
         user = (User) Objects.requireNonNull(getIntent().getExtras()).getSerializable(Constants.USER);
         if (user == null)
         {
-            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
-                    android.R.drawable.ic_dialog_alert);
+            Toast.makeText(this,
+                    R.string.authorize_user_error, Toast.LENGTH_SHORT).show();
             returnToMainActivity(this);
         }
         else
@@ -90,8 +92,8 @@ public class SettingsActivity extends AppCompatActivity implements IUserDataStat
 
         if (user == null)
         {
-            showOKDialog(this, R.string.error_title, R.string.authorize_user_error,
-                    android.R.drawable.ic_dialog_alert);
+            Toast.makeText(this,
+                    R.string.authorize_user_error, Toast.LENGTH_SHORT).show();
             returnToMainActivity(this);
         }
         else
@@ -209,16 +211,15 @@ public class SettingsActivity extends AppCompatActivity implements IUserDataStat
                                                                 Log.e(TAG, "deleteUserButton.OnClickListener(Auth) - Error: " +
                                                                         e.getMessage());
 
-                                                                DialogUtils.showOKDialog(SettingsActivity.this, R.string.error_title,
-                                                                        R.string.delete_user_failure, android.R.drawable.ic_dialog_alert);
+                                                                Toast.makeText(SettingsActivity.this,
+                                                                        R.string.delete_user_failure, Toast.LENGTH_SHORT).show();
                                                             }
                                                         });
                                                     }
                                                     else
                                                     {
-                                                        DialogUtils.showOKDialog(SettingsActivity.this, R.string.info_title,
-                                                                R.string.delete_user_accepted_requests,
-                                                                android.R.drawable.ic_dialog_alert);
+                                                        Toast.makeText(SettingsActivity.this,
+                                                                R.string.delete_user_accepted_requests, Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
 
@@ -227,16 +228,15 @@ public class SettingsActivity extends AppCompatActivity implements IUserDataStat
                                                     Log.e(TAG, "deleteUserButton.OnClickListener(Supplier) - DatabaseError: " +
                                                             databaseError.getMessage());
 
-                                                    DialogUtils.showOKDialog(SettingsActivity.this, R.string.error_title,
-                                                            R.string.delete_user_failure, android.R.drawable.ic_dialog_alert);
+                                                    Toast.makeText(SettingsActivity.this,
+                                                            R.string.delete_user_failure, Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                         }
                                         else
                                         {
-                                            DialogUtils.showOKDialog(SettingsActivity.this, R.string.info_title,
-                                                    R.string.delete_user_accepted_requests,
-                                                    android.R.drawable.ic_dialog_alert);
+                                            Toast.makeText(SettingsActivity.this,
+                                                    R.string.delete_user_accepted_requests, Toast.LENGTH_SHORT).show();
                                         }
                                     }
 
@@ -245,8 +245,8 @@ public class SettingsActivity extends AppCompatActivity implements IUserDataStat
                                         Log.e(TAG, "deleteUserButton.OnClickListener(Requester) - DatabaseError: " +
                                                 databaseError.getMessage());
 
-                                        DialogUtils.showOKDialog(SettingsActivity.this, R.string.error_title,
-                                                R.string.delete_user_failure, android.R.drawable.ic_dialog_alert);
+                                        Toast.makeText(SettingsActivity.this,
+                                                R.string.delete_user_failure, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
@@ -256,9 +256,8 @@ public class SettingsActivity extends AppCompatActivity implements IUserDataStat
                     final OnFailureListener reauthenticateNegativeListener = new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            DialogUtils.showOKDialog(SettingsActivity.this,
-                                    R.string.info_title, R.string.delete_user_invalid_password,
-                                    android.R.drawable.ic_dialog_alert);
+                            Toast.makeText(SettingsActivity.this,
+                                    R.string.delete_user_invalid_password, Toast.LENGTH_SHORT).show();
                         }
                     };
 
