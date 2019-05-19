@@ -12,7 +12,7 @@
         style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#C8C8C8"
+        android:background="#A6C8C8C8"
         android:indeterminateDrawable="@drawable/progress"
         android:padding="150dp"
         android:visibility="gone" />

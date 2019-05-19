@@ -3,11 +3,11 @@
     <!-- Map -->
     <string name="title_activity_maps">Map</string>
     <!-- Request Form -->
-    <string name="coordinates_label_name">Coordinates</string>
-    <string name="time_label_name">Time</string>
+    <string name="coordinates_label_name">Address</string>
+    <string name="time_label_name">Deadline</string>
     <string name="title_label_name">Title</string>
     <string name="description_label_name">Description</string>
-    <string name="tags_label_name">Tags</string>
+    <string name="tags_label_name">Tag</string>
 
     <string name="title_hint">New request</string>
     <string name="description_hint">What\'s the problem?</string>

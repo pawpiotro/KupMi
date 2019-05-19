@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements IUserDataStatus
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-
+        
         if (requestCode == RC_SIGN_IN)
         {
             if (resultCode == RESULT_OK)
@@ -82,6 +82,7 @@ public class MainActivity extends Activity implements IUserDataStatus
     @Override
     public void DataIsLoaded(User user)
     {
+        setBarVisible(false);
         if (user == null)
         {
             showOKDialog(this, R.string.info_title, R.string.deactivated_user,
@@ -90,7 +91,6 @@ public class MainActivity extends Activity implements IUserDataStatus
         }
         else
         {
-            setBarVisible(false);
             Intent intent = new Intent(this, MenuActivity.class);
             intent.putExtra(Constants.USER, user);
             startActivity(intent);
@@ -118,6 +118,7 @@ public class MainActivity extends Activity implements IUserDataStatus
                 }
                 else
                 {
+                    setBarVisible(false);
                     showOKDialog(MainActivity.this, R.string.error_title, R.string.no_network_connection,
                             android.R.drawable.ic_dialog_alert);
                 }

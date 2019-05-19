@@ -278,9 +278,9 @@ public class RequestFormActivity extends FragmentActivity {
             if (resultCode == Constants.FAILURE_RESULT) {
                 Log.w(TAG, "Address not found");
                 Toast.makeText(context, "Address not found", Toast.LENGTH_SHORT).show();
+                request.setLocationAddress("");
                 return;
             }
-
 
             Log.i(TAG, resultData.getString(Constants.RESULT_DATA_KEY));
             request.setLocationAddress(resultData.getString(Constants.RESULT_DATA_KEY));

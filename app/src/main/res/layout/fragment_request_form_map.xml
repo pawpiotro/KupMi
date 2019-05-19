@@ -20,16 +20,12 @@
         android:background="#00F0F0F0"
         android:padding="2dp">
 
-        <TextView
-            android:id="@+id/request_form_map_coords_textview"
+        <SearchView
+            android:id="@+id/requests_form_map_searchview"
             android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:background="@drawable/border"
-            android:backgroundTint="#DDDDDD"
-            android:padding="4dp"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textSize="18sp" />
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:queryHint="Address..." />
     </LinearLayout>
 
     <FrameLayout
