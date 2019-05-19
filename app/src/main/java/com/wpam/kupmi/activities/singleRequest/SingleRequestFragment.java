@@ -96,7 +96,9 @@ public class SingleRequestFragment extends Fragment {
                         RequestState.ACCEPTED, new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(parentActivity, "Request accepted!", Toast.LENGTH_SHORT).show();
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(parentActivity, "Request accepted!", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }, new OnFailureListener() {
                             @Override
