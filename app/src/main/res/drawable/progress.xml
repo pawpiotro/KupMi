@@ -19,8 +19,8 @@
         <gradient
             android:centerColor="@color/color_preloader_center"
             android:centerY="0.50"
-            android:endColor="@color/color_preloader_end"
-            android:startColor="@color/color_preloader_start"
+            android:endColor="@color/color_third"
+            android:startColor="@color/color_basic_background"
             android:type="sweep"
             android:useLevel="false" />
     </shape>

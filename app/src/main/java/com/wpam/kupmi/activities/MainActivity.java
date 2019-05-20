@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.FirebaseApp;
@@ -31,6 +33,9 @@ public class MainActivity extends Activity implements IUserDataStatus
 
     private UserService userService;
     private ProgressBar bar;
+    private Button authEmailButton;
+    private TextView loggingInTextView;
+    private RelativeLayout waitLayout;
 
     // Override Activity
     @Override
@@ -43,6 +48,9 @@ public class MainActivity extends Activity implements IUserDataStatus
 
         setContentView(R.layout.activity_main);
         bar = (ProgressBar) findViewById(R.id.main_activity_progress_bar);
+        authEmailButton = (Button) findViewById(R.id.authEmailButton);
+        loggingInTextView = (TextView) findViewById(R.id.main_activity_logging_in_textview);
+        waitLayout = findViewById(R.id.main_activity_wait_layout);
 
         AuthManager authManager = AuthManager.getInstance();
         if (AuthManager.getInstance().isSignIn())
@@ -130,13 +138,20 @@ public class MainActivity extends Activity implements IUserDataStatus
     // Public methods
 
     public void setBarVisible(boolean b) {
-        if (bar == null)
+        if (waitLayout == null)
             return;
         if (b) {
-            bar.bringToFront();
-            bar.setVisibility(View.VISIBLE);
+            waitLayout.setVisibility(View.VISIBLE);
+//            bar.bringToFront();
+//            loggingInTextView.bringToFront();
+//            bar.setVisibility(View.VISIBLE);
+//            loggingInTextView.setVisibility(View.VISIBLE);
+            authEmailButton.setVisibility(View.GONE);
         } else {
-            bar.setVisibility(View.GONE);
+//            bar.setVisibility(View.GONE);
+//            loggingInTextView.setVisibility(View.GONE);
+            waitLayout.setVisibility(View.GONE);
+            authEmailButton.setVisibility(View.VISIBLE);
         }
     }
 }
