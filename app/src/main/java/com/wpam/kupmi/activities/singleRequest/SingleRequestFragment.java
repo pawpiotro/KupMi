@@ -92,6 +92,8 @@ public class SingleRequestFragment extends Fragment {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                requestQuery.removeEventListener(requestQueryListener);
+                requestsDetailsQuery.removeEventListener(requestsDetailsQueryListener);
                 DatabaseManager dbManager = DatabaseManager.getInstance();
                 Log.i(TAG, "request uid:"+ parentActivity.getRequest().getRequestUID());
                 Log.i(TAG, "requester uid:" + parentActivity.getRequest().getRequesterUID());
@@ -104,23 +106,27 @@ public class SingleRequestFragment extends Fragment {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(parentActivity, "Request accepted!", Toast.LENGTH_SHORT).show();
+                                    parentActivity.finish();
                                 }
                             }
                         }, new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(parentActivity, "Accepting request failed!", Toast.LENGTH_SHORT).show();
+                                requestQuery.addValueEventListener(requestQueryListener);
+                                requestsDetailsQuery.addValueEventListener(requestsDetailsQueryListener);
                             }
                         });
-                requestQuery.removeEventListener(requestQueryListener);
-                requestQuery.removeEventListener(requestsDetailsQueryListener);
-                parentActivity.finish();
+
+
             }
         });
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                requestQuery.removeEventListener(requestQueryListener);
+                requestsDetailsQuery.removeEventListener(requestsDetailsQueryListener);
                 DatabaseManager dbManager = DatabaseManager.getInstance();
                 Log.i(TAG, "request uid:"+ parentActivity.getRequest().getRequestUID());
                 Log.i(TAG, "requester uid:" + parentActivity.getRequest().getRequesterUID());
@@ -133,17 +139,17 @@ public class SingleRequestFragment extends Fragment {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(parentActivity, "Request fulfilled!", Toast.LENGTH_SHORT).show();
+                                    parentActivity.finish();
                                 }
                             }
                         }, new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(parentActivity, "Fulfilling request failed!", Toast.LENGTH_SHORT).show();
+                                requestQuery.addValueEventListener(requestQueryListener);
+                                requestsDetailsQuery.addValueEventListener(requestsDetailsQueryListener);
                             }
                         });
-                requestQuery.removeEventListener(requestQueryListener);
-                requestQuery.removeEventListener(requestsDetailsQueryListener);
-                parentActivity.finish();
             }
         });
 
@@ -190,13 +196,13 @@ public class SingleRequestFragment extends Fragment {
                         if(reqState.equals(RequestState.ACCEPTED)) {
                             Toast.makeText(parentActivity, "Request already taken.", Toast.LENGTH_SHORT).show();
                             requestQuery.removeEventListener(requestQueryListener);
-                            requestQuery.removeEventListener(requestsDetailsQueryListener);
+                            requestsDetailsQuery.removeEventListener(requestsDetailsQueryListener);
                             parentActivity.finish();
                         }
                         if(reqState.equals(RequestState.UNDONE)) {
                             Toast.makeText(parentActivity, "Request cancelled.", Toast.LENGTH_SHORT).show();
                             requestQuery.removeEventListener(requestQueryListener);
-                            requestQuery.removeEventListener(requestsDetailsQueryListener);
+                            requestsDetailsQuery.removeEventListener(requestsDetailsQueryListener);
                             parentActivity.finish();
                         }
                     }
