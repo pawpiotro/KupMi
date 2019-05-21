@@ -230,8 +230,7 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         switch (state) {
             case DONE:
             case UNDONE:
-                // Another listener should do that.
-                //showRepButtons(true);
+                showRepButtons(true);
                 showCallButton(false);
                 break;
             case ACCEPTED:
