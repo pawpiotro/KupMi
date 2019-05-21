@@ -191,6 +191,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/single_request_user_up_button"
                     android:backgroundTint="@color/color_text_input"
                     android:clickable="true"
