@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.FirebaseApp;
 import com.wpam.kupmi.R;
-import com.wpam.kupmi.activities.settings.SettingsActivity;
 import com.wpam.kupmi.firebase.auth.AuthManager;
 import com.wpam.kupmi.lib.Constants;
 import com.wpam.kupmi.model.User;
@@ -22,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.wpam.kupmi.utils.NetworkUtils.*;
-import static com.wpam.kupmi.utils.DialogUtils.*;
 
 public class MainActivity extends Activity implements IUserDataStatus
 {
@@ -47,9 +45,9 @@ public class MainActivity extends Activity implements IUserDataStatus
         userService = new UserService();
 
         setContentView(R.layout.activity_main);
-        bar = (ProgressBar) findViewById(R.id.main_activity_progress_bar);
-        authEmailButton = (Button) findViewById(R.id.authEmailButton);
-        loggingInTextView = (TextView) findViewById(R.id.main_activity_logging_in_textview);
+        bar = findViewById(R.id.main_activity_progress_bar);
+        authEmailButton = findViewById(R.id.authEmailButton);
+        loggingInTextView = findViewById(R.id.main_activity_logging_in_textview);
         waitLayout = findViewById(R.id.main_activity_wait_layout);
 
         AuthManager authManager = AuthManager.getInstance();

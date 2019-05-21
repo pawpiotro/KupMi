@@ -82,6 +82,10 @@ public class SingleRequestFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                if (parentActivity.getRequestUserKind() == RequestUserKind.REQUESTER)
+                    cancelRequest(AuthManager.getInstance().getCurrentUserUid());
+                else
+                    cancelRequest(parentActivity.getRequest().getRequesterUID());
             }
         });
 
@@ -123,7 +127,7 @@ public class SingleRequestFragment extends Fragment {
                 Log.i(TAG, "supplier uid:" + parentActivity.getRequest().getSupplierUID());
                 dbManager.updateRequestState(parentActivity.getRequest().getRequestUID(),
                         AuthManager.getInstance().getCurrentUserUid(),
-                        "",
+                        null,
                         RequestState.DONE, new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
@@ -149,9 +153,7 @@ public class SingleRequestFragment extends Fragment {
         Log.i(TAG, parentActivity.getRequestUserKind().firstCapitalLetterName());
         Log.i(TAG, parentActivity.getRequest().getState().firstCapitalLetterName());
 
-
-
-        if(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER)
+        if (parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER)
             && parentActivity.getRequest().getState().equals(RequestState.ACTIVE)){
             requestQuery = dbManager.getRequestQuery(RequestUserKind.REQUESTER,
                     parentActivity.getRequest().getRequesterUID(),
@@ -227,6 +229,27 @@ public class SingleRequestFragment extends Fragment {
         requestsDetailsQuery.addValueEventListener(requestsDetailsQueryListener);
     }
 
+    private void cancelRequest(String userUID)
+    {
+        DatabaseManager.getInstance().updateRequestState(parentActivity.getRequest().getRequestUID(),
+                userUID,
+                null,
+                RequestState.UNDONE,
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(parentActivity, "Request cancelled!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(parentActivity, "Cancelling request failed!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private void updateButtons(RequestState state) {
         switch (state) {
             case ACCEPTED:
@@ -236,6 +259,8 @@ public class SingleRequestFragment extends Fragment {
                     showCancelButton();
                 break;
             case ACTIVE:
+                if(parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
+                    showCancelButton();
                 if(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER))
                     showAcceptButton();
                 break;
