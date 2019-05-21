@@ -185,6 +185,22 @@ public class SingleRequestFragment extends Fragment {
                     deadlineView.setText(DateUtils.getDateText(deadlineCal, parentActivity));
                     stateView.setText(reqState.firstCapitalLetterName());
 
+                    if(parentActivity.getRequestUserKind().equals(RequestUserKind.SUPPLIER)
+                        && parentActivity.getRequest().getState().equals(RequestState.ACTIVE)){
+                        if(reqState.equals(RequestState.ACCEPTED)) {
+                            Toast.makeText(parentActivity, "Request already taken.", Toast.LENGTH_SHORT).show();
+                            requestQuery.removeEventListener(requestQueryListener);
+                            requestQuery.removeEventListener(requestsDetailsQueryListener);
+                            parentActivity.finish();
+                        }
+                        if(reqState.equals(RequestState.UNDONE)) {
+                            Toast.makeText(parentActivity, "Request cancelled.", Toast.LENGTH_SHORT).show();
+                            requestQuery.removeEventListener(requestQueryListener);
+                            requestQuery.removeEventListener(requestsDetailsQueryListener);
+                            parentActivity.finish();
+                        }
+                    }
+
                     parentActivity.getRequest().setTag(RequestTag.getInstance(tag));
                     parentActivity.getRequest().setTitle(title);
                     parentActivity.getRequest().setState(reqState);
