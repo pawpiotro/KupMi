@@ -36,4 +36,6 @@ public class DbModel
     public static final String LOAN_KEY = RequestTag.LOAN.lowerCaseName();
     public static final String REPAIR_KEY = RequestTag.REPAIR.lowerCaseName();
     public static final String ACTIVITY_KEY = RequestTag.ACTIVITY.lowerCaseName();
+
+    public static final String RATINGS_KEY = "ratings";
 }

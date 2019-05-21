@@ -76,7 +76,7 @@ public class DateUtils
 
     public static String getDateText(Calendar date, String dateFormat, Locale locale)
     {
-        if (date != null && isNullOrEmpty(dateFormat)) {
+        if (date != null && !isNullOrEmpty(dateFormat)) {
             final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);
             return format.format(date.getTime());
         }

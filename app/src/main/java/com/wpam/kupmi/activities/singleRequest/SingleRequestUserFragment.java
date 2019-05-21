@@ -17,14 +17,25 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.wpam.kupmi.R;
+import com.wpam.kupmi.firebase.database.DatabaseManager;
 import com.wpam.kupmi.lib.PermissionsClassLib;
 import com.wpam.kupmi.model.RequestState;
 import com.wpam.kupmi.model.RequestUserKind;
 import com.wpam.kupmi.model.User;
 import com.wpam.kupmi.services.user.IUserDataStatus;
 import com.wpam.kupmi.services.user.UserService;
+
+import static com.wpam.kupmi.model.RequestUserRating.NEGATIVE_RATING;
+import static com.wpam.kupmi.model.RequestUserRating.NEUTRAL_RATING;
+import static com.wpam.kupmi.model.RequestUserRating.POSITIVE_RATING;
+import static com.wpam.kupmi.utils.StringUtils.isNullOrEmpty;
 
 public class SingleRequestUserFragment extends Fragment implements IUserDataStatus {
     private static final String TAG = "SINGLE_REQUEST_USER_FRAGMENT";
@@ -42,6 +53,10 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
     private ImageButton callButton;
 
     private User user;
+
+    private int currentRating = NEUTRAL_RATING;
+    private Query ratingQuery;
+    private ValueEventListener ratingQueryListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,19 +85,37 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         showPlaceholder(true);
         updateUserData();
 
-        upButton.setOnClickListener(new View.OnClickListener() {
+        ratingQueryListener = new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long rating = dataSnapshot.getValue(Long.class);
+                currentRating = rating != null ? rating.intValue() : NEUTRAL_RATING;
 
+                showRepButtons(true);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "ratingQueryListener - " + databaseError.getMessage());
+            }
+        };
+
+        upButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (user != null && !isNullOrEmpty(user.getEmail()))
+                setRating((long) POSITIVE_RATING);
             }
         });
 
         downButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (user != null && !isNullOrEmpty(user.getEmail()))
+                    setRating((long) NEGATIVE_RATING);
             }
         });
+
 
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,8 +133,35 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        RequestState requestState = parentActivity.getRequest().getState();
+        String userUID = getUserID();
+        String requestUID = parentActivity.getRequest().getRequestUID();
+        if (!isNullOrEmpty(userUID) && !isNullOrEmpty(requestUID)
+                && (requestState == RequestState.DONE || requestState == RequestState.UNDONE))
+        {
+            ratingQuery = DatabaseManager.getInstance().getRequestUserRating(
+                    requestUID, userUID);
+            if (ratingQuery != null)
+                ratingQuery.addValueEventListener(ratingQueryListener);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (ratingQuery != null) {
+            ratingQuery.removeEventListener(ratingQueryListener);
+            ratingQuery = null;
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.i(TAG, "elo:" + requestCode);
+        Log.i(TAG, "RequestCode: " + requestCode);
         switch (requestCode) {
             case PermissionsClassLib.CALL_PHONE_PERMISSION_CODE: {
                 if (grantResults.length > 0
@@ -117,14 +177,18 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
 
     public void updateUserData(){
         String userID;
-        if(parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
-            userID = parentActivity.getRequest().getSupplierUID();
-        else
-            userID = parentActivity.getRequest().getRequesterUID();
+        userID = getUserID();
         UserService userService = new UserService();
         userService.enableUserQuery(userID, false, this);
-        userService.getUser();
         updateButtons(parentActivity.getRequest().getState());
+    }
+
+    private String getUserID()
+    {
+        if (parentActivity.getRequestUserKind().equals(RequestUserKind.REQUESTER))
+            return parentActivity.getRequest().getSupplierUID();
+        else
+            return parentActivity.getRequest().getRequesterUID();
     }
 
     private void setData(User user) {
@@ -142,7 +206,6 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
             repView.setText(rep.toString());
 
         showPlaceholder(false);
-        //imageView.setImageResource(R.mipmap.sample_avatar);
     }
 
     @Override
@@ -185,12 +248,43 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
 
     private void showRepButtons(boolean b) {
         if (upButton != null && downButton != null) {
-            if (b) {
-                upButton.bringToFront();
-                downButton.bringToFront();
-                upButton.setVisibility(View.VISIBLE);
-                downButton.setVisibility(View.VISIBLE);
-            } else {
+            if (b)
+            {
+                switch (currentRating)
+                {
+                    case POSITIVE_RATING:
+                        upButton.bringToFront();
+                        upButton.setVisibility(View.VISIBLE);
+                        downButton.setVisibility(View.GONE);
+
+                        upButton.setClickable(false);
+                        downButton.setClickable(false);
+                        break;
+                    case NEGATIVE_RATING:
+                        downButton.bringToFront();
+                        downButton.setVisibility(View.VISIBLE);
+                        upButton.setVisibility(View.GONE);
+
+                        upButton.setClickable(false);
+                        downButton.setClickable(false);
+                        break;
+                    case NEUTRAL_RATING:
+                        upButton.bringToFront();
+                        downButton.bringToFront();
+                        upButton.setVisibility(View.VISIBLE);
+                        downButton.setVisibility(View.VISIBLE);
+
+                        upButton.setClickable(true);
+                        downButton.setClickable(true);
+                        break;
+                    default:
+                        upButton.setVisibility(View.GONE);
+                        downButton.setVisibility(View.GONE);
+                        break;
+                }
+            }
+            else
+            {
                 upButton.setVisibility(View.GONE);
                 downButton.setVisibility(View.GONE);
             }
@@ -220,4 +314,24 @@ public class SingleRequestUserFragment extends Fragment implements IUserDataStat
         }
     }
 
+    private void setRating(Long rating)
+    {
+        String userUID = getUserID();
+        String requestUID = parentActivity.getRequest().getRequestUID();
+        if (!isNullOrEmpty(userUID) && !isNullOrEmpty(requestUID))
+        {
+            DatabaseManager.getInstance().updateRequestUserRating(requestUID, userUID, rating,
+                    new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(parentActivity, "Rating added!", Toast.LENGTH_SHORT).show();
+                        }
+                    }, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(parentActivity, "Adding rating failed!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.firebase.geofire.LocationCallback;
 import com.firebase.geofire.core.GeoHash;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,9 +32,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.wpam.kupmi.firebase.database.model.DbModel.TAGS_KEY;
+import static com.wpam.kupmi.model.RequestUserRating.NEGATIVE_RATING;
+import static com.wpam.kupmi.model.RequestUserRating.POSITIVE_RATING;
 import static com.wpam.kupmi.utils.CoordinatesUtils.getGeoLocation;
 import static com.wpam.kupmi.utils.FirebaseUtils.createPath;
 import static com.wpam.kupmi.utils.StringUtils.isNullOrEmpty;
@@ -59,7 +61,7 @@ public class DatabaseManager
 
     public Query getUserQuery(String userUID)
     {
-        if (userUID != null)
+        if (!isNullOrEmpty(userUID))
             return dbRef.child(createPath(DbModel.USERS_KEY, userUID));
 
         return null;
@@ -67,7 +69,7 @@ public class DatabaseManager
 
     public Query getRequestQuery(RequestUserKind userKind, String userUID, String requestUID)
     {
-        if (userKind != null && userUID != null && requestUID != null)
+        if (userKind != null && !isNullOrEmpty(userUID) && !isNullOrEmpty(requestUID))
         {
             return dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
                     userUID, requestUID));
@@ -78,7 +80,7 @@ public class DatabaseManager
 
     public Query getRequestsQuery(RequestUserKind userKind, String userUID, boolean isOrderByChild)
     {
-        if (userKind != null && userUID != null)
+        if (userKind != null && !isNullOrEmpty(userUID))
         {
             DatabaseReference requestsRef = dbRef.child(createPath(DbModel.REQUESTS_KEY, userKind.lowerCaseName(),
                     userUID));
@@ -93,7 +95,7 @@ public class DatabaseManager
 
     public Query getRequestDetailsQuery(String requestUID)
     {
-        if (requestUID != null)
+        if (!(isNullOrEmpty(requestUID)))
         {
             return dbRef.child(createPath(DbModel.REQUESTS_DETAILS_KEY, requestUID));
         }
@@ -122,7 +124,7 @@ public class DatabaseManager
     public void getRequestLocationQuery(String requestUID, RequestState state,
                                             LocationCallback callback)
     {
-        if (requestUID != null && state != RequestState.UNKNOWN)
+        if (!isNullOrEmpty(requestUID) && state != RequestState.UNKNOWN)
         {
             GeoFire geoRef = new GeoFire(dbRef.child(
                     createPath(DbModel.REQUESTS_LOCATIONS_KEY, state.lowerCaseName())));
@@ -205,6 +207,14 @@ public class DatabaseManager
         }
 
         return RequestState.UNKNOWN;
+    }
+
+    public Query getRequestUserRating(String requestUID, String userUID)
+    {
+        if (!isNullOrEmpty(requestUID) && !isNullOrEmpty(userUID))
+            return dbRef.child(createPath(DbModel.RATINGS_KEY, requestUID, userUID));
+
+        return null;
     }
 
     public void addRequest(Request request, OnCompleteListener<Void> completeListener,
@@ -307,6 +317,18 @@ public class DatabaseManager
     {
         if (!isNullOrEmpty(userUID) && phoneNumber != null) {
             dbRef.child(createPath(DbModel.USERS_KEY, userUID, DbModel.PHONE_NUMBER_KEY)).setValue(phoneNumber, null);
+        }
+    }
+
+    public void updateRequestUserRating(String requestUID, String userUID, Long rating,
+                                        OnSuccessListener<Void> successListener,
+                                        OnFailureListener failureListener)
+    {
+        if (!isNullOrEmpty(requestUID) && !isNullOrEmpty(userUID) &&
+                (rating.intValue() == POSITIVE_RATING || rating.intValue() == NEGATIVE_RATING))
+        {
+            dbRef.child(createPath(DbModel.RATINGS_KEY, requestUID, userUID)).setValue(rating)
+                    .addOnSuccessListener(successListener).addOnFailureListener(failureListener);
         }
     }
 

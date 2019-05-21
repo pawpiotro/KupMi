@@ -32,6 +32,11 @@ const LOAN_KEY = 'loan';
 const REPAIR_KEY = 'repair';
 const ACTIVITY_KEY = 'activity';
 
+const RATINGS_KEY = "ratings";
+const NEUTRAL_RATING = 0;
+const POSITIVE_RATING = 1;
+const NEGATIVE_RATING = -1;
+
 admin.initializeApp();
 
 // Auth listeners
@@ -192,6 +197,29 @@ exports.changeRequest = functions.database.ref(REQUESTS_KEY +
                     ' to another state failed: ',
                     'Moving request: ' + requestUID + ' to another state succedded.');
                 }
+
+                if ((stateName == DONE_KEY || stateName == UNDONE_KEY) && otherUserUID)
+                {
+                    await admin.database().ref(RATINGS_KEY + '/' + requestUID + '/' +
+                    userUID).set(NEUTRAL_RATING)
+                    .then(function() {
+                      console.log('Adding neutral rating for : (' + requestUID + ', ' + userUID + ') succeeded.');
+                    })
+                    .catch(function(error) {
+                      console.error('Adding neutral rating for : (' + requestUID + ', ' + userUID + ') failed: '
+                      + error.message);
+                    });
+
+                    await admin.database().ref(RATINGS_KEY + '/' + requestUID + '/' +
+                    otherUserUID).set(NEUTRAL_RATING)
+                    .then(function() {
+                      console.log('Adding neutral rating for : (' + requestUID + ', ' + otherUserUID + ') succeeded.');
+                    })
+                    .catch(function(error) {
+                      console.error('Adding neutral rating for : (' + requestUID + ', ' + otherUserUID + ') failed: '
+                      + error.message);
+                    });
+                }
             }
         }
         else
@@ -267,6 +295,54 @@ exports.deleteSupplierRequest = functions.database.ref(REQUESTS_KEY +
           console.error('Removing supplier UID for request: ' + requestUID + ' failed: '
           + error.message);
         });
+    }
+});
+
+exports.updateUserRating = functions.database.ref(RATINGS_KEY + '/{requestUID}/{userUID}').
+onWrite((change, context) => {
+
+    const requestUID = context.params.requestUID;
+    const userUID = context.params.userUID;
+
+    if (change.before.exists() && change.after.exists())
+    {
+        const oldRating = change.before.val();
+        const rating = change.after.val();
+
+        var diff = rating - oldRating
+
+        if (rating == POSITIVE_RATING || rating == NEGATIVE_RATING || rating == NEUTRAL_RATING)
+        {
+            const path = USERS_KEY + '/' + userUID + '/' + REPUTATION_KEY;
+
+            admin.database().ref(path).once('value')
+            .then(async function (dataSnapshot)
+            {
+                var reputation = dataSnapshot.val();
+                if (!isNaN(reputation))
+                {
+                    reputation += diff;
+
+                    await admin.database().ref(path).set(reputation)
+                    .then(function() {
+                      console.log('Updating user reputation: (' + requestUID + ', ' + reputation + ') succeeded.');
+                    })
+                    .catch(function(error) {
+                      console.error('Updating user reputation: (' + requestUID + ', ' + reputation + ') failed: '
+                      + error.message);
+                    });
+                }
+                else {
+                    console.log('Reading data from snapshot failed.')
+                }
+            })
+            .catch(function(error) {
+                console.error('Cannot read from: ' + path + ' (' + error.message + ')');
+            });
+        }
+        else {
+            console.log('Wrong value: ' + rating)
+        }
     }
 });
 
