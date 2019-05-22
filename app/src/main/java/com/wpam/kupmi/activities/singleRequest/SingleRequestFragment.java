@@ -81,7 +81,6 @@ public class SingleRequestFragment extends Fragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (parentActivity.getRequestUserKind() == RequestUserKind.REQUESTER)
                     cancelRequest(AuthManager.getInstance().getCurrentUserUid());
                 else
@@ -253,6 +252,8 @@ public class SingleRequestFragment extends Fragment {
 
     private void cancelRequest(String userUID)
     {
+        requestQuery.removeEventListener(requestQueryListener);
+        requestsDetailsQuery.removeEventListener(requestsDetailsQueryListener);
         DatabaseManager.getInstance().updateRequestState(parentActivity.getRequest().getRequestUID(),
                 userUID,
                 null,
@@ -262,12 +263,15 @@ public class SingleRequestFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(parentActivity, "Request cancelled!", Toast.LENGTH_SHORT).show();
+                            parentActivity.finish();
                         }
                     }
                 }, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(parentActivity, "Cancelling request failed!", Toast.LENGTH_SHORT).show();
+                        requestQuery.addValueEventListener(requestQueryListener);
+                        requestsDetailsQuery.addValueEventListener(requestsDetailsQueryListener);
                     }
                 });
     }
