@@ -164,19 +164,19 @@ public class RequestsSearchMap extends Fragment implements OnMapReadyCallback {
             locationRequestsQuery = dbManager.getLocationRequestsQuery(
                     getCoordsPair(currentLatLng), currentRadius / 1000, REQUEST_STATE,
                     locationRequestsQueryListener);
-        } else {
+        } /*else {
             dbManager.addLocationRequestsListener(locationRequestsQuery,
                     locationRequestsQueryListener);
-        }
+        }*/
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        if (locationRequestsQuery != null) {
+        /*if (locationRequestsQuery != null) {
             DatabaseManager.getInstance().removeLocationRequestsListeners(locationRequestsQuery);
-        }
+        }*/
     }
 
     // Override OnMapReadyCallback
