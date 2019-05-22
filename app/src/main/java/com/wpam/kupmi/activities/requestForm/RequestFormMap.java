@@ -84,14 +84,14 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
         Log.i(TAG, "Map ready");
         parentActivity.setBarVisible(false);
         map = googleMap;
-        updateMarkerOnMap();
+        updateMarkerOnMap(true);
 
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 Log.i(TAG, latLng.toString());
                 currentLatLng = latLng;
-                updateMarkerOnMap();
+                updateMarkerOnMap(false);
             }
         });
 
@@ -110,10 +110,11 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void updateMarkerOnMap(){
+    private void updateMarkerOnMap(boolean moveCamera){
         map.clear();
         map.addMarker(new MarkerOptions().position(currentLatLng));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
+        if(moveCamera)
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, MAP_ZOOM));
     }
 
     // Private methods
@@ -151,7 +152,7 @@ public class RequestFormMap extends Fragment implements OnMapReadyCallback {
             Log.i(TAG, Double.toString(lon));
 
             currentLatLng = new LatLng(lat, lon);
-            updateMarkerOnMap();
+            updateMarkerOnMap(true);
         }
     }
 }
